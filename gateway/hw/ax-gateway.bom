@@ -1,0 +1,113 @@
+Bill Of Materials
+=================
+
+Source file: ax-gateway.xml
+Date: 2016-08-10T14:46:28.314930
+
+Parts Missing Footprints
+------------------------
+
+
+Parts Missing Order Codes
+-------------------------
+C37    NOSTUFF         agg:0402
+C35    NOSTUFF         agg:0402
+P1     Raspberry_Pi_Conn rem:Rasberry_Pi_3
+C38    NOSTUFF         agg:0402
+C36    NOSTUFF         agg:0402
+D3     LAN             agg:0603-LED
+D4     INTERNET        agg:0603-LED
+D5     DATA 0          agg:0603-LED
+D6     DATA 1          agg:0603-LED
+D7     DC 1            agg:0603-LED
+D9     DC 0            agg:0603-LED
+JP1    Jumper_NO_Small rem:SOLDER_JUMPER_NO
+JP2    Jumper_NO_Small rem:SOLDER_JUMPER_NO
+
+Inconsistent Order Codes
+------------------------
+
+
+Vendor Specific BOMs
+--------------------
+  Vtrig
+  ~~~~~
+Vtrig = 21V typ (4W@50Ω),2,2x D1 D2 TSLP-2-17
+
+
+  Farnell
+  ~~~~~~~
+2497719,1,1x PAD BMI-S-x05
+2405790,1,1x TG-5006CJ TG-5006CJ
+2382987,1,1x TPS73433 SOT-23-5
+2480929,2,2x TVS_DIODE TSLP-2-17
+2521322,2,2x AX5243 QFN-20-EP-AX
+1608592,2,2x COAX SMA-EDGE
+2345130,2,2x 2.2µH 0805
+1525484,2,2x SCHOTTKY SOD-123
+
+
+  Capacitance
+  ~~~~~~~~~~~
+0.1pF,2,2x D1 D2 TSLP-2-17
+
+
+  STD.PAS
+  ~~~~~~~
+DNP,2,2x C22 C21 0402
+47nH,2,2x L5 L6 0402
+5.1pF,2,2x C31 C33 0402
+27nH,2,2x L9 L11 0402
+100nF,8,8x C11 C13 C14 C12 C16 C17 C41 C45 0402
+2.7pF,4,4x C26 C25 C32 C34 0402
+12nH,2,2x L10 L12 0402
+18nH,4,4x L3 L4 L7 L8 0402
+8.2pF,2,2x C28 C27 0402
+39pF,2,2x C15 C18 0402
+1µF,2,2x C2 C1 0402
+1nF,8,8x C5 C6 C7 C8 C39 C42 C43 C46 0402
+330Ω,6,6x R3 R4 R5 R6 R7 R8 0402
+4.7µF,3,3x C9 C10 C4 0402
+68nH,2,2x L1 L2 0402
+10nF,1,1x C3 0402
+100pF,2,2x C40 C44 0402
+1kΩ,2,2x R1 R2 0402
+4.3pF,4,4x C24 C23 C19 C20 0402
+0Ω,2,2x L13 L14 0402
+3.6pF,2,2x C30 C29 0402
+
+
+Assembly BOM
+------------
+Vtrig = 21V typ (4W@50Ω) 2   TVS_DIODE       TSLP-2-17       D1 D2
+2497719              1   PAD             BMI-S-x05       P4
+2405790              1   TG-5006CJ       TG-5006CJ       IC1
+2382987              1   TPS73433        SOT-23-5        IC2
+2480929              2   TVS_DIODE       TSLP-2-17       D1 D2
+2521322              2   AX5243          QFN-20-EP-AX    IC3 IC4
+1608592              2   COAX            SMA-EDGE        P2 P3
+2345130              2   2.2µH           0805            L15 L16
+1525484              2   SCHOTTKY        SOD-123         D10 D8
+0.1pF                2   TVS_DIODE       TSLP-2-17       D1 D2
+DNP                  2   DNP             0402            C21 C22
+47nH                 2   47nH            0402            L5 L6
+5.1pF                2   5.1pF           0402            C31 C33
+27nH                 2   27nH            0402            L11 L9
+100nF                8   100nF           0402            C11 C12 C13 C14 C16 C17 C41 C45
+2.7pF                4   2.7pF           0402            C25 C26 C32 C34
+12nH                 2   12nH            0402            L10 L12
+18nH                 4   18nH            0402            L3 L4 L7 L8
+8.2pF                2   8.2pF           0402            C27 C28
+39pF                 2   39pF            0402            C15 C18
+1µF                  2   1µF             0402            C1 C2
+1nF                  8   1nF             0402            C39 C42 C43 C46 C5 C6 C7 C8
+330Ω                 6   330Ω            0402            R3 R4 R5 R6 R7 R8
+4.7µF                3   4.7µF           0402            C10 C4 C9
+68nH                 2   68nH            0402            L1 L2
+10nF                 1   10nF            0402            C3
+100pF                2   100pF           0402            C40 C44
+1kΩ                  2   1kΩ             0402            R1 R2
+4.3pF                4   4.3pF           0402            C19 C20 C23 C24
+0Ω                   2   0Ω              0402            L13 L14
+3.6pF                2   3.6pF           0402            C29 C30
+
