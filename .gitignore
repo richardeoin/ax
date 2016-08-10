@@ -1,0 +1,7 @@
+# kicad ignores
+*-bak
+*.bak
+*.bck
+_autosave*
+bom
+gerbers
