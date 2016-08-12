@@ -2,7 +2,7 @@
 <export version="D">
   <design>
     <source>/Users/richard/Documents/_ax50/gateway/hw/ax-gateway.sch</source>
-    <date>Wednesday, 10 August 2016 'pmt' 14:46:25</date>
+    <date>Thursday, 11 August 2016 'pmt' 15:34:48</date>
     <tool>Eeschema 4.0.2-stable</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
@@ -714,7 +714,7 @@
       <value>PAD</value>
       <footprint>rem:BMI-S-x05</footprint>
       <fields>
-        <field name="Farnell">2497719</field>
+        <field name="Farnell">2497723</field>
       </fields>
       <libsource lib="ax-gateway-cache" part="PAD"/>
       <sheetpath names="/" tstamps="/"/>
