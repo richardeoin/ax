@@ -1,5 +1,5 @@
 /*
- * Register definitions for ax5243
+ * Register definitions for ax5043/ax5243
  * Copyright (C) 2016  Richard Meadows <richardeoin>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -22,6 +22,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/**
+ * See AND9347-D-AX5043 Programming Manual.PDF
+ */
 
 #define AX_REG_SILICONREVISION	0x000	/* Silicon Revision */
 #define AX_REG_SCRATCH			0x001	/* Scratch */
