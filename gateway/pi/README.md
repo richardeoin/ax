@@ -13,3 +13,5 @@ uses wiring pi
 * ax_hw.{c,h} - spi hardware functions, `ax_hw_{read,write}_register`
   and so on. Specific to wiring-pi
 * ax_test.c - test for pi
+* ax_reg.h - register addresses
+* ax_reg_values.h - register values
