@@ -186,7 +186,7 @@
 #define AX_SYSCLK_PU_ENABLE		(1 << 7) /* Weak Pullup Enable */
 
 /**
- * FIFO Status
+ * FIFO Status (FIFOSAT)
  */
 #define AX_FIFO_EMPTY		(1 << 0) /* FIFO is empty if 1 (SEE NOTE)  */
 #define AX_FIFO_FULL		(1 << 1) /* FIFO is full if 1 */
@@ -202,3 +202,11 @@
 #define AX_FIFOCMD_CLEAR_FIFO_DATA_AND_FLAGS	3
 #define AX_FIFOCMD_COMMIT		4
 #define AX_FIFOCMD_ROLLBACK		5
+
+/**
+ * PLL Ranging
+ */
+#define AX_PLLRANGING_RNG_START		(1 << 4)
+#define AX_PLLRANGING_RNGERR		(1 << 5)
+#define AX_PLLRANGING_PLL_LOCK		(1 << 6)
+#define AX_PLLRANGING_STICKY_LOCK	(1 << 7)

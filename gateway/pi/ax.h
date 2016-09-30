@@ -25,6 +25,9 @@
 #ifndef AX_H
 #define AX_H
 
+#include <stdlib.h>
+#include <stdint.h>
+
 /**
  * ax status field
  */
@@ -50,7 +53,22 @@
 #define AX_SILICONREVISION	0x51
 #define AX_SCRATCH			0xC5
 
+enum ax_pll {
+  AX_PLL_A,
+  AX_PLL_B
+};
 
+typedef struct ax_config {
+
+  /* external clock */
+  uint8_t use_tcxo;             /* 1 if TCXO used, 0 otherwise */
+  uint32_t f_xtal;              /* external clock frequency (Hz) */
+  uint16_t load_capacitance;    /* if crystal, load capacitance to be applied (pF) */
+
+} ax_config;
+
+void ax_transmit(void);
+void ax_init();
 
 uint8_t ax_silicon_revision(int channel);
 uint8_t ax_scratch(int channel);

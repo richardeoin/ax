@@ -33,6 +33,7 @@
 
 #include "ax_hw.h"
 #include "ax.h"
+#include "ax_reg.h"
 
 #define SPI_SPEED	500000      /* 500kHz */
 
@@ -121,6 +122,51 @@ uint16_t ax_hw_write_register_8(int channel, uint16_t reg, uint8_t value)
     return status;
   }
 }
+
+/**
+ * Writes buffer to fifo
+ *
+ * Returns status
+ */
+uint16_t ax_hw_write_fifo(int channel, uint8_t* buffer, uint16_t length)
+{
+  unsigned char data[1];
+
+  data[0] = ((AX_REG_FIFODATA & 0x7F) | 0x80);
+  wiringPiSPIDataRW(channel, data, 2);
+
+  wiringPiSPIDataRW(channel, buffer, length);
+
+  status &= 0xFF;
+  status |= ((uint16_t)data[0] << 8);
+
+  return status;
+}
+
+
+
+/**
+ * weak combinations
+ */
+uint16_t ax_hw_write_register_16(int channel, uint16_t reg, uint16_t value)
+{
+  ax_hw_write_register_8(channel,        reg,   (value >> 8)); /* MSB first */
+  return ax_hw_write_register_8(channel, reg+1, (value >> 0));
+}
+uint16_t ax_hw_write_register_24(int channel, uint16_t reg, uint32_t value)
+{
+  ax_hw_write_register_8(channel,        reg,   (value >> 16)); /* MSB first */
+  ax_hw_write_register_8(channel,        reg+1, (value >> 8));
+  return ax_hw_write_register_8(channel, reg+2, (value >> 0));
+}
+uint16_t ax_hw_write_register_32(int channel, uint16_t reg, uint32_t value)
+{
+  ax_hw_write_register_8(channel,        reg,   (value >> 24)); /* MSB first */
+  ax_hw_write_register_8(channel,        reg+1, (value >> 16));
+  ax_hw_write_register_8(channel,        reg+2, (value >> 8));
+  return ax_hw_write_register_8(channel, reg+3, (value >> 0));
+}
+
 
 /**
  * Returns the status from the last transaction

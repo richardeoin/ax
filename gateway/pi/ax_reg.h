@@ -26,6 +26,8 @@
  * See AND9347-D-AX5043 Programming Manual.PDF
  */
 
+//typedef uint16_t ax_reg_address_t
+
 #define AX_REG_SILICONREVISION	0x000	/* Silicon Revision */
 #define AX_REG_SCRATCH			0x001	/* Scratch */
 #define AX_REG_PWRMODE			0x002	/* Power Mode */
@@ -155,21 +157,21 @@
 #define AX_REG_RX_PARAMETER2	0x140
 #define AX_REG_RX_PARAMETER3	0x150
 
-#define AX_RX_AGCGAIN0			0x0	/* AGC Speed */
-#define AX_RX_AGCTARGET0		0x1	/* AGC Target */
-#define AX_RX_AGCAHYST0			0x2	/* AGC Analog Hysteresis */
-#define AX_RX_AGCMINMAX0		0x3	/* AGC Analog Update Behaviour */
-#define AX_RX_TIMEGAIN0			0x4	/* Time Estimator Bandwidth */
-#define AX_RX_DRGAIN0			0x5	/* Data Rate Estimator Bandwidth */
-#define AX_RX_PHASEGAIN0		0x6	/* Phase Estimator Bandwidth */
-#define AX_RX_FREQUENCYGAINA0	0x7	/* Frequency Estimator Bandwidth A */
-#define AX_RX_FREQUENCYGAINB0	0x8	/* Frequency Estimator Bandwidth B */
-#define AX_RX_FREQUENCYGAINC0	0x9	/* Frequency Estimator Bandwidth C */
-#define AX_RX_FREQUENCYGAIND0	0xA	/* Frequency Estimator Bandwidth D */
-#define AX_RX_AMPLITUDEGAIN0	0xB	/* Amplitude Estimator Bandwidth */
-#define AX_RX_FREQDEV0			0xC	/* Receiver Frequency Deviation */
-#define AX_RX_FOURFSK0			0xE	/* Four FSK Control */
-#define AX_RX_BBOFFSRES0		0xF	/* Baseband Offset Compensation Resistors */
+#define AX_RX_AGCGAIN			0x0	/* AGC Speed */
+#define AX_RX_AGCTARGET			0x1	/* AGC Target */
+#define AX_RX_AGCAHYST			0x2	/* AGC Analog Hysteresis */
+#define AX_RX_AGCMINMAX			0x3	/* AGC Analog Update Behaviour */
+#define AX_RX_TIMEGAIN			0x4	/* Time Estimator Bandwidth */
+#define AX_RX_DRGAIN			0x5	/* Data Rate Estimator Bandwidth */
+#define AX_RX_PHASEGAIN			0x6	/* Phase Estimator Bandwidth */
+#define AX_RX_FREQUENCYGAINA	0x7	/* Frequency Estimator Bandwidth A */
+#define AX_RX_FREQUENCYGAINB	0x8	/* Frequency Estimator Bandwidth B */
+#define AX_RX_FREQUENCYGAINC	0x9	/* Frequency Estimator Bandwidth C */
+#define AX_RX_FREQUENCYGAIND	0xA	/* Frequency Estimator Bandwidth D */
+#define AX_RX_AMPLITUDEGAIN		0xB	/* Amplitude Estimator Bandwidth */
+#define AX_RX_FREQDEV			0xC	/* Receiver Frequency Deviation */
+#define AX_RX_FOURFSK			0xE	/* Four FSK Control */
+#define AX_RX_BBOFFSRES			0xF	/* Baseband Offset Compensation Resistors */
 
 /**
  * Transmitter Parameters

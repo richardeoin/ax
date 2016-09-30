@@ -22,6 +22,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#ifndef AX_HW_H
+#define AX_HW_H
 
 #include <stdint.h>
 
@@ -40,7 +42,15 @@ uint16_t ax_hw_write_register_long_8(int channel, uint16_t reg, uint8_t value);
 uint8_t ax_hw_read_register_8(int channel, uint16_t reg);
 uint16_t ax_hw_write_register_8(int channel, uint16_t reg, uint8_t value);
 
+uint16_t ax_hw_write_fifo(int channel, uint8_t* buffer, uint16_t length);
+
+uint16_t ax_hw_write_register_16(int channel, uint16_t reg, uint16_t value);
+uint16_t ax_hw_write_register_24(int channel, uint16_t reg, uint32_t value);
+uint16_t ax_hw_write_register_32(int channel, uint16_t reg, uint32_t value);
+
 uint16_t ax_hw_status(void);
 uint16_t ax_hw_poll_status(void);
 
 int ax_hw_init(int channel);
+
+#endif  /* AX_HW_H */

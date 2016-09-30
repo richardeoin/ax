@@ -23,13 +23,22 @@
  */
 
 #include <stdio.h>
+#include <unistd.h>
 
+#include "ax.h"
 #include "ax_hw.h"
 
 int main()
 {
   ax_hw_init(0);
   ax_hw_init(1);
+
+  ax_init();
+
+  while (1) {
+    sleep(1);
+    ax_transmit();
+  }
 
   return 0;
 }
