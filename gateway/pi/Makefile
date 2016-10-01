@@ -24,8 +24,8 @@ TR		:= tr
 #
 # Display all warnings
 #
-CFLAGS  += -Wall -Wextra -pthread
-LDFLAGS += -Wall -Wextra
+CFLAGS  += -g3 -ggdb -std=c99 -Wall -Wextra -pthread
+LDFLAGS += -g3 -ggdb -Wall -Wextra
 
 # Source files
 SOURCES		= $(shell $(FIND) . -name '*.c')

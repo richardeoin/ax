@@ -56,6 +56,31 @@
 #define AX_FIFO_CHUNK_DATARATE		0x74 /* Datarate */
 #define AX_FIFO_CHUNK_ANTRSSI3		0x75 /* Antenna Selection RSSI */
 
+typedef struct ax_rx_chunk {
+  uint8_t chunk_t;
+  union {
+    struct {
+      uint8_t flags;
+      uint16_t length;
+      uint8_t data[0x100];
+    } data;
+    uint8_t rssi;
+    uint16_t freqoffs;
+    struct {
+      uint8_t rssi;
+      uint8_t bgndnoise;
+    } antrssi2;
+    uint32_t timer;
+    uint32_t rffreqoffs;
+    uint32_t datarate;
+    struct {
+      uint8_t ant0rssi;
+      uint8_t ant1rssi;
+      uint8_t bgndnoise;
+    } antrssi3;
+  } chunk;
+} ax_rx_chunk;
+
 /**
  * TXCTRL Command
  */

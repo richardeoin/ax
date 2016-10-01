@@ -24,6 +24,12 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
+
+#define USE_MATH_H
+#ifdef USE_MATH_H
+#include <math.h>
+#endif
 
 #include "ax.h"
 #include "ax_hw.h"
@@ -37,13 +43,497 @@
 #define debug_printf printf
 
 void ax_set_tx_power(float power);
+void ax_set_synthesiser_parameters(ax_synthesiser_parameters* params);
 
-void ax5043_set_registers(void)
+
+
+/* __reentrantb void ax5043_set_registers_rxwor(void) __reentrant */
+/* { */
+/* 	AX_REG_TMGRXAGC                = 0x3E; */
+/* 	AX_REG_TMGRXPREAMBLE1          = 0x19; */
+/* 	AX_REG_PKTMISCFLAGS            = 0x03; */
+/* } */
+
+
+/* __reentrantb void ax5043_set_registers_rxcont(void) __reentrant */
+/* { */
+/* 	AX_REG_TMGRXAGC                = 0x00; */
+/* 	AX_REG_TMGRXPREAMBLE1          = 0x00; */
+/* 	AX_REG_PKTMISCFLAGS            = 0x00; */
+/* } */
+
+
+/* __reentrantb void ax5043_set_registers_rxcont_singleparamset(void) __reentrant */
+/* { */
+/* 	AX_REG_RXPARAMSETS             = 0xFF; */
+/* 	AX_REG_FREQDEV13               = 0x00; */
+/* 	AX_REG_FREQDEV03               = 0x00; */
+/* 	AX_REG_AGCGAIN3                = 0xE8; */
+/* } */
+
+
+
+
+/**
+ * FIFO -----------------------------------------------------
+ */
+
+/**
+ * write tx data
+ */
+void ax_fifo_tx_data(uint8_t* data, uint8_t length)
 {
-  ax_hw_write_register_8(0, AX_REG_MODULATION, 0x08);
-  ax_hw_write_register_8(0, AX_REG_ENCODING, 0x00);
-  ax_hw_write_register_8(0, AX_REG_FRAMING, 0x24);
-  ax_hw_write_register_8(0, AX_REG_FEC, 0x13);
+  uint8_t header[5];
+
+  header[0] = AX_FIFO_CHUNK_DATA;
+  header[1] = 2+1;              /* incl flags */
+  header[2] = AX_FIFO_TXDATA_PKTSTART | AX_FIFO_TXDATA_UNENC;
+  header[3] = 0x7E;
+  header[4] = 0x7E;             /* preamble */
+
+  ax_hw_write_fifo(0, header, 5);
+
+  header[0] = AX_FIFO_CHUNK_DATA;
+  header[1] = length+1;         /* incl flags */
+  header[2] = AX_FIFO_TXDATA_PKTEND;
+
+  ax_hw_write_fifo(0, header, 3);
+  ax_hw_write_fifo(0, data, (uint8_t)length);
+}
+/**
+ * read rx data
+ */
+
+
+/**
+ * Clears the FIFO
+ */
+void ax_fifo_clear(void)
+{
+  ax_hw_write_register_8(0, AX_REG_FIFOSTAT,
+                         AX_FIFOCMD_CLEAR_FIFO_DATA_AND_FLAGS);
+}
+/**
+ * Commits data written to the fifo
+ */
+void ax_fifo_commit(void)
+{
+  ax_hw_write_register_8(0, AX_REG_FIFOSTAT,
+                         AX_FIFOCMD_COMMIT);
+}
+
+
+/**
+ * UTILITY FUNCTIONS ----------------------------------------
+ */
+
+/**
+ * 5.5 - 5.6 set modulation and fec parameters
+ */
+void ax_set_modulation_parameters(ax_config* config, uint32_t bitrate)
+{
+  uint32_t txrate;
+
+  /* modulation */
+  ax_hw_write_register_8(0, AX_REG_MODULATION,
+                         AX_MODULATION_FSK);
+
+  /* encoding (inv, diff, scram, manch..) */
+  ax_hw_write_register_8(0, AX_REG_ENCODING,
+                         0);
+
+  /* framing */
+  ax_hw_write_register_8(0, AX_REG_FRAMING,
+                         AX_FRAMING_MODE_HDLC | AX_FRAMING_CRCMODE_CRC_16);
+
+  /* fec */
+  ax_hw_write_register_8(0, AX_REG_FEC, /* positive interleaver sync, 1/2 soft rx */
+                         AX_FEC_POS | AX_FEC_ENA | (1 << 1));
+}
+
+
+void ax_set_pwrmode(uint8_t pwrmode)
+{
+  ax_hw_write_register_8(0, AX_REG_PWRMODE, pwrmode); /* TODO R-m-w */
+}
+
+/**
+ * Sets a PLL to a given frequency.
+ *
+ * returns the register value written
+ */
+uint32_t ax_set_freq_register(ax_config* config,
+                              uint8_t reg, uint32_t frequency)
+{
+  uint32_t freq;
+
+  /* we choose to always set the LSB to avoid spectral tones */
+  freq = (uint32_t)(((double)frequency * (1 << 23)) /
+                    (float)config->f_xtal);
+  freq = (freq << 1) | 1;
+  ax_hw_write_register_32(0, reg, freq);
+
+  debug_printf("freq %d = 0x%08x\n", frequency, freq);
+
+  return freq;
+}
+/**
+ * 5.10 set synthesiser frequencies
+ */
+void ax_set_synthesiser_frequencies(ax_config* config)
+{
+  if (config->synthesiser.A.frequency) {
+    /* FREQA */
+    config->synthesiser.A.register_value =
+      ax_set_freq_register(config,
+                           AX_REG_FREQA, config->synthesiser.A.frequency);
+  }
+  if (config->synthesiser.B.frequency) {
+    /* FREQB */
+    config->synthesiser.B.register_value =
+      ax_set_freq_register(config,
+                           AX_REG_FREQB, config->synthesiser.B.frequency);
+  }
+}
+
+
+/**
+ * Synthesiser parameters for ranging
+ */
+ax_synthesiser_parameters synth_ranging = {
+  /* Internal Loop Filter 100kHz */
+  .loop = AX_PLLLOOP_FILTER_DIRECT | AX_PLLLOOP_INTERNAL_FILTER_BW_100_KHZ,
+  /* Charge Pump I = 68uA */
+  .charge_pump_current = 8,
+  /* VCO Parameters */
+  .vco_parameters = AX_PLLVCODIV_RF_DIVIDER_DIV_TWO |
+  AX_PLLVCODIV_RF_FULLY_INTERNAL_VCO1 |
+  AX_PLLVCODIV_RF_INTERNAL_VCO2_EXTERNAL_INDUCTOR,
+};
+/**
+ * Synthesiser parameters for operation
+ */
+ax_synthesiser_parameters synth_operation = {
+  /* Internal Loop Filter 500kHz */
+  .loop = AX_PLLLOOP_FILTER_DIRECT | AX_PLLLOOP_INTERNAL_FILTER_BW_500_KHZ,
+  /* Charge Pump I = 136uA */
+  .charge_pump_current = 16,
+  /* VCO Parameters */
+  .vco_parameters = AX_PLLVCODIV_RF_DIVIDER_DIV_TWO |
+  AX_PLLVCODIV_RF_FULLY_INTERNAL_VCO1 |
+  AX_PLLVCODIV_RF_INTERNAL_VCO2_EXTERNAL_INDUCTOR,
+};
+/**
+ * 5.10 set synthesiser parameters
+ */
+void ax_set_synthesiser_parameters(ax_synthesiser_parameters* params)
+{
+  ax_hw_write_register_8(0, AX_REG_PLLLOOP,   params->loop);
+  ax_hw_write_register_8(0, AX_REG_PLLCPI,    params->charge_pump_current);
+  ax_hw_write_register_8(0, AX_REG_PLLVCODIV, params->vco_parameters);
+}
+
+/**
+ * 5.15.8 - 5.15.10 set afsk receiver parameters
+ */
+void ax_set_afsk_rx_parameters(ax_config* config)
+{
+  uint16_t mark = 1200, space = 2200;
+  uint16_t afskmark, afskspace;
+  uint8_t afskshift;
+
+  /* Mark */
+  afskmark = (uint16_t)((((float)mark * (1 << 16) *
+                          config->decimation * config->f_xtaldiv) /
+                         (float)config->f_xtal) + 0.5);
+  ax_hw_write_register_16(0, AX_REG_AFSKMARK, afskmark);
+
+  debug_printf("afskmark (rx) %d = 0x%04x\n", mark, afskmark);
+
+  /* Space */
+  afskspace = (uint16_t)((((float)space * (1 << 16) *
+                           config->decimation * config->f_xtaldiv) /
+                          (float)config->f_xtal) + 0.5);
+  ax_hw_write_register_16(0, AX_REG_AFSKSPACE, afskspace);
+
+  debug_printf("afskspace (rx) %d = 0x%04x\n", space, afskspace);
+
+  /* Detector Bandwidth */
+  float bw = (float)config->f_xtal /
+    (32 * config->bitrate * config->f_xtaldiv * config->decimation);
+
+#ifdef USE_MATH_H
+  afskshift = (uint8_t)(2 * log2(bw));
+#else
+  debug_printf("math.h required! define USE_MATH_H\n");
+  afskshift = 4;                /* or define manually */
+#endif
+
+  ax_hw_write_register_16(0, AX_REG_AFSKCTRL, afskshift);
+
+  debug_printf("afskshift (rx) %f = %d\n", bw, afskshift);
+}
+/**
+ * 5.15 set receiver parameters
+ */
+void ax_set_rx_parameters(ax_config* config)
+{
+  /* IF Frequency */
+  ax_hw_write_register_16(0, AX_REG_IFFREQ, 0x00C8);
+  /* 0xC8 = 200. Therefore f_IF = 3122 Hz */
+
+  /* Decimation */
+  ax_hw_write_register_8(0, AX_REG_DECIMATION, 0x44);
+  config->decimation = 0x44;
+  /* 68x decimation */
+
+  /* RX Data Rate */
+  ax_hw_write_register_24(0, AX_REG_RXDATARATE, 0x003C2E);
+  /* 0x3C2E = 15406. Therefore bitrate is 2kHz */
+
+  /* Max Data Rate offset */
+  ax_hw_write_register_24(0, AX_REG_MAXDROFFSET, 0x0);
+  /* 0. Therefore < 1% */
+
+  /* Max RF offset */
+  ax_hw_write_register_24(0, AX_REG_MAXRFOFFSET, 0x80037B);
+  /* Correct offset at first LO */
+  /* 0x37B = 891. Therefore delta-carrier = 870Hz = ±2ppm */
+
+  /* FSK Deviation */
+  ax_hw_write_register_16(0, AX_REG_FSKDMAX, 0x00A6);
+  ax_hw_write_register_16(0, AX_REG_FSKDMIN, 0xFF5A);
+  /* 0xA6 = 166. In Manual Mode??? */
+
+  ax_hw_write_register_8(0, AX_REG_AMPLFILTER, 0x00);
+  /* Bypass the Amplitude Lowpass filter */
+}
+
+/**
+ * 5.15.8 - 5.15.9 set afsk transmit parameters
+ */
+void ax_set_afsk_tx_parameters(ax_config* config)
+{
+  uint16_t mark = 2000, space = 2000;
+  uint16_t afskmark, afskspace;
+
+  /* Mark */
+  afskmark = (uint16_t)((((float)mark * (1 << 18)) /
+                         (float)config->f_xtal) + 0.5);
+  ax_hw_write_register_16(0, AX_REG_AFSKMARK, afskmark);
+
+  debug_printf("afskmark (tx) %d = 0x%04x\n", mark, afskmark);
+
+  /* Space */
+  afskspace = (uint16_t)((((float)space * (1 << 18)) /
+                         (float)config->f_xtal) + 0.5);
+  ax_hw_write_register_16(0, AX_REG_AFSKSPACE, afskspace);
+
+  debug_printf("afskspace (tx) %d = 0x%04x\n", space, afskspace);
+}
+/**
+ * 5.16 set transmitter parameters
+ *
+ * * power - output power, as a fraction of maximum
+ *
+ * Pre-distortion is possible in hardware, but not supported here.
+ */
+void ax_set_tx_parameters(ax_config* config, float power)
+{
+  uint16_t pwr;
+  uint32_t fskdev, txrate;
+  uint32_t deviation = 666;
+  uint32_t bitrate = 2000;
+
+  /* frequency shaping mode of transmitter */
+  ax_hw_write_register_8(0, AX_REG_MODCFGF,
+                         AX_MODCFGF_FREQSHAPE_GAUSSIAN_BT_0_5);
+
+  /* amplitude shaping mode of transmitter */
+  ax_hw_write_register_8(0, AX_REG_MODCFGA,
+                         AX_MODCFGA_TXDIFF | AX_MODCFGA_AMPLSHAPE_RAISED_COSINE);
+
+  /* TX deviation */
+  if (1) {                      /* (G)FSK */
+    fskdev = (uint32_t)((((float)deviation * (1 << 24)) /
+                         (float)config->f_xtal) + 0.5);
+  } else {                      /* AFSK */
+    fskdev = (uint32_t)((((float)deviation * (1 << 24) * 0.858785) /
+                         (float)config->f_xtal) + 0.5);
+  }
+  ax_hw_write_register_24(0, AX_REG_FSKDEV, fskdev);
+  /* 0x2AB = 683. f_deviation = 666Hz... */
+
+  debug_printf("fskdev %d = 0x%06x\n", deviation, fskdev);
+
+
+  /* TX bitrate. We assume bitrate < f_xtal */
+  txrate = (uint32_t)((((float)bitrate * (1 << 24)) /
+                       (float)config->f_xtal) + 0.5);
+  ax_hw_write_register_24(0, AX_REG_TXRATE, txrate);
+
+  debug_printf("bitrate %d = 0x%06x\n", bitrate, txrate);
+
+  /* check bitrate for asynchronous wire mode */
+  if (1 && bitrate >= config->f_xtal / 32) {
+    debug_printf("for asynchronous wire mode, bitrate must be less than f_xtal/32\n");
+  }
+
+  /* TX power */
+  pwr = (uint16_t)((power * (1 << 12)) + 0.5);
+  pwr = (pwr > 0xFFF) ? 0xFFF : pwr; /* max 0xFFF */
+  ax_hw_write_register_16(0, AX_REG_TXPWRCOEFFB, pwr);
+
+  debug_printf("power %f = 0x%03x\n", power, pwr);
+}
+
+/**
+ * 5.17 set PLL parameters
+ */
+void ax_set_pll_parameters(ax_config* config)
+{
+  uint8_t pllrngclk_div;
+
+  /* VCO Current */
+  ax_hw_write_register_8(0, AX_REG_PLLVCOI,
+                         25 | AX_PLLVCOI_ENABLE_MANUAL);
+  /* 1250 uA VCO1, 250 uA VCO2 */
+
+  /* PLL Ranging Clock */
+  pllrngclk_div = AX_PLLRNGCLK_DIV_2048;
+  ax_hw_write_register_8(0, AX_REG_PLLRNGCLK, 0x03);
+  /* approx 8kHz for 16MHz clock */
+
+  config->f_pllrng = config->f_xtal / (1 << (8 + pllrngclk_div));
+  /* TODO: config->f_pllrng should be less than 1/10 of the loop filter b/w */
+  debug_printf("Ranging clock f_pllrng %d Hz\n", config->f_pllrng);
+}
+/**
+ * 5.18 set xtal parameters
+ */
+void ax_set_xtal_parameters(ax_config* config)
+{
+  uint8_t xtalcap;
+  uint8_t xtalosc;
+  uint8_t xtalampl;
+  uint8_t f35;
+
+  /* Load Capacitance */
+  if (config->load_capacitance != 0) {
+    if (config->load_capacitance == 3) {
+      xtalcap = 0;
+    } else if (config->load_capacitance == 8) {
+      xtalcap = 1;
+    } else if ((config->load_capacitance >= 9) &&
+               (config->load_capacitance <= 39)) {
+      xtalcap = (config->load_capacitance - 8) << 1;
+    } else {
+      debug_printf("xtal load capacitance %d not supported\n",
+                   config->load_capacitance);
+      xtalcap = 0;
+    }
+
+    ax_hw_write_register_8(0, AX_REG_XTALCAP, xtalcap);
+  }
+
+  /* Crystal Oscillator Control */
+  if (config->f_xtal > 43*1000*1000) {
+    xtalosc = 0x0D;             /* > 43 MHz */
+  } else if (config->clock_source == AX_CLOCK_SOURCE_TCXO) {
+    xtalosc = 0x04;             /* TCXO */
+  } else {
+    xtalosc = 0x03;             /*  */
+  }
+  ax_hw_write_register_8(0, AX_REG_XTALOSC, xtalosc);
+
+  /* Crystal Oscillator Amplitude Control */
+  if (config->clock_source == AX_CLOCK_SOURCE_TCXO) {
+    xtalampl = 0x00;
+  } else {
+    xtalampl = 0x07;
+  }
+  ax_hw_write_register_8(0, AX_REG_XTALAMPL, xtalampl);
+
+  /* F35 */
+  if (config->f_xtal < 24800*1000) {
+    f35 = 0x10;                 /* < 24.8 MHz */
+    config->f_xtaldiv = 1;
+  } else {
+    f35 = 0x11;
+    config->f_xtaldiv = 2;
+  }
+  ax_hw_write_register_8(0, 0xF35, f35);
+}
+/**
+ * 5.19 set baseband parameters
+ */
+void ax_set_baseband_parameters()
+{
+  ax_hw_write_register_8(0, AX_REG_BBTUNE, 0x0F);
+  /* Baseband tuning value 0xF */
+
+  ax_hw_write_register_8(0, AX_REG_BBOFFSCAP, 0x77);
+  /* Offset capacitors all ones */
+}
+/**
+ * 5.20 set packet format parameters
+ */
+void ax_set_packet_parameters()
+{
+  ax_hw_write_register_8(0, AX_REG_PKTADDRCFG, 0x01);
+  /* address at position 1 */
+
+  ax_hw_write_register_8(0, AX_REG_PKTLENCFG, 0x80);
+  /* 8 significant bits on length byte */
+
+  ax_hw_write_register_8(0, AX_REG_PKTLENOFFSET, 0x00);
+  /* zero offset on length byte */
+
+  /* Maximum packet length */
+  ax_hw_write_register_8(0, AX_REG_PKTMAXLEN, 0xC8);
+  /* 0xC8 = 200 bytes */
+}
+/**
+ * 5.21 set match parameters
+ */
+void ax_set_match_parameters()
+{
+  /* match 1, then match 0 */
+
+  ax_hw_write_register_32(0, AX_REG_MATCH0PAT, 0xAACCAACC);
+  ax_hw_write_register_16(0, AX_REG_MATCH1PAT, 0x7E7E);
+
+  ax_hw_write_register_8(0, AX_REG_MATCH1LEN, 0x8A);
+  /* Raw received bits, 11-bit pattern */
+
+  ax_hw_write_register_8(0, AX_REG_MATCH1MAX, 0x0A);
+  /* signal a match if recevied bitstream matches for 10-bits or more */
+}
+
+
+
+
+/**
+ * Wait for oscillator running and stable
+ */
+void ax_wait_for_oscillator(void)
+{
+  int i = 0;
+  while (!(ax_hw_read_register_8(0, AX_REG_XTALSTATUS) & 1)) {
+    i++;
+  }
+
+  debug_printf("osc stable in %d cycles\n", i);
+}
+
+
+
+void ax5043_set_registers(ax_config* config)
+{
+  ax_hw_write_register_8(0, AX_REG_MODULATION, 0x08);//
+  ax_hw_write_register_8(0, AX_REG_ENCODING, 0x00);//
+  ax_hw_write_register_8(0, AX_REG_FRAMING, 0x24);//
+  ax_hw_write_register_8(0, AX_REG_FEC, 0x13);//
   ax_hw_write_register_8(0, AX_REG_PINFUNCSYSCLK, 0x01);
   ax_hw_write_register_8(0, AX_REG_PINFUNCDCLK, 0x01);
   ax_hw_write_register_8(0, AX_REG_PINFUNCDATA, 0x01);
@@ -52,19 +542,19 @@ void ax5043_set_registers(void)
   ax_hw_write_register_8(0, AX_REG_WAKEUPXOEARLY, 0x01);
 
   ax_hw_write_register_16(0, AX_REG_IFFREQ, 0x00C8);
-
   ax_hw_write_register_8(0, AX_REG_DECIMATION, 0x44);
-
   ax_hw_write_register_24(0, AX_REG_RXDATARATE, 0x003C2E);
-
   ax_hw_write_register_24(0, AX_REG_MAXDROFFSET, 0x0);
   ax_hw_write_register_24(0, AX_REG_MAXRFOFFSET, 0x80037B);
-
   ax_hw_write_register_16(0, AX_REG_FSKDMAX, 0x00A6);
   ax_hw_write_register_16(0, AX_REG_FSKDMIN, 0xFF5A);
-
   ax_hw_write_register_8(0, AX_REG_AMPLFILTER, 0x00);
+  //
+  ax_set_rx_parameters(config);
+
+
   ax_hw_write_register_8(0, AX_REG_RXPARAMSETS, 0xF4);
+  /* 0, 1, 3, 3 */
 
   /* RX 0 */
   ax_hw_write_register_8(0, AX_REG_RX_PARAMETER0 + AX_RX_AGCGAIN, 0xD7);
@@ -113,33 +603,37 @@ void ax5043_set_registers(void)
   ax_hw_write_register_8(0, AX_REG_RX_PARAMETER3 + AX_RX_BBOFFSRES, 0x00);
 
   ax_hw_write_register_8(0, AX_REG_MODCFGF, 0x03);
-
   ax_hw_write_register_24(0, AX_REG_FSKDEV, 0x0002AB);
-
   ax_hw_write_register_8(0, AX_REG_MODCFGA, 0x05);
-
-
   ax_hw_write_register_24(0, AX_REG_TXRATE, 0x000802);
-
-  //ax_hw_write_register_16(0, AX_REG_TXPWRCOEFFB, 0x0FFF);
-  ax_set_tx_power(1.0);
+  ax_hw_write_register_16(0, AX_REG_TXPWRCOEFFB, 0x0FFF);
+  //
+  ax_set_tx_parameters(config, 1.0);
 
   ax_hw_write_register_8(0, AX_REG_PLLVCOI, 0x99);
-  /* PLL Ranging clock = f_XTAL / 2^11 */
   ax_hw_write_register_8(0, AX_REG_PLLRNGCLK, 0x03);
+  //
+  ax_set_pll_parameters(config);
+
   ax_hw_write_register_8(0, AX_REG_BBTUNE, 0x0F);
   ax_hw_write_register_8(0, AX_REG_BBOFFSCAP, 0x77);
+  //
+  ax_set_baseband_parameters();
+
   ax_hw_write_register_8(0, AX_REG_PKTADDRCFG, 0x01);
   ax_hw_write_register_8(0, AX_REG_PKTLENCFG, 0x80);
   ax_hw_write_register_8(0, AX_REG_PKTLENOFFSET, 0x00);
   ax_hw_write_register_8(0, AX_REG_PKTMAXLEN, 0xC8);
+  //
+  ax_set_packet_parameters();
 
   ax_hw_write_register_32(0, AX_REG_MATCH0PAT, 0xAACCAACC);
-
   ax_hw_write_register_16(0, AX_REG_MATCH1PAT, 0x7E7E);
-
   ax_hw_write_register_8(0, AX_REG_MATCH1LEN, 0x8A);
   ax_hw_write_register_8(0, AX_REG_MATCH1MAX, 0x0A);
+  //
+  ax_set_match_parameters();
+
   ax_hw_write_register_8(0, AX_REG_TMGTXBOOST, 0x33);
   ax_hw_write_register_8(0, AX_REG_TMGTXSETTLE, 0x14);
   ax_hw_write_register_8(0, AX_REG_TMGRXBOOST, 0x33);
@@ -171,14 +665,8 @@ void ax5043_set_registers(void)
 
 void ax5043_set_registers_tx(void)
 {
-  /* Bypass external filter, Internall loop filter BW=500kHz */
-  ax_hw_write_register_8(0, AX_REG_PLLLOOP, 0x0B);
-  /* Charge Pump I = 136uA */
-  ax_hw_write_register_8(0, AX_REG_PLLCPI, 0x10);
-  /* f_PD = f_XTAL, divide RF by 2, internal VCO2 */
-  ax_hw_write_register_8(0, AX_REG_PLLVCODIV, 0x24);
-  /* No XTAL load capacitance */
-  ax_hw_write_register_8(0, AX_REG_XTALCAP, 0x00);
+  ax_set_synthesiser_parameters(&synth_operation);
+
   ax_hw_write_register_8(0, 0xF00, 0x0F);
   ax_hw_write_register_8(0, 0xF18, 0x06);
 }
@@ -186,156 +674,10 @@ void ax5043_set_registers_tx(void)
 
 void ax5043_set_registers_rx(void)
 {
-  ax_hw_write_register_8(0, AX_REG_PLLLOOP, 0x0B);
-  ax_hw_write_register_8(0, AX_REG_PLLCPI, 0x10);
-  ax_hw_write_register_8(0, AX_REG_PLLVCODIV, 0x24);
-  ax_hw_write_register_8(0, AX_REG_XTALCAP, 0x00);
+  ax_set_synthesiser_parameters(&synth_operation);
+
   ax_hw_write_register_8(0, 0xF00, 0x0F);
   ax_hw_write_register_8(0, 0xF18, 0x02);
-}
-
-
-/* __reentrantb void ax5043_set_registers_rxwor(void) __reentrant */
-/* { */
-/* 	AX_REG_TMGRXAGC                = 0x3E; */
-/* 	AX_REG_TMGRXPREAMBLE1          = 0x19; */
-/* 	AX_REG_PKTMISCFLAGS            = 0x03; */
-/* } */
-
-
-/* __reentrantb void ax5043_set_registers_rxcont(void) __reentrant */
-/* { */
-/* 	AX_REG_TMGRXAGC                = 0x00; */
-/* 	AX_REG_TMGRXPREAMBLE1          = 0x00; */
-/* 	AX_REG_PKTMISCFLAGS            = 0x00; */
-/* } */
-
-
-/* __reentrantb void ax5043_set_registers_rxcont_singleparamset(void) __reentrant */
-/* { */
-/* 	AX_REG_RXPARAMSETS             = 0xFF; */
-/* 	AX_REG_FREQDEV13               = 0x00; */
-/* 	AX_REG_FREQDEV03               = 0x00; */
-/* 	AX_REG_AGCGAIN3                = 0xE8; */
-/* } */
-
-
-
-
-/**
- * FIFO -----------------------------------------------------
- */
-
-/**
- * one DATA command
- */
-void ax_fifo_tx_data(uint8_t* data, uint8_t length)
-{
-  uint8_t header[5];
-
-  header[0] = AX_FIFO_CHUNK_DATA;
-  header[1] = 2+1;              /* incl flags */
-  header[2] = AX_FIFO_TXDATA_PKTSTART | AX_FIFO_TXDATA_UNENC;
-  header[3] = 0x7E;
-  header[4] = 0x7E;             /* preamble */
-
-  ax_hw_write_fifo(0, header, 5);
-
-  header[0] = AX_FIFO_CHUNK_DATA;
-  header[1] = length+1;         /* incl flags */
-  header[2] = AX_FIFO_TXDATA_PKTEND;
-
-  ax_hw_write_fifo(0, header, 3);
-  ax_hw_write_fifo(0, data, (uint8_t)length);
-}
-
-/**
- * Commits data written to the fifo
- */
-void ax_fifo_commit(void)
-{
-  ax_hw_write_register_8(0, AX_REG_FIFOSTAT, AX_FIFOCMD_COMMIT);
-}
-
-/**
- * UTILITY FUNCTIONS ----------------------------------------
- */
-
-void ax_set_pwrmode(uint8_t pwrmode)
-{
-  ax_hw_write_register_8(0, AX_REG_PWRMODE, pwrmode); /* TODO R-m-w */
-}
-
-/**
- * Sets a PLL to a given frequency.
- */
-void ax_set_frequency(ax_config* config, enum ax_pll pll, uint32_t frequency)
-{
-  uint32_t freq;
-  uint16_t reg_freq;
-
-  switch (pll) {
-    case AX_PLL_A: reg_freq = AX_REG_FREQA; break;
-    case AX_PLL_B: reg_freq = AX_REG_FREQB; break;
-    default: return;
-  }
-
-  /* we choose to always set the LSB to avoid spectral tones */
-  freq = (uint32_t)(((double)frequency * (1 << 23)) / (float)config->f_xtal);
-  freq = (freq << 1) | 1;
-
-  debug_printf("freq %d = 0x%08x\n", frequency, freq);
-
-  ax_hw_write_register_32(0, reg_freq, freq);
-}
-/**
- * Set modulation
- */
-void ax_set_modulation(ax_config* config, uint32_t bitrate)
-{
-  uint32_t txrate;
-
-  /* amplitude shaping mode of transmitter */
-
-  /* bitrate. We assume bitrate < f_xtal */
-  txrate = (uint32_t)((((float)bitrate * (1<<24)) / (float)config->f_xtal) + 0.5);
-  ax_hw_write_register_24(0, AX_REG_TXRATE, txrate);
-
-  /* check bitrate for asynchronous wire mode */
-  if (1 && bitrate >= config->f_xtal / 32) {
-    debug_printf("for asynchronous wire mode, bitrate must be less than f_xtal/32\n");
-  }
-}
-
-
-/**
- * Sets a given transmit power, as a fraction of maximum
- *
- * Pre-distortion is possible in hardware, but not supported here.
- */
-void ax_set_tx_power(float power)
-{
-  uint16_t pwr;
-
-  pwr = (uint16_t)((power * (1 << 12)) + 0.5);
-  pwr = (pwr > 0xFFF) ? 0xFFF : pwr; /* max 0xFFF */
-
-  debug_printf("power %f = 0x%03x\n", power, pwr);
-
-  ax_hw_write_register_16(0, AX_REG_TXPWRCOEFFB, pwr);
-}
-
-/**
- * Wait for oscillator running and stable
- */
-void ax_wait_for_oscillator(void)
-{
-  int i = 0;
-  while (!(ax_hw_read_register_8(0, AX_REG_XTALSTATUS) & 1)) {
-    i++;
-  }
-
-  debug_printf("osc stable in %d cycles\n", i);
 }
 
 
@@ -345,6 +687,8 @@ void ax_wait_for_oscillator(void)
 
 void ax_transmit(void)
 {
+  uint8_t pkt[0x100];
+
   debug_printf("going for transmit...\n");
 
   /* Place chip in FULLTX mode */
@@ -358,7 +702,8 @@ void ax_transmit(void)
   while (!(ax_hw_read_register_8(0, AX_REG_POWSTAT) & AX_POWSTAT_SVMODEM));
 
   /* Write preamble and packet to the FIFO */
-  ax_fifo_tx_data((uint8_t*)"hello", 5);
+  strcpy((char*)pkt, "-hello");
+  ax_fifo_tx_data(pkt, 5);
 
   /* Wait for oscillator to start running  */
   ax_wait_for_oscillator();
@@ -377,6 +722,46 @@ void ax_transmit(void)
   /* Disable TCXO if used */
 }
 
+/**
+ * First attempt at receiver, don't care about power
+ */
+void ax_receive()
+{
+  ax_rx_chunk rx_chunk;
+
+  /* Meta-data can be automatically added to FIFO, see PKTSTOREFLAGS */
+
+  /* Place chip in FULLRX mode */
+  ax_set_pwrmode(AX_PWRMODE_FULLRX);
+
+  ax5043_set_registers_rx();    /* set rx registers??? */
+
+  /* Enable TCXO if used */
+
+  /* Clear FIFO */
+  ax_fifo_clear();
+
+  while (1) {
+    /* Check if FIFO is not empty */
+    if (ax_hw_read_fifo(0, &rx_chunk)) {
+
+      /* Got something */
+      if (rx_chunk.chunk_t == AX_FIFO_CHUNK_DATA) {
+
+        for (int i = 0; i < rx_chunk.chunk.data.length; i++) {
+          debug_printf("data %d: 0x%02x %c\n", i,
+                       rx_chunk.chunk.data.data[i],
+                       rx_chunk.chunk.data.data[i]);
+        }
+
+      } else {
+        debug_printf("some other chunk type 0x%02x\n", rx_chunk.chunk_t);
+      }
+    }
+  }
+}
+
+
 void ax_vco_ranging(ax_config* config, enum ax_pll pll)
 {
   uint8_t r;
@@ -390,26 +775,16 @@ void ax_vco_ranging(ax_config* config, enum ax_pll pll)
   /* Set PWRMODE to STANDBY */
   ax_set_pwrmode(AX_PWRMODE_STANDBY);
 
-
   /* Set FREQA,B registers to correct value */
-  ax_set_frequency(config, pll, 434600000);
+  ax_set_synthesiser_frequencies(config);
 
-  r = ax_hw_read_register_8(0, AX_REG_FREQA);
-  debug_printf("FREQA r = 0x%02x\n", r);
-  r = ax_hw_read_register_8(0, AX_REG_FREQA+1);
-  debug_printf("FREQA r = 0x%02x\n", r);
-  r = ax_hw_read_register_8(0, AX_REG_FREQA+2);
-  debug_printf("FREQA r = 0x%02x\n", r);
-  r = ax_hw_read_register_8(0, AX_REG_FREQA+3);
-  debug_printf("FREQA r = 0x%02x\n", r);
 
-  /* Set default 100kHz loop BW for ranging */
+
   /* Manual VCO current, 27 = 1350uA VCO1, 270uA VCO2 */
   ax_hw_write_register_8(0, AX_REG_PLLVCOI, 0x9B);
-  /* Internal loop filter, BW=100kHz, bypass external filter pin */
-  ax_hw_write_register_8(0, AX_REG_PLLLOOP, 0x09);
-  /* Charge Pump I = 68uA */
-  ax_hw_write_register_8(0, AX_REG_PLLCPI, 0x08);
+
+  /* Set default 100kHz loop BW for ranging */
+  ax_set_synthesiser_parameters(&synth_ranging);
 
 
   /* Possibly set VCORA,B, good default is 8 */
@@ -454,13 +829,6 @@ void ax_vco_ranging(ax_config* config, enum ax_pll pll)
   /* Disable TCXO if used */
 }
 
-/**
- * First attempt at receiver, don't care about power
- */
-void ax_receive()
-{
-  /* Meta-data can be automatically added to FIFO, see PKTSTOREFLAGS */
-}
 
 /**
  * First attempt at Initialisation
@@ -468,7 +836,12 @@ void ax_receive()
 void ax_init()
 {
   ax_config config;
+  config.clock_source = AX_CLOCK_SOURCE_TCXO;
   config.f_xtal = 16369000;
+  config.load_capacitance = 0;
+
+  config.synthesiser.A.frequency = 434600000;
+  config.synthesiser.B.frequency = 434600000;
 
   /* Reset the chip */
 
@@ -485,8 +858,9 @@ void ax_init()
   ax_set_pwrmode(AX_PWRMODE_POWERDOWN);
 
   /* Program parameters.. (these could initially come from windows software, or be calculated) */
-  ax5043_set_registers();
+  ax5043_set_registers(&config);
   ax5043_set_registers_tx();
+  ax_set_xtal_parameters(&config);
 
   /* Perform auto-ranging for VCO */
   ax_vco_ranging(&config, AX_PLL_A);

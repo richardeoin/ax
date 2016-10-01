@@ -24,6 +24,7 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
 #include <stdio.h>
 
@@ -34,6 +35,7 @@
 #include "ax_hw.h"
 #include "ax.h"
 #include "ax_reg.h"
+#include "ax_fifo.h"
 
 #define SPI_SPEED	500000      /* 500kHz */
 
@@ -59,24 +61,6 @@ uint8_t ax_hw_read_register_long_8(int channel, uint16_t reg)
   return (uint8_t)data[2];
 }
 /**
- * Writes register, and fully updates status. 8 bit
- *
- * Returns status
- */
-uint16_t ax_hw_write_register_long_8(int channel, uint16_t reg, uint8_t value)
-{
-  unsigned char data[3];
-
-  data[0] = ((reg >> 8) | 0xF0);
-  data[1] = (reg & 0xFF);
-  data[2] = value;
-  wiringPiSPIDataRW(channel, data, 3);
-
-  status = ((uint16_t)data[0] << 8) & data[1];
-
-  return status;
-}
-/**
  * Reads register, using long or short access as required. 8 bit
  *
  * Returns result
@@ -98,6 +82,24 @@ uint8_t ax_hw_read_register_8(int channel, uint16_t reg)
 
     return (uint8_t)data[1];
   }
+}
+/**
+ * Writes register, and fully updates status. 8 bit
+ *
+ * Returns status
+ */
+uint16_t ax_hw_write_register_long_8(int channel, uint16_t reg, uint8_t value)
+{
+  unsigned char data[3];
+
+  data[0] = ((reg >> 8) | 0xF0);
+  data[1] = (reg & 0xFF);
+  data[2] = value;
+  wiringPiSPIDataRW(channel, data, 3);
+
+  status = ((uint16_t)data[0] << 8) & data[1];
+
+  return status;
 }
 /**
  * Write register, using long or short access as required. 8 bit
@@ -122,28 +124,60 @@ uint16_t ax_hw_write_register_8(int channel, uint16_t reg, uint8_t value)
     return status;
   }
 }
-
 /**
- * Writes buffer to fifo
+ * Reads register, and fully updates status. Up to 4 bytes
  *
  * Returns status
  */
-uint16_t ax_hw_write_fifo(int channel, uint8_t* buffer, uint16_t length)
+uint16_t ax_hw_read_register_long_bytes(int channel, uint16_t reg,
+                                        uint8_t* ptr, uint8_t bytes)
 {
-  unsigned char data[1];
+  unsigned char data[6];
 
-  data[0] = ((AX_REG_FIFODATA & 0x7F) | 0x80);
-  wiringPiSPIDataRW(channel, data, 2);
+  if (bytes > 4) return 0;        /* Up to 4 bytes! */
 
-  wiringPiSPIDataRW(channel, buffer, length);
+  data[0] = ((reg >> 8) | 0x70);
+  data[1] = (reg & 0xFF);
+  memset(data+2, 0xFF, bytes);
+  wiringPiSPIDataRW(channel, data, 2+bytes);
 
-  status &= 0xFF;
-  status |= ((uint16_t)data[0] << 8);
+  status = ((uint16_t)data[0] << 8) & data[1];
+
+  memcpy(ptr, data+2, bytes);
 
   return status;
 }
+/**
+ * Reads register, using long or short access as required. Up to 4 bytes
+ *
+ * Returns status
+ */
+uint16_t ax_hw_read_register_bytes(int channel, uint16_t reg,
+                                   uint8_t* ptr, uint8_t bytes)
+{
+  if (reg > 0x70) {             /* long access */
+    return ax_hw_read_register_long_bytes(channel, reg, ptr, bytes);
+
+  } else {                      /* short access */
+    unsigned char data[5];
+
+    data[0] = (reg & 0x7F);
+    memset(data+1, 0xFF, bytes);
+    wiringPiSPIDataRW(channel, data, 1+bytes);
+
+    status &= 0xFF;
+    status |= ((uint16_t)data[0] << 8);
+
+    memcpy(ptr, data+1, bytes);
+
+    return status;
+  }
+}
 
 
+/**
+ * MULTIPLE BYTES ----------------------------------------
+ */
 
 /**
  * weak combinations
@@ -166,6 +200,123 @@ uint16_t ax_hw_write_register_32(int channel, uint16_t reg, uint32_t value)
   ax_hw_write_register_8(channel,        reg+2, (value >> 8));
   return ax_hw_write_register_8(channel, reg+3, (value >> 0));
 }
+uint16_t ax_hw_read_register_16(int channel, uint16_t reg)
+{
+  uint8_t ptr[2];
+  ax_hw_read_register_bytes(channel, reg, ptr, 2);
+
+  return ((ptr[0] << 8) | (ptr[1]));
+}
+uint32_t ax_hw_read_register_24(int channel, uint16_t reg)
+{
+  uint8_t ptr[3];
+  ax_hw_read_register_bytes(channel, reg, ptr, 3);
+
+  return ((ptr[0] << 16) | (ptr[1] << 8) | (ptr[2]));
+}
+uint32_t ax_hw_read_register_32(int channel, uint16_t reg)
+{
+  uint8_t ptr[4];
+  ax_hw_read_register_bytes(channel, reg, ptr, 4);
+
+  return ((ptr[0] << 24) | (ptr[1] << 16) | (ptr[2] << 8) | (ptr[3]));
+}
+
+
+/**
+ * FIFO ------------------------------------------------
+ */
+
+/**
+ * Writes buffer to fifo. First byte of buffer is discarded.
+ *
+ * Returns status
+ */
+uint16_t ax_hw_write_fifo(int channel, uint8_t* buffer, uint16_t length)
+{
+  uint8_t data[0x100];
+
+  /* write (short access) */
+  data[0] = ((AX_REG_FIFODATA & 0x7F) | 0x80);
+  memcpy(data+1, buffer, length);
+
+  wiringPiSPIDataRW(channel, data, length+1);
+
+  status &= 0xFF;
+  status |= ((uint16_t)buffer[0] << 8);
+
+  return status;
+}
+/**
+ * Reads from FIFO
+ *
+ * returns the total number of bytes read from the fifo
+ */
+uint16_t ax_hw_read_fifo(int channel, ax_rx_chunk* chunk)
+{
+  uint8_t ptr[3];
+
+  if (ax_hw_read_register_16(channel, AX_REG_FIFOCOUNT) == 0) {
+    return 0;                   /* nothing to read */
+  }
+
+  chunk->chunk_t = ax_hw_read_register_8(channel, AX_REG_FIFODATA);
+
+  switch (chunk->chunk_t) {
+    case AX_FIFO_CHUNK_DATA:
+      ax_hw_read_register_bytes(channel, AX_REG_FIFODATA, ptr, 2);
+
+      chunk->chunk.data.length = ptr[0] - 1; /* not including flags here */
+      chunk->chunk.data.flags  = ptr[1];
+
+      /* read (short access) */
+      chunk->chunk.data.data[0] = (AX_REG_FIFODATA & 0x7F);
+      wiringPiSPIDataRW(channel,
+                        chunk->chunk.data.data,
+                        chunk->chunk.data.length + 1);
+
+      return 3 + chunk->chunk.data.length;
+                                /* RSSI */
+    case AX_FIFO_CHUNK_RSSI:
+      chunk->chunk.rssi = ax_hw_read_register_8(channel, AX_REG_FIFODATA);
+      return 2;
+                                /* FREQOFFS */
+    case AX_FIFO_CHUNK_FREQOFFS:
+      chunk->chunk.freqoffs = ax_hw_read_register_16(channel, AX_REG_FIFODATA);
+      return 2;
+                                /* ANTRSSI 2 */
+    case AX_FIFO_CHUNK_ANTRSSI2:
+      ax_hw_read_register_bytes(channel, AX_REG_FIFODATA, ptr, 2);
+
+      chunk->chunk.antrssi2.rssi      = ptr[0];
+      chunk->chunk.antrssi2.bgndnoise = ptr[1];
+      return 3;
+                                /* TIMER */
+    case AX_FIFO_CHUNK_TIMER:
+      chunk->chunk.timer = ax_hw_read_register_24(channel, AX_REG_FIFODATA);
+      return 4;
+                                /* RFFREQOFFS */
+    case AX_FIFO_CHUNK_RFFREQOFFS:
+      chunk->chunk.rffreqoffs = ax_hw_read_register_24(channel, AX_REG_FIFODATA);
+      return 4;
+                                /* DATARATE */
+    case AX_FIFO_CHUNK_DATARATE:
+      chunk->chunk.datarate = ax_hw_read_register_24(channel, AX_REG_FIFODATA);
+      return 4;
+                                /* ANTRSSI3 */
+    case AX_FIFO_CHUNK_ANTRSSI3:
+      ax_hw_read_register_bytes(channel, AX_REG_FIFODATA, ptr, 3);
+
+      chunk->chunk.antrssi3.ant0rssi  = ptr[0];
+      chunk->chunk.antrssi3.ant1rssi  = ptr[1];
+      chunk->chunk.antrssi3.bgndnoise = ptr[2];
+      return 4;
+                                /* default */
+    default:
+      return 1;
+  }
+}
+
 
 
 /**

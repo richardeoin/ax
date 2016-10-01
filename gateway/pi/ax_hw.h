@@ -26,6 +26,7 @@
 #define AX_HW_H
 
 #include <stdint.h>
+#include "ax_fifo.h"
 
 /**
  * Initialisation Status
@@ -42,11 +43,15 @@ uint16_t ax_hw_write_register_long_8(int channel, uint16_t reg, uint8_t value);
 uint8_t ax_hw_read_register_8(int channel, uint16_t reg);
 uint16_t ax_hw_write_register_8(int channel, uint16_t reg, uint8_t value);
 
-uint16_t ax_hw_write_fifo(int channel, uint8_t* buffer, uint16_t length);
-
 uint16_t ax_hw_write_register_16(int channel, uint16_t reg, uint16_t value);
 uint16_t ax_hw_write_register_24(int channel, uint16_t reg, uint32_t value);
 uint16_t ax_hw_write_register_32(int channel, uint16_t reg, uint32_t value);
+uint16_t ax_hw_read_register_16(int channel, uint16_t reg);
+uint32_t ax_hw_read_register_24(int channel, uint16_t reg);
+uint32_t ax_hw_read_register_32(int channel, uint16_t reg);
+
+uint16_t ax_hw_write_fifo(int channel, uint8_t* buffer, uint16_t length);
+uint16_t ax_hw_read_fifo(int channel, ax_rx_chunk* chunk);
 
 uint16_t ax_hw_status(void);
 uint16_t ax_hw_poll_status(void);

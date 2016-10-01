@@ -108,7 +108,7 @@
 #define AX_FRAMING_ABORT			(1 << 0)
 #define AX_FRAMING_MODE_RAW			(0 << 1)
 #define AX_FRAMING_MODE_RAW_SOFT_BITS		(1 << 1)
-#define AX_FRAMING_MODE_HDLE			(2 << 1)
+#define AX_FRAMING_MODE_HDLC			(2 << 1)
 #define AX_FRAMING_MODE_RAW_PATTERN_MATCH	(3 << 1)
 #define AX_FRAMING_MODE_WIRELESS_MBUS		(4 << 1)
 #define AX_FRAMING_MODE_WIRELESS_MBUS_4_TO_6	(5 << 1)
@@ -123,10 +123,10 @@
  * FEC
  */
 #define AX_FEC_ENA		(1 << 0) /* Enable FEC (Convolutional Encoder) */
-#define AX_FEC_POS		(1 << 2) /* Enable noninverted Interleaver Synchronisation */
-#define AX_FEC_NEG		(1 << 3) /* Enable inverted Interleaver Synchronisation */
-#define AX_FEC_RSTVITERBI	(1 << 4) /* Reset Viterbi Decoder */
-#define AX_FEC_SHORTMEM		(1 << 5) /* Shorten Backtrack Memory */
+#define AX_FEC_POS		(1 << 4) /* Enable noninverted Interleaver Synchronisation */
+#define AX_FEC_NEG		(1 << 5) /* Enable inverted Interleaver Synchronisation */
+#define AX_FEC_RSTVITERBI	(1 << 6) /* Reset Viterbi Decoder */
+#define AX_FEC_SHORTMEM		(1 << 7) /* Shorten Backtrack Memory */
 
 /**
  * FEC Status
@@ -204,9 +204,89 @@
 #define AX_FIFOCMD_ROLLBACK		5
 
 /**
+ * PLL LOOP
+ */
+#define AX_PLLLOOP_EXTERNAL_FILTER				0
+#define AX_PLLLOOP_INTERNAL_FILTER_BW_100_KHZ	1
+#define AX_PLLLOOP_INTERNAL_FILTER_BW_200_KHZ	2
+#define AX_PLLLOOP_INTERNAL_FILTER_BW_500_KHZ	3
+#define AX_PLLLOOP_FILTER_ENABLE_EXTERNAL		(1 << 2)
+#define AX_PLLLOOP_FILTER_DIRECT				(1 << 3)
+#define AX_PLLLOOP_FREQSEL_A					(0 << 7)
+#define AX_PLLLOOP_FREQSEL_B					(1 << 7)
+
+/**
+ * PLL VCO Divider
+ */
+#define AX_PLLVCODIV_DIVIDE_1	0
+#define AX_PLLVCODIV_DIVIDE_2	1
+#define AX_PLLVCODIV_DIVIDE_4	2
+#define AX_PLLVCODIV_DIVIDE_8	3
+#define AX_PLLVCODIV_RF_DIVIDER_NONE			(0 << 2)
+#define AX_PLLVCODIV_RF_DIVIDER_DIV_TWO			(1 << 2)
+#define AX_PLLVCODIV_RF_FULLY_INTERNAL_VCO1		(0 << 4)
+#define AX_PLLVCODIV_RF_EXTERNAL_VCO			(0 << 5)
+#define AX_PLLVCODIV_RF_INTERNAL_VCO2_EXTERNAL_INDUCTOR	(1 << 5)
+
+/**
  * PLL Ranging
  */
 #define AX_PLLRANGING_RNG_START		(1 << 4)
 #define AX_PLLRANGING_RNGERR		(1 << 5)
 #define AX_PLLRANGING_PLL_LOCK		(1 << 6)
 #define AX_PLLRANGING_STICKY_LOCK	(1 << 7)
+
+/**
+ * Modulation Config - Frequency (MODCFGF)
+ */
+#define AX_MODCFGF_FREQSHAPE_UNSHAPED			(0 << 0)
+#define AX_MODCFGF_FREQSHAPE_GAUSSIAN_BT_0_3	(2 << 0)
+#define AX_MODCFGF_FREQSHAPE_GAUSSIAN_BT_0_5	(3 << 0)
+
+/**
+ * FSK Deviation - FM Mode
+ */
+#define AX_FSKDEV_FMSHIFT_DIV_32768	0
+#define AX_FSKDEV_FMSHIFT_DIV_16384	1
+#define AX_FSKDEV_FMSHIFT_DIV_8192	2
+#define AX_FSKDEV_FMSHIFT_DIV_4096	3
+#define AX_FSKDEV_FMSHIFT_DIV_2048	4
+#define AX_FSKDEV_FMSHIFT_DIV_1024	5
+#define AX_FSKDEV_FMSHIFT_DIV_512	6
+#define AX_FSKDEV_FMSHIFT_DIV_256	7
+#define AX_FSKDEV_FMINPUT_GPADC13	(0 << 8)
+#define AX_FSKDEV_FMINPUT_GPADC1	(1 << 8)
+#define AX_FSKDEV_FMINPUT_GPADC2	(2 << 8)
+#define AX_FSKDEV_FMINPUT_GPADC3	(3 << 8)
+#define AX_FSKDEV_FMSEXT			(1 << 14) /* ADC Sign Extension */
+#define AX_FSKDEV_FMOFFS			(1 << 15) /* ADC Offset Subtract */
+
+/**
+ * Modulation Config - Amplitude (MODCFGA)
+ */
+#define AX_MODCFGA_TXDIFF					(1 << 0) /* Differential TX */
+#define AX_MODCFGA_TXSE						(1 << 1) /* Single Ended TX */
+#define AX_MODCFGA_AMPLSHAPE_RAISED_COSINE	(1 << 2) /* RC Filter on TX */
+#define AX_MODCFGA_SLOWRAMP_1_BIT_TIME		(0 << 4) /* 1 bit time startup */
+#define AX_MODCFGA_SLOWRAMP_2_BIT_TIME		(1 << 4) /* 2 bit time startup */
+#define AX_MODCFGA_SLOWRAMP_4_BIT_TIME		(2 << 4) /* 4 bit time startup */
+#define AX_MODCFGA_SLOWRAMP_8_BIT_TIME		(3 << 4) /* 8 bit time startup */
+#define AX_MODCFGA_PTTLCK_GATE_ENABLE		(1 << 6) /* Disable TX if PLL unlocks */
+#define AX_MODCFGA_BROWN_GATE_ENABLE		(1 << 7) /* Disable TX if brownout */
+
+/**
+ * PLL VCO Current
+ */
+#define AX_PLLVCOI_ENABLE_MANUAL	(1 << 7)
+
+/**
+ * PLL Ranging Clock
+ */
+#define AX_PLLRNGCLK_DIV_256	0
+#define AX_PLLRNGCLK_DIV_512	1
+#define AX_PLLRNGCLK_DIV_1024	2
+#define AX_PLLRNGCLK_DIV_2048	3
+#define AX_PLLRNGCLK_DIV_4096	4
+#define AX_PLLRNGCLK_DIV_8192	5
+#define AX_PLLRNGCLK_DIV_16384	6
+#define AX_PLLRNGCLK_DIV_32768	7

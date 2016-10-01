@@ -53,17 +53,53 @@
 #define AX_SILICONREVISION	0x51
 #define AX_SCRATCH			0xC5
 
+/* Which PLL */
 enum ax_pll {
   AX_PLL_A,
   AX_PLL_B
 };
+/* Type of clock source */
+enum ax_clock_source {
+  AX_CLOCK_SOURCE_CRYSTAL,
+  AX_CLOCK_SOURCE_TCXO,
+};
+/* Frequency Modulation Mode */
+/* enum ax_freq_mod_mode { */
+/*   AX_FREQ_MOD_GFSK, */
+/*   AX_FRE */
+/* } */
+
+typedef struct ax_synthesiser_parameters {
+  uint8_t loop, charge_pump_current, vco_parameters;
+} ax_synthesiser_parameters;
 
 typedef struct ax_config {
 
+  /* synthesiser */
+  struct {
+    struct {
+      uint32_t frequency;
+      uint32_t register_value;
+    } A, B;
+  } synthesiser;
+
+  /* modulation parameters */
+  uint32_t bitrate;
+
+  /* struct { */
+  /* } modulation_parameters; */
+
   /* external clock */
-  uint8_t use_tcxo;             /* 1 if TCXO used, 0 otherwise */
+  enum ax_clock_source clock_source; /* Crystal or TCXO */
   uint32_t f_xtal;              /* external clock frequency (Hz) */
   uint16_t load_capacitance;    /* if crystal, load capacitance to be applied (pF) */
+  uint8_t f_xtaldiv;            /* xtal division factor, set by set_xtal_registers */
+
+  /* pll vco */
+  uint32_t f_pllrng;
+
+  /* rx parameters */
+  uint8_t decimation;
 
 } ax_config;
 
