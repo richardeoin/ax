@@ -1,6 +1,6 @@
 # Hardware for ax-gateway
 
-This folder contains the schematic filed for the ax-gateway header
+This folder contains the schematic files for the ax-gateway header
 board.
 
 _[Schematics](ax-gateway.sch.pdf)_
