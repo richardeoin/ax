@@ -82,25 +82,31 @@
 /**
  * Modulation
  */
-#define AX_MODULATION_ASK		0
+#define AX_MODULATION_ASK			0
 #define AX_MODULATION_ASK_COHERENT	1
-#define AX_MODULATION_PSK		2
-#define AX_MODULATION_OQSK		3
-#define AX_MODULATION_MSK		4
-#define AX_MODULATION_FSK		5
-#define AX_MODULATION_4_FSK		6
-#define AX_MODULATION_AFSK		7
-#define AX_MODULATION_FM		8
+#define AX_MODULATION_PSK			4
+#define AX_MODULATION_CW			5 /* not documented.. */
+#define AX_MODULATION_OQSK			6
+#define AX_MODULATION_MSK			7
+#define AX_MODULATION_FSK			8
+#define AX_MODULATION_4_FSK			9
+#define AX_MODULATION_AFSK			10
+#define AX_MODULATION_FM			11
 #define AX_MODULATION_HALFSPEED		(1 << 4)
 
 /**
  * Encoding
  */
-#define AX_ENC_INV	(1 << 0) /* Invert data */
-#define AX_ENC_DIFF	(1 << 1) /* Differential Encode/Decode data */
+#define AX_ENC_INV		(1 << 0) /* Invert data */
+#define AX_ENC_DIFF		(1 << 1) /* Differential Encode/Decode data */
 #define AX_ENC_SCRAM	(1 << 2) /* Enable Scrambler / Descrambler */
 #define AX_ENC_MANCH	(1 << 3) /* Enable manchester encoding/decoding */
 #define AX_ENC_NOSYNC	(1 << 4) /* Disable Dibit synchronisation in 4-FSK mode */
+
+#define AX_ENC_NRZ		(0x0)      /* NRZ - level encodes data */
+#define AX_ENC_NRZI		(0x3)      /* NRZI - inversion encodes data */
+#define AX_ENC_FM0		(0xA)      /* FM0 - biphase space */
+#define AX_ENC_FM1		(0xB)      /* FM1 - biphase mark */
 
 /**
  * Framing
@@ -227,6 +233,11 @@
 #define AX_PLLVCODIV_RF_FULLY_INTERNAL_VCO1		(0 << 4)
 #define AX_PLLVCODIV_RF_EXTERNAL_VCO			(0 << 5)
 #define AX_PLLVCODIV_RF_INTERNAL_VCO2_EXTERNAL_INDUCTOR	(1 << 5)
+
+#define AX_PLLVCODIV_RF_INTERNAL_VCO					(0 << 4)
+#define AX_PLLVCODIV_RF_INTERNAL_VCO_EXTERNAL_INDUCTOR	(3 << 4)
+#define AX_PLLVCODIV_RF_EXTERNAL_VCO_					(1 << 4)
+
 
 /**
  * PLL Ranging
