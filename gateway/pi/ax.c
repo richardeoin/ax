@@ -231,6 +231,13 @@ void ax_set_synthesiser_parameters(ax_synthesiser_parameters* params)
   ax_hw_write_register_8(0, AX_REG_PLLLOOP,   params->loop);
   ax_hw_write_register_8(0, AX_REG_PLLCPI,    params->charge_pump_current);
   ax_hw_write_register_8(0, AX_REG_PLLVCODIV, params->vco_parameters);
+
+  /* f34 (See 5.26) */
+  if (params->vco_parameters & AX_PLLVCODIV_RF_DIVIDER_DIV_TWO) {
+    ax_hw_write_register_8(0, 0xF34, 0x28);
+  } else {
+    ax_hw_write_register_8(0, 0xF34, 0x08);
+  }
 }
 
 /**
@@ -278,6 +285,8 @@ void ax_set_afsk_rx_parameters(ax_config* config)
  */
 void ax_set_rx_parameters(ax_config* config)
 {
+  uint32_t rxdatarate, maxrfoffset;
+
   /* IF Frequency */
   ax_hw_write_register_16(0, AX_REG_IFFREQ, 0x00C8);
   /* 0xC8 = 200. Therefore f_IF = 3122 Hz */
@@ -287,27 +296,114 @@ void ax_set_rx_parameters(ax_config* config)
   config->decimation = 0x44;
   /* 68x decimation */
 
+
   /* RX Data Rate */
-  ax_hw_write_register_24(0, AX_REG_RXDATARATE, 0x003C2E);
-  /* 0x3C2E = 15406. Therefore bitrate is 2kHz */
+  rxdatarate = (uint32_t)((((float)config->f_xtal * 128) /
+                           ((float)config->f_xtaldiv * config->bitrate *
+                            config->decimation)) + 0.5);
+  ax_hw_write_register_24(0, AX_REG_RXDATARATE, rxdatarate);
+
+  debug_printf("rx data rate %d = 0x%04x\n", config->bitrate, rxdatarate);
+
 
   /* Max Data Rate offset */
   ax_hw_write_register_24(0, AX_REG_MAXDROFFSET, 0x0);
   /* 0. Therefore < 1% */
 
-  /* Max RF offset */
-  ax_hw_write_register_24(0, AX_REG_MAXRFOFFSET, 0x80037B);
-  /* Correct offset at first LO */
-  /* 0x37B = 891. Therefore delta-carrier = 870Hz = ±2ppm */
+
+  /* Max RF offset - Correct offset at first LO */
+  maxrfoffset = (uint32_t)((((float)config->max_delta_carrier *
+                             (1 << 24)) / (float)config->f_xtal) + 0.5);
+  ax_hw_write_register_24(0, AX_REG_MAXRFOFFSET,
+                          AX_MAXRFOFFSET_FREQOFFSCORR_FIRST_LO | maxrfoffset);
+
+  debug_printf("max rf offset %d = 0x%04x\n",
+               config->max_delta_carrier, maxrfoffset);
+
 
   /* FSK Deviation */
   ax_hw_write_register_16(0, AX_REG_FSKDMAX, 0x00A6);
   ax_hw_write_register_16(0, AX_REG_FSKDMIN, 0xFF5A);
-  /* 0xA6 = 166. In Manual Mode??? */
+  /* 0xA6 = 166. In Manual Mode??? Only for 4FSK??? */
 
-  ax_hw_write_register_8(0, AX_REG_AMPLFILTER, 0x00);
   /* Bypass the Amplitude Lowpass filter */
+  ax_hw_write_register_8(0, AX_REG_AMPLFILTER, 0x00);
 }
+
+/**
+ * Work in progress
+ */
+void ax_set_rx_parameter_set()
+{
+  /* AGC Gain Attack/Decay */
+  ax_hw_write_register_8(0, AX_REG_RX_PARAMETER3 + AX_RX_AGCGAIN, 0xFF);
+  /**
+   * 0xFF freezes the ADC.  during preamble it's set for f_3dB of the
+   * attack to be BITRATE, and f_3dB of the decay to be BITRATE/100
+   */
+  /* AGC target value */
+  ax_hw_write_register_8(0, AX_REG_RX_PARAMETER3 + AX_RX_AGCTARGET, 0x84);
+  /**
+   * Always set to 132, which gives target output of 304 from 1023 counts
+   */
+
+  /* ADC digital threashold range */
+  ax_hw_write_register_8(0, AX_REG_RX_PARAMETER3 + AX_RX_AGCAHYST, 0x00);
+  /**
+   * Always set to zero, the analogue ADC always follows immediately
+   */
+
+  /* AGC minmax */
+  ax_hw_write_register_8(0, AX_REG_RX_PARAMETER3 + AX_RX_AGCMINMAX, 0x00);
+  /**
+   * Always set to zero, this is probably best
+   */
+
+  /* Gain of timing recovery loop */
+  ax_hw_write_register_8(0, AX_REG_RX_PARAMETER3 + AX_RX_TIMEGAIN, 0xF5);
+  /**
+   * Values - 0xF8, 0xF6, 0xF5
+   * TMGCORRFRAC - 4, 16, 32
+   * tightning the loop...
+   */
+
+  /* Gain of datarate recovery loop */
+  ax_hw_write_register_8(0, AX_REG_RX_PARAMETER3 + AX_RX_DRGAIN, 0xF0);
+  /**
+   * Values - 0xF2, 0xF1, 0xF0
+   * TMGCORRFRAC - 256, 512, 1024
+   * tightning the loop...
+   */
+
+  /* Gain of phase recovery look / decimation filter fractional b/w */
+  ax_hw_write_register_8(0, AX_REG_RX_PARAMETER3 + AX_RX_PHASEGAIN, 0xC3);
+  /**
+   * Always 0xC3
+   */
+
+  ax_hw_write_register_8(0, AX_REG_RX_PARAMETER3 + AX_RX_FREQUENCYGAINA, 0x0F);
+  /* Always 0x0F (baseband frequency loop disabled) */
+  ax_hw_write_register_8(0, AX_REG_RX_PARAMETER3 + AX_RX_FREQUENCYGAINB, 0x1F);
+  /* Always 0x1F (baseband frequency loop disabled) */
+  ax_hw_write_register_8(0, AX_REG_RX_PARAMETER3 + AX_RX_FREQUENCYGAINC, 0x0D);
+  /* 0xB, 0xB, 0xD */
+  ax_hw_write_register_8(0, AX_REG_RX_PARAMETER3 + AX_RX_FREQUENCYGAIND, 0x0D);
+  /* 0xB, 0xB, 0xD */
+
+  ax_hw_write_register_8(0, AX_REG_RX_PARAMETER3 + AX_RX_AMPLITUDEGAIN, 0x06);
+  /* Always 0x6 */
+
+  /* Receiver Frequency Deviation */
+  ax_hw_write_register_16(0, AX_REG_RX_PARAMETER1 + AX_RX_FREQDEV, 0x0043);
+  /**
+   * Disable (0x00) for first pre-amble, then equal to deviation of signal???
+   */
+
+  ax_hw_write_register_8(0, AX_REG_RX_PARAMETER3 + AX_RX_FOURFSK, 0x16);
+  ax_hw_write_register_8(0, AX_REG_RX_PARAMETER3 + AX_RX_BBOFFSRES, 0x00);
+
+}
+
 
 /**
  * 5.15.8 - 5.15.9 set afsk transmit parameters
@@ -326,7 +422,7 @@ void ax_set_afsk_tx_parameters(ax_config* config)
 
   /* Space */
   afskspace = (uint16_t)((((float)space * (1 << 18)) /
-                         (float)config->f_xtal) + 0.5);
+                          (float)config->f_xtal) + 0.5);
   ax_hw_write_register_16(0, AX_REG_AFSKSPACE, afskspace);
 
   debug_printf("afskspace (tx) %d = 0x%04x\n", space, afskspace);
@@ -509,7 +605,30 @@ void ax_set_match_parameters()
   ax_hw_write_register_8(0, AX_REG_MATCH1MAX, 0x0A);
   /* signal a match if recevied bitstream matches for 10-bits or more */
 }
+/**
+ * 5.22 set packet controller parameters
+ */
+void ax_set_packet_controller_parameters()
+{
+  ax_hw_write_register_8(0, AX_REG_TMGTXBOOST, 0x33); /* 38us pll boost time */
+  ax_hw_write_register_8(0, AX_REG_TMGTXSETTLE, 0x14); /* 20us tx pll settle time  */
+  ax_hw_write_register_8(0, AX_REG_TMGRXBOOST, 0x33);  /* 38us rx pll boost time */
+  ax_hw_write_register_8(0, AX_REG_TMGRXSETTLE, 0x14); /* 20us rx pll settle time */
+  ax_hw_write_register_8(0, AX_REG_TMGRXOFFSACQ, 0x00); /* 0us bb dc offset aquis tim */
+  ax_hw_write_register_8(0, AX_REG_TMGRXCOARSEAGC, 0x73); /* 152 us rx agc coarse  */
+  ax_hw_write_register_8(0, AX_REG_TMGRXRSSI, 0x03);      /* 3us rssi setting time */
+  ax_hw_write_register_8(0, AX_REG_TMGRXPREAMBLE2, 0x17); /* 23 bit preamble timeout */
+  ax_hw_write_register_8(0, AX_REG_RSSIABSTHR, 0xDD);     /* rssi threashold = 221 */
+  ax_hw_write_register_8(0, AX_REG_BGNDRSSITHR, 0x00);
 
+  /* max chunk size = 240 bytes */
+  ax_hw_write_register_8(0, AX_REG_PKTCHUNKSIZE,
+                         AX_PKT_MAXIMUM_CHUNK_SIZE_240_BYTES);
+
+  /* accept multiple chunks */
+  ax_hw_write_register_8(0, AX_REG_PKTACCEPTFLAGS,
+                         AX_PKT_ACCEPT_MULTIPLE_CHUNKS);
+}
 
 
 
@@ -634,6 +753,7 @@ void ax5043_set_registers(ax_config* config)
   //
   ax_set_match_parameters();
 
+  /* Packet controller */
   ax_hw_write_register_8(0, AX_REG_TMGTXBOOST, 0x33);
   ax_hw_write_register_8(0, AX_REG_TMGTXSETTLE, 0x14);
   ax_hw_write_register_8(0, AX_REG_TMGRXBOOST, 0x33);
@@ -641,25 +761,27 @@ void ax5043_set_registers(ax_config* config)
   ax_hw_write_register_8(0, AX_REG_TMGRXOFFSACQ, 0x00);
   ax_hw_write_register_8(0, AX_REG_TMGRXCOARSEAGC, 0x73);
   ax_hw_write_register_8(0, AX_REG_TMGRXRSSI, 0x03);
-  ax_hw_write_register_8(0, AX_REG_TMGRXPREAMBLE + 1, 0x17);
+  ax_hw_write_register_8(0, AX_REG_TMGRXPREAMBLE2, 0x17);
   ax_hw_write_register_8(0, AX_REG_RSSIABSTHR, 0xDD);
   ax_hw_write_register_8(0, AX_REG_BGNDRSSITHR, 0x00);
   ax_hw_write_register_8(0, AX_REG_PKTCHUNKSIZE, 0x0D);
   ax_hw_write_register_8(0, AX_REG_PKTACCEPTFLAGS, 0x20);
+  //
+  ax_set_packet_controller_parameters();
 
   ax_hw_write_register_8(0, AX_REG_DACCONFIG, 0x00);
   ax_hw_write_register_8(0, AX_REG_REF, 0x03);
   ax_hw_write_register_8(0, AX_REG_XTALOSC, 0x04);
   ax_hw_write_register_8(0, AX_REG_XTALAMPL, 0x00);
 
-  ax_hw_write_register_8(0, 0xF1C, 0x07);
-  ax_hw_write_register_8(0, 0xF21, 0x68);
-  ax_hw_write_register_8(0, 0xF22, 0xFF);
-  ax_hw_write_register_8(0, 0xF23, 0x84);
-  ax_hw_write_register_8(0, 0xF26, 0x98);
-  ax_hw_write_register_8(0, 0xF34, 0x28);
-  ax_hw_write_register_8(0, 0xF35, 0x10);
-  ax_hw_write_register_8(0, 0xF44, 0x25);
+  ax_hw_write_register_8(0, 0xF1C, 0x07); /* const */
+  ax_hw_write_register_8(0, 0xF21, 0x68); /* !! */
+  ax_hw_write_register_8(0, 0xF22, 0xFF); /* !! */
+  ax_hw_write_register_8(0, 0xF23, 0x84); /* !! */
+  ax_hw_write_register_8(0, 0xF26, 0x98); /* !! */
+  ax_hw_write_register_8(0, 0xF34, 0x28); /* done */
+  ax_hw_write_register_8(0, 0xF35, 0x10); /* done */
+  ax_hw_write_register_8(0, 0xF44, 0x25); /* ?? */
 }
 
 
@@ -667,8 +789,8 @@ void ax5043_set_registers_tx(void)
 {
   ax_set_synthesiser_parameters(&synth_operation);
 
-  ax_hw_write_register_8(0, 0xF00, 0x0F);
-  ax_hw_write_register_8(0, 0xF18, 0x06);
+  ax_hw_write_register_8(0, 0xF00, 0x0F); /* const */
+  ax_hw_write_register_8(0, 0xF18, 0x06); /* ?? */
 }
 
 
@@ -676,8 +798,8 @@ void ax5043_set_registers_rx(void)
 {
   ax_set_synthesiser_parameters(&synth_operation);
 
-  ax_hw_write_register_8(0, 0xF00, 0x0F);
-  ax_hw_write_register_8(0, 0xF18, 0x02);
+  ax_hw_write_register_8(0, 0xF00, 0x0F); /* const */
+  ax_hw_write_register_8(0, 0xF18, 0x02); /* ?? */
 }
 
 
@@ -840,8 +962,12 @@ void ax_init()
   config.f_xtal = 16369000;
   config.load_capacitance = 0;
 
+  config.bitrate = 2000;
+
   config.synthesiser.A.frequency = 434600000;
   config.synthesiser.B.frequency = 434600000;
+
+  config.max_delta_carrier = 870; // 2ppm TODO ppm calculations
 
   /* Reset the chip */
 
@@ -858,9 +984,10 @@ void ax_init()
   ax_set_pwrmode(AX_PWRMODE_POWERDOWN);
 
   /* Program parameters.. (these could initially come from windows software, or be calculated) */
+  ax_set_xtal_parameters(&config);
   ax5043_set_registers(&config);
   ax5043_set_registers_tx();
-  ax_set_xtal_parameters(&config);
+
 
   /* Perform auto-ranging for VCO */
   ax_vco_ranging(&config, AX_PLL_A);

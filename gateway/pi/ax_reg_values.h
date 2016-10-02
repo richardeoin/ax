@@ -237,6 +237,46 @@
 #define AX_PLLRANGING_STICKY_LOCK	(1 << 7)
 
 /**
+ * 5.15 Receiver Parameters ----------------------------------------
+ */
+
+/**
+ * Max RF offset
+ */
+#define AX_MAXRFOFFSET_FREQOFFSCORR_FIRST_LO	(1 << 21)
+#define AX_MAXRFOFFSET_FREQOFFSCORR_SECOND_LO	(0 << 21)
+
+/**
+ * FREQGAIN registers
+ */
+/* A */
+#define AX_FREQGAIN_BB_FREQUENCY_RECOVERY_AMPLITUDE_GATE	(1 << 4)
+#define AX_FREQGAIN_BB_FREQUENCY_RECOVERY_WRAP_HALF_MODULO	(1 << 5)
+#define AX_FREQGAIN_BB_FREQUENCY_RECOVERY_WRAP_MODULO		(1 << 6)
+#define AX_FREQGAIN_BB_FREQUENCY_RECOVERY_WRAP_LIMIT		(1 << 7)
+/* B */
+#define AX_FREQGAIN_BB_FREQUENCY_RECOVERY_AVERAGE_CONSECUTIVE	(1 << 6)
+#define AX_FREQGAIN_BB_FREQUENCY_RECOVERY_FREEZE_LOOP			(1 << 7)
+/* D */
+#define AX_FREQGAIN_RF_FREQUENCY_RECOVERY_FREEZE_LOOP		(1 << 7)
+
+/**
+ * AMPLGAIN
+ */
+#define AX_AMPLGAIN_TRY_TO_CORRECT_AMPLITUDE_ON_AGC_JUMP	(1 << 6)
+#define AX_AMPLGAIN_AMPLITUDE_RECOVERY_PEAKDET		(0 << 7)
+#define AX_AMPLGAIN_AMPLITUDE_RECOVERY_AVERAGING	(1 << 7)
+
+/**
+ * FOURFSK
+ */
+#define AX_FOURFSK_ENABLE_DEVIATION_UPDATE	(1 << 4)
+
+/**
+ * 5.16 Transmitter Parameters ----------------------------------------
+ */
+
+/**
  * Modulation Config - Frequency (MODCFGF)
  */
 #define AX_MODCFGF_FREQSHAPE_UNSHAPED			(0 << 0)
@@ -275,6 +315,10 @@
 #define AX_MODCFGA_BROWN_GATE_ENABLE		(1 << 7) /* Disable TX if brownout */
 
 /**
+ * 5.17 PLL Parameters ----------------------------------------
+ */
+
+/**
  * PLL VCO Current
  */
 #define AX_PLLVCOI_ENABLE_MANUAL	(1 << 7)
@@ -290,3 +334,42 @@
 #define AX_PLLRNGCLK_DIV_8192	5
 #define AX_PLLRNGCLK_DIV_16384	6
 #define AX_PLLRNGCLK_DIV_32768	7
+
+/**
+ * 5.22 Packet Controller ----------------------------------------
+ */
+
+#define AX_PKT_MAXIMUM_CHUNK_SIZE_1_BYTES		1
+#define AX_PKT_MAXIMUM_CHUNK_SIZE_2_BYTES		2
+#define AX_PKT_MAXIMUM_CHUNK_SIZE_4_BYTES		3
+#define AX_PKT_MAXIMUM_CHUNK_SIZE_8_BYTES		4
+#define AX_PKT_MAXIMUM_CHUNK_SIZE_16_BYTES		5
+#define AX_PKT_MAXIMUM_CHUNK_SIZE_32_BYTES		6
+#define AX_PKT_MAXIMUM_CHUNK_SIZE_64_BYTES		7
+#define AX_PKT_MAXIMUM_CHUNK_SIZE_128_BYTES		8
+#define AX_PKT_MAXIMUM_CHUNK_SIZE_160_BYTES		9
+#define AX_PKT_MAXIMUM_CHUNK_SIZE_192_BYTES		10
+#define AX_PKT_MAXIMUM_CHUNK_SIZE_224_BYTES		11
+#define AX_PKT_MAXIMUM_CHUNK_SIZE_240_BYTES		12
+
+#define AX_PKT_FLAGS_RSSI_UNITS_MICROSECONDS	(0 << 0)
+#define AX_PKT_FLAGS_RSSI_UNITS_BIT_TIME		(1 << 0)
+#define AX_PKT_FLAGS_AGC_UNITS_MICROSECONDS		(0 << 1)
+#define AX_PKT_FLAGS_AGC_UNITS_BIT_TIME			(1 << 1)
+#define AX_PKT_FLAGS_ENABLE_BGND_RSSI			(1 << 2)
+#define AX_PKT_FLAGS_AGC_SETTLING_DETECTION		(1 << 3)
+
+#define AX_PKT_STORE_TIMER					(1 << 0)
+#define AX_PKT_STORE_FREQUENCY_OFFSET		(1 << 1)
+#define AX_PKT_STORE_RF_OFFSET				(1 << 2)
+#define AX_PKT_STORE_DATARATE_OFFSET		(1 << 3)
+#define AX_PKT_STORE_RSSI					(1 << 4)
+#define AX_PKT_STORE_CRC_BYTES				(1 << 5)
+#define AX_PKT_STORE_RSSI_ON_ANTENNA_SELECT	(1 << 6)
+
+#define AX_PKT_ACCEPT_RESIDUE			(1 << 0)
+#define AX_PKT_ACCEPT_ABORTED			(1 << 1)
+#define AX_PKT_ACCEPT_CRC_FAILURES		(1 << 2)
+#define AX_PKT_ACCEPT_ADDRESS_FAILURES	(1 << 3)
+#define AX_PKT_ACCEPT_SIZE_FAILURES		(1 << 4)
+#define AX_PKT_ACCEPT_MULTIPLE_CHUNKS	(1 << 5)

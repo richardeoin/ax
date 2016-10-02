@@ -86,6 +86,9 @@ typedef struct ax_config {
   /* modulation parameters */
   uint32_t bitrate;
 
+  /* rx parameters */
+  uint32_t max_delta_carrier;   /* maximum difference of carrier centre */
+
   /* struct { */
   /* } modulation_parameters; */
 

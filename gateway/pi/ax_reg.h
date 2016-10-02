@@ -238,7 +238,9 @@
 #define AX_REG_TMGRXCOARSEAGC	0x226	/* Receive Coarse AGC Time */
 #define AX_REG_TMGRXAGC			0x227	/* Receiver AGC Settling Time */
 #define AX_REG_TMGRXRSSI		0x228	/* Receiver RSSI Settling Time */
-#define AX_REG_TMGRXPREAMBLE	0x229	/* Receiver Preamble Timeout */
+#define AX_REG_TMGRXPREAMBLE1	0x229	/* Receiver Preamble 1 Timeout */
+#define AX_REG_TMGRXPREAMBLE2	0x22A	/* Receiver Preamble 2 Timeout */
+#define AX_REG_TMGRXPREAMBLE3	0x22B	/* Receiver Preamble 3 Timeout */
 #define AX_REG_RSSIREFERENCE	0x22C	/* RSSI Offset */
 #define AX_REG_RSSIABSTHR		0x22D	/* RSSI Absolute Threshold */
 #define AX_REG_BGNDRSSIGAIN		0x22E	/* Background RSSI Averaging Time Constant */
