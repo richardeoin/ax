@@ -58,45 +58,85 @@ enum ax_pll {
   AX_PLL_A,
   AX_PLL_B
 };
-/* Type of clock source */
-enum ax_clock_source {
+/* Clock source type */
+enum ax_clock_source_type {
   AX_CLOCK_SOURCE_CRYSTAL,
   AX_CLOCK_SOURCE_TCXO,
 };
-/* Frequency Modulation Mode */
-/* enum ax_freq_mod_mode { */
-/*   AX_FREQ_MOD_GFSK, */
-/*   AX_FRE */
-/* } */
+/* VCO type - See Datasheet Table 8. */
+enum ax_vco_type {
+  AX_VCO_INTERNAL = 0,
+  AX_VCO_INTERNAL_EXTERNAL_INDUCTOR,
+  AX_VCO_EXTERNAL,
+};
+/* Divider at the output of the VCO  */
+enum ax_rfdiv {
+  AX_RFDIV_UKNOWN = 0,
+  AX_RFDIV_0,
+  AX_RFDIV_1,
+};
 
-typedef struct ax_synthesiser_parameters {
-  uint8_t loop, charge_pump_current, vco_parameters;
-} ax_synthesiser_parameters;
 
+/**
+ * represents the chosen modulation scheme
+ */
+typedef struct ax_modulation {
+  uint8_t modulation;           /* modulation */
+  uint8_t encoding;             /* encoding */
+  uint8_t framing;              /* framing */
+  uint32_t bitrate;             /* link bitrate provided to user */
+  uint8_t fec;                  /* 0 = no fec, 1 = fec enabled */
+
+  float power;                  /* TX output power */
+
+  union {
+    struct {                    /* FSK */
+      float modulation_index;
+    } fsk;
+    struct {                    /* AFSK */
+      uint16_t deviation;       /* (Hz) */
+      uint16_t space, mark;     /* (Hz) */
+    } afsk;
+  } parameters;
+
+  uint32_t max_delta_carrier;   /* max. delta from carrier centre, autoset if 0 */
+  /* larger increases the time for the AFC to achieve lock */
+
+} ax_modulation;
+
+
+/**
+ * represents one of the two physical synthesisers
+ */
+typedef struct ax_synthesiser {
+  uint32_t frequency;
+  uint32_t register_value;
+  enum ax_rfdiv rfdiv;     /* set if this is known, else it's set automatically */
+  uint8_t vco_range_known; /* set to 0 if vco range unknown */
+  uint8_t vco_range;       /* determined by autoranging */
+} ax_synthesiser;
+
+
+/**
+ *
+ */
 typedef struct ax_config {
+  /* power mode */
+  uint8_t pwrmode;
 
   /* synthesiser */
   struct {
-    struct {
-      uint32_t frequency;
-      uint32_t register_value;
-    } A, B;
+    ax_synthesiser A, B;
+    enum ax_vco_type vco_type;  /* default is internal */
   } synthesiser;
 
-  /* modulation parameters */
-  uint32_t bitrate;
-
-  /* rx parameters */
-  uint32_t max_delta_carrier;   /* maximum difference of carrier centre */
-
-  /* struct { */
-  /* } modulation_parameters; */
-
   /* external clock */
-  enum ax_clock_source clock_source; /* Crystal or TCXO */
+  enum ax_clock_source_type clock_source; /* Crystal or TCXO */
   uint32_t f_xtal;              /* external clock frequency (Hz) */
   uint16_t load_capacitance;    /* if crystal, load capacitance to be applied (pF) */
-  uint8_t f_xtaldiv;            /* xtal division factor, set by set_xtal_registers */
+  uint32_t error_ppm;           /* max. error of clock source, ppm */
+  uint8_t f_xtaldiv;            /* xtal division factor, set automatically */
+
 
   /* pll vco */
   uint32_t f_pllrng;
@@ -106,8 +146,11 @@ typedef struct ax_config {
 
 } ax_config;
 
-void ax_transmit(void);
-void ax_init();
+
+void ax_tx_on(ax_config* config, ax_modulation* mod);
+void ax_tx_packet(ax_config* config, uint8_t* packet, uint16_t length);
+
+void ax_init(ax_config* config);
 
 uint8_t ax_silicon_revision(int channel);
 uint8_t ax_scratch(int channel);

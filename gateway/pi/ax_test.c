@@ -24,20 +24,37 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "ax.h"
 #include "ax_hw.h"
+#include "ax_modes.h"
 
 int main()
 {
   ax_hw_init(0);
   ax_hw_init(1);
 
-  ax_init();
+  uint8_t pkt[0x100];
+
+  ax_config config;
+  memset(&config, 0, sizeof(ax_config));
+
+  config.clock_source = AX_CLOCK_SOURCE_TCXO;
+  config.f_xtal = 16369000;
+
+  config.synthesiser.A.frequency = 434600000;
+  config.synthesiser.B.frequency = 434600000;
+
+
+  ax_init(&config);
+  ax_tx_on(&config, &psk1_modulation);
 
   while (1) {
     sleep(1);
-    ax_transmit();
+
+    strcpy((char*)pkt, "-hello");
+    ax_tx_packet(&config, pkt, 5);
   }
 
   return 0;

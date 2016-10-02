@@ -248,73 +248,21 @@ uint16_t ax_hw_write_fifo(int channel, uint8_t* buffer, uint16_t length)
   return status;
 }
 /**
- * Reads from FIFO
+ * Reads buffer from fifo. First byte of returned buffer is top byte of status
  *
- * returns the total number of bytes read from the fifo
+ * Returns status
  */
-uint16_t ax_hw_read_fifo(int channel, ax_rx_chunk* chunk)
+uint16_t ax_hw_read_fifo(int channel, uint8_t* buffer, uint16_t length)
 {
-  uint8_t ptr[3];
+  /* read (short access) */
+  buffer[0] = (AX_REG_FIFODATA & 0x7F);
 
-  if (ax_hw_read_register_16(channel, AX_REG_FIFOCOUNT) == 0) {
-    return 0;                   /* nothing to read */
-  }
+  wiringPiSPIDataRW(channel, buffer, length);
 
-  chunk->chunk_t = ax_hw_read_register_8(channel, AX_REG_FIFODATA);
+  status &= 0xFF;
+  status |= ((uint16_t)buffer[0] << 8);
 
-  switch (chunk->chunk_t) {
-    case AX_FIFO_CHUNK_DATA:
-      ax_hw_read_register_bytes(channel, AX_REG_FIFODATA, ptr, 2);
-
-      chunk->chunk.data.length = ptr[0] - 1; /* not including flags here */
-      chunk->chunk.data.flags  = ptr[1];
-
-      /* read (short access) */
-      chunk->chunk.data.data[0] = (AX_REG_FIFODATA & 0x7F);
-      wiringPiSPIDataRW(channel,
-                        chunk->chunk.data.data,
-                        chunk->chunk.data.length + 1);
-
-      return 3 + chunk->chunk.data.length;
-                                /* RSSI */
-    case AX_FIFO_CHUNK_RSSI:
-      chunk->chunk.rssi = ax_hw_read_register_8(channel, AX_REG_FIFODATA);
-      return 2;
-                                /* FREQOFFS */
-    case AX_FIFO_CHUNK_FREQOFFS:
-      chunk->chunk.freqoffs = ax_hw_read_register_16(channel, AX_REG_FIFODATA);
-      return 2;
-                                /* ANTRSSI 2 */
-    case AX_FIFO_CHUNK_ANTRSSI2:
-      ax_hw_read_register_bytes(channel, AX_REG_FIFODATA, ptr, 2);
-
-      chunk->chunk.antrssi2.rssi      = ptr[0];
-      chunk->chunk.antrssi2.bgndnoise = ptr[1];
-      return 3;
-                                /* TIMER */
-    case AX_FIFO_CHUNK_TIMER:
-      chunk->chunk.timer = ax_hw_read_register_24(channel, AX_REG_FIFODATA);
-      return 4;
-                                /* RFFREQOFFS */
-    case AX_FIFO_CHUNK_RFFREQOFFS:
-      chunk->chunk.rffreqoffs = ax_hw_read_register_24(channel, AX_REG_FIFODATA);
-      return 4;
-                                /* DATARATE */
-    case AX_FIFO_CHUNK_DATARATE:
-      chunk->chunk.datarate = ax_hw_read_register_24(channel, AX_REG_FIFODATA);
-      return 4;
-                                /* ANTRSSI3 */
-    case AX_FIFO_CHUNK_ANTRSSI3:
-      ax_hw_read_register_bytes(channel, AX_REG_FIFODATA, ptr, 3);
-
-      chunk->chunk.antrssi3.ant0rssi  = ptr[0];
-      chunk->chunk.antrssi3.ant1rssi  = ptr[1];
-      chunk->chunk.antrssi3.bgndnoise = ptr[2];
-      return 4;
-                                /* default */
-    default:
-      return 1;
-  }
+  return status;
 }
 
 
