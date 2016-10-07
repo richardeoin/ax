@@ -5,7 +5,7 @@
     (no_connects 1)
     (area 147.449999 86.449999 212.550001 142.550001)
     (thickness 1.6)
-    (drawings 25)
+    (drawings 26)
     (tracks 879)
     (zones 0)
     (modules 92)
@@ -3431,6 +3431,7 @@
     )
   )
 
+  (gr_line (start 193 108) (end 193 114) (angle 90) (layer F.SilkS) (width 0.1))
   (gr_text "DC 1" (at 163 116.75) (layer B.SilkS)
     (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
   )
@@ -3443,10 +3444,10 @@
   (gr_text DC (at 148.75 98.5) (layer F.SilkS)
     (effects (font (size 1 1) (thickness 0.15)))
   )
-  (gr_text 1 (at 185 122) (layer F.SilkS)
+  (gr_text 1 (at 186 119) (layer F.SilkS)
     (effects (font (size 5 5) (thickness 0.8)))
   )
-  (gr_text 0 (at 185 105) (layer F.SilkS)
+  (gr_text 0 (at 186 101) (layer F.SilkS)
     (effects (font (size 5 5) (thickness 0.8)))
   )
   (gr_line (start 167 115.75) (end 169.5 115.75) (angle 90) (layer F.SilkS) (width 0.1))
@@ -5416,6 +5417,36 @@
     (filled_polygon
       (pts
         (xy 157.4 99.9) (xy 156.1 99.9) (xy 156.1 96.85) (xy 157.4 96.85)
+      )
+    )
+  )
+  (zone (net 0) (net_name "") (layer F.SilkS) (tstamp 57F7A1A8) (hatch edge 0.508)
+    (connect_pads (clearance 0.5))
+    (min_thickness 0.254)
+    (fill yes (arc_segments 16) (thermal_gap 0.508) (thermal_bridge_width 0.508))
+    (polygon
+      (pts
+        (xy 192 111) (xy 180 111) (xy 180 105) (xy 192 105) (xy 192 111)
+      )
+    )
+    (filled_polygon
+      (pts
+        (xy 191.873 110.873) (xy 180.127 110.873) (xy 180.127 105.127) (xy 191.873 105.127)
+      )
+    )
+  )
+  (zone (net 0) (net_name "") (layer F.SilkS) (tstamp 57F7A1F2) (hatch edge 0.508)
+    (connect_pads (clearance 0.5))
+    (min_thickness 0.254)
+    (fill yes (arc_segments 16) (thermal_gap 0.508) (thermal_bridge_width 0.508))
+    (polygon
+      (pts
+        (xy 192 129) (xy 180 129) (xy 180 123) (xy 192 123) (xy 192 129)
+      )
+    )
+    (filled_polygon
+      (pts
+        (xy 191.873 128.873) (xy 180.127 128.873) (xy 180.127 123.127) (xy 191.873 123.127)
       )
     )
   )
