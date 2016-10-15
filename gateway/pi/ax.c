@@ -301,11 +301,8 @@ void ax_set_synthesiser_parameters(ax_synthesiser_parameters* params,
   uint8_t vco_parameters =
     (synth->rfdiv == AX_RFDIV_1) ? AX_PLLVCODIV_RF_DIVIDER_DIV_TWO : 0;
 
-  /* TODO vco type */
-  (void)vco_type;
-  vco_parameters |=
-    AX_PLLVCODIV_RF_FULLY_INTERNAL_VCO1 |
-    AX_PLLVCODIV_RF_INTERNAL_VCO2_EXTERNAL_INDUCTOR;
+  /* vco type */
+  vco_parameters |= (vco_type & 0x30);
 
   /* set registers */
   ax_hw_write_register_8(0, AX_REG_PLLLOOP,   params->loop);
