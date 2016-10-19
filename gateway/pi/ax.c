@@ -213,8 +213,14 @@ void ax_set_modulation_parameters(ax_config* config, ax_modulation* mod)
   ax_hw_write_register_8(0, AX_REG_ENCODING, mod->encoding);
 
   /* framing */
-  ax_hw_write_register_8(0, AX_REG_FRAMING,
-                         AX_FRAMING_MODE_HDLC | AX_FRAMING_CRCMODE_CRC_16);
+  ax_hw_write_register_8(0, AX_REG_FRAMING, mod->framing);
+
+  if ((mod->framing & 0xE) == AX_FRAMING_MODE_RAW_SOFT_BITS) {
+    /* See 5.26 Performance Tuning */
+    ax_hw_write_register_8(0, 0xF72, 0x06);
+  } else {
+    ax_hw_write_register_8(0, 0xF72, 0x00);
+  }
 
   /* fec */
   if (mod->fec) {
@@ -512,8 +518,12 @@ void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
   uint32_t fskdev, txrate;
 
   /* frequency shaping mode of transmitter */
-  ax_hw_write_register_8(0, AX_REG_MODCFGF,
-                         AX_MODCFGF_FREQSHAPE_GAUSSIAN_BT_0_5);
+  switch (mod->modulation) {
+    case AX_MODULATION_FSK:
+      ax_hw_write_register_8(0, AX_REG_MODCFGF,
+                             AX_MODCFGF_FREQSHAPE_GAUSSIAN_BT_0_5);
+      break;
+  }
 
   /* amplitude shaping mode of transmitter */
   ax_hw_write_register_8(0, AX_REG_MODCFGA,
@@ -521,7 +531,9 @@ void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
 
   /* TX deviation */
   switch (mod->modulation) {
-    case AX_MODULATION_PSK:     /* PSK here?????? */
+    case AX_MODULATION_PSK:     /* PSK */
+      fskdev = 0;
+      break;
     case AX_MODULATION_FSK:     /* FSK */
 
       deviation = (mod->parameters.fsk.modulation_index * 0.5 * mod->bitrate);
@@ -854,17 +866,19 @@ void ax5043_set_registers(ax_config* config, ax_modulation* mod)
 
   ax_hw_write_register_8(0, AX_REG_DACCONFIG, 0x00);
   ax_hw_write_register_8(0, AX_REG_REF, 0x03);
-  /* ax_hw_write_register_8(0, AX_REG_XTALOSC, 0x04); */
-  /* ax_hw_write_register_8(0, AX_REG_XTALAMPL, 0x00); */
+
+
 
   ax_hw_write_register_8(0, 0xF1C, 0x07); /* const */
   ax_hw_write_register_8(0, 0xF21, 0x68); /* !! */
   ax_hw_write_register_8(0, 0xF22, 0xFF); /* !! */
   ax_hw_write_register_8(0, 0xF23, 0x84); /* !! */
   ax_hw_write_register_8(0, 0xF26, 0x98); /* !! */
-  /* ax_hw_write_register_8(0, 0xF34, 0x28); /\* done *\/ */
-  /* ax_hw_write_register_8(0, 0xF35, 0x10); /\* done *\/ */
-  ax_hw_write_register_8(0, 0xF44, 0x25); /* ?? */
+
+
+
+  ax_hw_write_register_8(0, 0xF44, 0x25); /* !! */
+  //ax_hw_write_register_8(0, 0xF44, 0x24); /* !! */
 }
 
 
@@ -1013,6 +1027,9 @@ void ax_tx_packet(ax_config* config, uint8_t* packet, uint16_t length)
 
   /* Ensure the SVMODEM bit (POWSTAT) is set high (See 3.1.1) */
   while (!(ax_hw_read_register_8(0, AX_REG_POWSTAT) & AX_POWSTAT_SVMODEM));
+
+  /* wait for space */
+  while (ax_hw_read_register_16(0, AX_REG_FIFOCOUNT) > 128);
 
   /* Write preamble and packet to the FIFO */
   ax_fifo_tx_data(packet, length);
