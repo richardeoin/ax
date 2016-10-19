@@ -1110,8 +1110,8 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
             /* print byte-by-byte */
             for (int i = 0; i < rx_chunk.chunk.data.length; i++) {
               debug_printf("data %d: 0x%02x %c\n", i,
-                           rx_chunk.chunk.data.data[i],
-                           rx_chunk.chunk.data.data[i]);
+                           rx_chunk.chunk.data.data[i+1],
+                           rx_chunk.chunk.data.data[i+1]);
             }
         }
       } else {
