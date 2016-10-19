@@ -35,8 +35,14 @@
 #include "ax_modes.h"
 
 
+#define SPI_CHANNEL	0           /* channel */
 #define SPI_SPEED	500000      /* 500kHz */
 
+
+void wiringpi_spi_transfer(unsigned char* data, uint8_t length)
+{
+  wiringPiSPIDataRW(SPI_CHANNEL, data, length);
+}
 
 
 int main()
@@ -57,6 +63,7 @@ int main()
   config.synthesiser.A.frequency = 434600000;
   config.synthesiser.B.frequency = 434600000;
 
+  config.spi_transfer = wiringpi_spi_transfer;
 
   ax_init(&config);
   //ax_tx_on(&config, &fsk1_modulation);

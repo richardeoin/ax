@@ -36,6 +36,7 @@ typedef enum ax_init_status {
   AX_INIT_PORT_FAILED,
   AX_INIT_BAD_SCRATCH,
   AX_INIT_BAD_REVISION,
+  AX_INIT_SET_SPI,
 } ax_init_status;
 
 /**
@@ -121,6 +122,9 @@ typedef struct ax_config {
   uint8_t f_xtaldiv;            /* xtal division factor, set automatically */
   void* (*tcxo_enable)(void);    /* function to enable tcxo */
   void* (*tcxo_disable)(void);   /* function to disable tcxo */
+
+  /* spi transfer */
+  void* (*spi_transfer)(unsigned char*, uint8_t);
 
   /* pll vco */
   uint32_t f_pllrng;
