@@ -29,56 +29,17 @@
 #include <stdint.h>
 
 /**
- * ax status field
+ * Initialisation Status
  */
-#define AX_STATUS_POWER_READY				(1 << 15)
-#define AX_STATUS_PLL_LOCK					(1 << 14)
-#define AX_STATUS_FIFO_OVERFLOW				(1 << 13)
-#define AX_STATUS_FIFO_UNDERFLOW			(1 << 12)
-#define AX_STATUS_THRESHOLD_FREE			(1 << 11)
-#define AX_STATUS_THRESHOLD_COUNT			(1 << 10)
-#define AX_STATUS_FIFO_FULL					(1 << 9)
-#define AX_STATUS_FIFO_EMPTY				(1 << 8)
-#define AX_STATUS_PWRGOOD					(1 << 7)
-#define AX_STATUS_PWR_INTERRUPT_PENDING		(1 << 6)
-#define AX_STATUS_RADIO_EVENT_PENDING		(1 << 5)
-#define AX_STATUS_XTAL_OSCILLATOR_RUNNING	(1 << 4)
-#define AX_STATUS_WAKEUP_INTERRUPT_PENDING	(1 << 3)
-#define AX_STATUS_LPOSC_INTERRUPT_PENDING	(1 << 2)
-#define AX_STATUS_GPADC_INTERRUPT_PENDING	(1 << 1)
+typedef enum ax_init_status {
+  AX_INIT_OK = 0,
+  AX_INIT_PORT_FAILED,
+  AX_INIT_BAD_SCRATCH,
+  AX_INIT_BAD_REVISION,
+} ax_init_status;
 
 /**
- * ax constants
- */
-#define AX_SILICONREVISION	0x51
-#define AX_SCRATCH			0xC5
-
-/* Which PLL */
-enum ax_pll {
-  AX_PLL_A,
-  AX_PLL_B
-};
-/* Clock source type */
-enum ax_clock_source_type {
-  AX_CLOCK_SOURCE_CRYSTAL,
-  AX_CLOCK_SOURCE_TCXO,
-};
-/* VCO type - See Datasheet Table 8. */
-enum ax_vco_type {
-  AX_VCO_INTERNAL = 0,
-  AX_VCO_INTERNAL_EXTERNAL_INDUCTOR,
-  AX_VCO_EXTERNAL,
-};
-/* Divider at the output of the VCO  */
-enum ax_rfdiv {
-  AX_RFDIV_UKNOWN = 0,
-  AX_RFDIV_0,
-  AX_RFDIV_1,
-};
-
-
-/**
- * represents the chosen modulation scheme
+ * Represents the chosen modulation scheme.
  */
 typedef struct ax_modulation {
   uint8_t modulation;           /* modulation */
@@ -104,9 +65,31 @@ typedef struct ax_modulation {
 
 } ax_modulation;
 
+/**
+ * CONFIG ----------------------------------------------------------------------
+ */
+
+/* Clock source type */
+enum ax_clock_source_type {
+  AX_CLOCK_SOURCE_CRYSTAL,
+  AX_CLOCK_SOURCE_TCXO,
+};
+/* VCO type - See Datasheet Table 8. */
+enum ax_vco_type {
+  AX_VCO_INTERNAL = 0,
+  AX_VCO_INTERNAL_EXTERNAL_INDUCTOR,
+  AX_VCO_EXTERNAL,
+};
+/* Divider at the output of the VCO  */
+enum ax_rfdiv {
+  AX_RFDIV_UKNOWN = 0,
+  AX_RFDIV_0,
+  AX_RFDIV_1,
+};
+
 
 /**
- * represents one of the two physical synthesisers
+ * Represents one of the two physical synthesisers.
  */
 typedef struct ax_synthesiser {
   uint32_t frequency;
@@ -118,7 +101,7 @@ typedef struct ax_synthesiser {
 
 
 /**
- *
+ * configuration
  */
 typedef struct ax_config {
   /* power mode */
@@ -147,14 +130,18 @@ typedef struct ax_config {
 } ax_config;
 
 
+/**
+ * FUNCTION PROTOTYPES ---------------------------------------------------------
+ */
+
+/* transmit */
 void ax_tx_on(ax_config* config, ax_modulation* mod);
 void ax_tx_packet(ax_config* config, uint8_t* packet, uint16_t length);
 
+/* receive */
 void ax_rx_on(ax_config* config, ax_modulation* mod);
 
-void ax_init(ax_config* config);
-
-uint8_t ax_silicon_revision(int channel);
-uint8_t ax_scratch(int channel);
+/* init */
+int ax_init(ax_config* config);
 
 #endif  /* AX_H */

@@ -28,16 +28,6 @@
 #include <stdint.h>
 #include "ax_fifo.h"
 
-/**
- * Initialisation Status
- */
-typedef enum ax_init_status {
-  AX_INIT_OK = 0,
-  AX_INIT_PORT_FAILED,
-  AX_INIT_BAD_SCRATCH,
-  AX_INIT_BAD_REVISION,
-} ax_init_status;
-
 uint8_t ax_hw_read_register_long_8(int channel, uint16_t reg);
 uint16_t ax_hw_write_register_long_8(int channel, uint16_t reg, uint8_t value);
 uint8_t ax_hw_read_register_8(int channel, uint16_t reg);
@@ -60,7 +50,5 @@ uint16_t ax_hw_read_fifo(int channel, uint8_t* buffer, uint16_t length);
 
 uint16_t ax_hw_status(void);
 uint16_t ax_hw_poll_status(void);
-
-int ax_hw_init(int channel);
 
 #endif  /* AX_HW_H */

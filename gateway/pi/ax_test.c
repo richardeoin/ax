@@ -26,14 +26,25 @@
 #include <unistd.h>
 #include <string.h>
 
+/* Wiring pi */
+#include <wiringPi.h>
+#include <wiringPiSPI.h>
+
 #include "ax.h"
 #include "ax_hw.h"
 #include "ax_modes.h"
 
+
+#define SPI_SPEED	500000      /* 500kHz */
+
+
+
 int main()
 {
-  ax_hw_init(0);
-  ax_hw_init(1);
+  if (wiringPiSPISetup(0, SPI_SPEED) < 0) {
+    fprintf(stderr, "Failed to open SPI port.  Try loading spi library with 'gpio load spi'");
+  }
+
 
   uint8_t pkt[0x100];
 

@@ -90,16 +90,24 @@ void ax_set_synthesiser_parameters(ax_synthesiser_parameters* params,
  */
 void ax_fifo_tx_data(uint8_t* data, uint8_t length)
 {
-  /* TODO wait for free space in the FIFO if needed */
-
   uint8_t header[5];
 
-  header[0] = AX_FIFO_CHUNK_DATA;
-  header[1] = length+1;         /* incl flags */
-  header[2] = AX_FIFO_TXDATA_PKTSTART |  AX_FIFO_TXDATA_PKTEND;
+  if (length < (256-3)) {       /* All in one go */
 
-  ax_hw_write_fifo(0, header, 3);
-  ax_hw_write_fifo(0, data, (uint8_t)length);
+    /* wait for space */
+    while (ax_hw_read_register_16(0, AX_REG_FIFOCOUNT) > (256-length));
+
+    /* header */
+    header[0] = AX_FIFO_CHUNK_DATA;
+    header[1] = length+1;         /* incl flags */
+    header[2] = AX_FIFO_TXDATA_PKTSTART |  AX_FIFO_TXDATA_PKTEND;
+
+    ax_hw_write_fifo(0, header, 3);
+    ax_hw_write_fifo(0, data, (uint8_t)length);
+
+  } else {
+    while(1);                   /* TODO longer packets */
+  }
 }
 /**
  * read rx data
@@ -109,7 +117,6 @@ uint16_t ax_fifo_rx_data(int channel, ax_rx_chunk* chunk)
   uint8_t ptr[3];
 
   uint8_t fifocount = ax_hw_read_register_16(channel, AX_REG_FIFOCOUNT);
-
   if (fifocount == 0) {
     return 0;                   /* nothing to read */
   }
@@ -131,34 +138,34 @@ uint16_t ax_fifo_rx_data(int channel, ax_rx_chunk* chunk)
                       chunk->chunk.data.length + 1);
 
       return 3 + chunk->chunk.data.length;
-                                /* RSSI */
+      /* RSSI */
     case AX_FIFO_CHUNK_RSSI:
       chunk->chunk.rssi = ax_hw_read_register_8(channel, AX_REG_FIFODATA);
       return 2;
-                                /* FREQOFFS */
+      /* FREQOFFS */
     case AX_FIFO_CHUNK_FREQOFFS:
       chunk->chunk.freqoffs = ax_hw_read_register_16(channel, AX_REG_FIFODATA);
       return 2;
-                                /* ANTRSSI 2 */
+      /* ANTRSSI 2 */
     case AX_FIFO_CHUNK_ANTRSSI2:
       ax_hw_read_register_bytes(channel, AX_REG_FIFODATA, ptr, 2);
 
       chunk->chunk.antrssi2.rssi      = ptr[0];
       chunk->chunk.antrssi2.bgndnoise = ptr[1];
       return 3;
-                                /* TIMER */
+      /* TIMER */
     case AX_FIFO_CHUNK_TIMER:
       chunk->chunk.timer = ax_hw_read_register_24(channel, AX_REG_FIFODATA);
       return 4;
-                                /* RFFREQOFFS */
+      /* RFFREQOFFS */
     case AX_FIFO_CHUNK_RFFREQOFFS:
       chunk->chunk.rffreqoffs = ax_hw_read_register_24(channel, AX_REG_FIFODATA);
       return 4;
-                                /* DATARATE */
+      /* DATARATE */
     case AX_FIFO_CHUNK_DATARATE:
       chunk->chunk.datarate = ax_hw_read_register_24(channel, AX_REG_FIFODATA);
       return 4;
-                                /* ANTRSSI3 */
+      /* ANTRSSI3 */
     case AX_FIFO_CHUNK_ANTRSSI3:
       ax_hw_read_register_bytes(channel, AX_REG_FIFODATA, ptr, 3);
 
@@ -166,7 +173,7 @@ uint16_t ax_fifo_rx_data(int channel, ax_rx_chunk* chunk)
       chunk->chunk.antrssi3.ant1rssi  = ptr[1];
       chunk->chunk.antrssi3.bgndnoise = ptr[2];
       return 4;
-                                /* default */
+      /* default */
     default:
       return 1;
   }
@@ -193,6 +200,21 @@ void ax_fifo_commit(void)
 /**
  * UTILITY FUNCTIONS ----------------------------------------
  */
+
+/**
+ * 5.1 revision and interface probing
+ */
+uint8_t ax_silicon_revision(int channel)
+{
+  return ax_hw_read_register_8(channel, AX_REG_SILICONREVISION);
+}
+/**
+ * 5.1 revision and interface probing
+ */
+uint8_t ax_scratch(int channel)
+{
+  return ax_hw_read_register_8(channel, AX_REG_SCRATCH);
+}
 
 /**
  * 5.2 set operating mode
@@ -1032,9 +1054,6 @@ void ax_tx_packet(ax_config* config, uint8_t* packet, uint16_t length)
   /* Ensure the SVMODEM bit (POWSTAT) is set high (See 3.1.1) */
   while (!(ax_hw_read_register_8(0, AX_REG_POWSTAT) & AX_POWSTAT_SVMODEM));
 
-  /* wait for space */
-  while (ax_hw_read_register_16(0, AX_REG_FIFOCOUNT) > 128);
-
   /* Write preamble and packet to the FIFO */
   ax_fifo_tx_data(packet, length);
 
@@ -1070,18 +1089,21 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
     /* Check if FIFO is not empty */
     if (ax_fifo_rx_data(0, &rx_chunk)) {
 
-      /* Got something */
+      /* Got something from FIFO */
       if (rx_chunk.chunk_t == AX_FIFO_CHUNK_DATA) {
 
         debug_printf("flags 0x%02x\n", rx_chunk.chunk.data.flags);
         debug_printf("length %d\n", rx_chunk.chunk.data.length);
 
-        for (int i = 0; i < rx_chunk.chunk.data.length; i++) {
-          debug_printf("data %d: 0x%02x %c\n", i,
-                       rx_chunk.chunk.data.data[i],
-                       rx_chunk.chunk.data.data[i]);
+        switch (mod->framing & 0x7) {
+          default:              /* anything else, unsure */
+            /* print byte-by-byte */
+            for (int i = 0; i < rx_chunk.chunk.data.length; i++) {
+              debug_printf("data %d: 0x%02x %c\n", i,
+                           rx_chunk.chunk.data.data[i],
+                           rx_chunk.chunk.data.data[i]);
+            }
         }
-
       } else {
         debug_printf("some other chunk type 0x%02x\n", rx_chunk.chunk_t);
       }
@@ -1105,10 +1127,37 @@ void ax_off(ax_config* config)
 }
 
 /**
- * First attempt at Initialisation
+ * Initialise radio.
+ *
+ * * reset
+ * * check SPI interface functions
+ * * range VCOs
  */
-void ax_init(ax_config* config)
+int ax_init(ax_config* config)
 {
+  int channel = 0;
+
+  /* Scratch */
+  uint8_t scratch = ax_scratch(channel);
+  debug_printf("Scratch 0x%X\n", scratch);
+
+  if (scratch != AX_SCRATCH) {
+   debug_printf("Bad scratch value.\n");
+
+    return AX_INIT_BAD_SCRATCH;
+  }
+
+  /* Revision */
+  uint8_t silicon_revision = ax_silicon_revision(channel);
+  debug_printf("Silcon Revision 0x%X\n", silicon_revision);
+
+  if (silicon_revision != AX_SILICONREVISION) {
+    debug_printf("Bad Silcon Revision value.\n");
+
+    return AX_INIT_BAD_REVISION;
+  }
+
+
   //config.max_delta_carrier = 870; // 2ppm TODO ppm calculations
 
   /* Reset the chip */
@@ -1130,19 +1179,7 @@ void ax_init(ax_config* config)
 
   /* Perform auto-ranging for both VCOs */
   ax_vco_ranging(config);
-}
 
-/**
- * Read silicon revision register
- */
-uint8_t ax_silicon_revision(int channel)
-{
-  return ax_hw_read_register_8(channel, AX_REG_SILICONREVISION);
-}
-/**
- * Read scratch register
- */
-uint8_t ax_scratch(int channel)
-{
-  return ax_hw_read_register_8(channel, AX_REG_SCRATCH);
+
+  return AX_INIT_OK;
 }

@@ -26,6 +26,38 @@
  * See AND9347-D-AX5043 Programming Manual.PDF
  */
 
+/**
+ * Status field
+ */
+#define AX_STATUS_POWER_READY				(1 << 15)
+#define AX_STATUS_PLL_LOCK					(1 << 14)
+#define AX_STATUS_FIFO_OVERFLOW				(1 << 13)
+#define AX_STATUS_FIFO_UNDERFLOW			(1 << 12)
+#define AX_STATUS_THRESHOLD_FREE			(1 << 11)
+#define AX_STATUS_THRESHOLD_COUNT			(1 << 10)
+#define AX_STATUS_FIFO_FULL					(1 << 9)
+#define AX_STATUS_FIFO_EMPTY				(1 << 8)
+#define AX_STATUS_PWRGOOD					(1 << 7)
+#define AX_STATUS_PWR_INTERRUPT_PENDING		(1 << 6)
+#define AX_STATUS_RADIO_EVENT_PENDING		(1 << 5)
+#define AX_STATUS_XTAL_OSCILLATOR_RUNNING	(1 << 4)
+#define AX_STATUS_WAKEUP_INTERRUPT_PENDING	(1 << 3)
+#define AX_STATUS_LPOSC_INTERRUPT_PENDING	(1 << 2)
+#define AX_STATUS_GPADC_INTERRUPT_PENDING	(1 << 1)
+
+/**
+ * Revision
+ */
+#define AX_SILICONREVISION	0x51
+
+/**
+ * Scratch
+ */
+#define AX_SCRATCH			0xC5
+
+/**
+ * Power Mode
+ */
 #define AX_PWRMODE_POWERDOWN	0  /* 400nA */
 #define AX_PWRMODE_DEEPSLEEP	1  /* 50nA */
 #define AX_PWRMODE_STANDBY	5  /* 230µA */

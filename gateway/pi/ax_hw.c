@@ -37,8 +37,6 @@
 #include "ax_reg.h"
 #include "ax_fifo.h"
 
-#define SPI_SPEED	500000      /* 500kHz */
-
 /* Current status */
 uint16_t status = 0;
 
@@ -280,39 +278,4 @@ uint16_t ax_hw_status(void)
 uint16_t ax_hw_poll_status(void)
 {
   return 0;
-}
-
-/**
- * Attempts to initialise the ax hardware
- *
- * Returns 1 on success, 0 otherwise
- */
-int ax_hw_init(int channel)
-{
-  if (wiringPiSPISetup(channel, SPI_SPEED) < 0) {
-    fprintf(stderr, "Failed to open SPI port.  Try loading spi library with 'gpio load spi'");
-    return AX_INIT_PORT_FAILED;
-  }
-
-  /* Scratch */
-  uint8_t scratch = ax_scratch(channel);
-  printf("Scratch 0x%X\n", scratch);
-
-  if (scratch != AX_SCRATCH) {
-    printf("Bad scratch value.\n");
-
-    return AX_INIT_BAD_SCRATCH;
-  }
-
-  /* Revision */
-  uint8_t silicon_revision = ax_silicon_revision(channel);
-  printf("Silcon Revision 0x%X\n", silicon_revision);
-
-  if (silicon_revision != AX_SILICONREVISION) {
-    printf("Bad Silcon Revision value.\n");
-
-    return AX_INIT_BAD_REVISION;
-  }
-
-  return AX_INIT_OK;
 }
