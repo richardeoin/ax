@@ -243,7 +243,7 @@ uint16_t ax_hw_write_fifo(int channel, uint8_t* buffer, uint16_t length)
   wiringPiSPIDataRW(channel, data, length+1);
 
   status &= 0xFF;
-  status |= ((uint16_t)buffer[0] << 8);
+  status |= ((uint16_t)data[0] << 8);
 
   return status;
 }
