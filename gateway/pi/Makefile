@@ -24,7 +24,7 @@ TR		:= tr
 #
 # Display all warnings
 #
-CFLAGS  += -g3 -ggdb -std=c99 -Wall -Wextra -pthread
+CFLAGS  += -g3 -ggdb -std=c99 -Wall -Wextra -pthread -I. -I..
 LDFLAGS += -g3 -ggdb -Wall -Wextra
 
 # Source files
@@ -35,7 +35,7 @@ SOURCES		= $(shell $(FIND) . -name '*.c')
 INCLUDES	= $(shell $(FIND) . -name '*.h')
 
 # Object files
-objects		= ax.o ax_hw.o ax_test.o ax_modes.o
+objects		= ax/ax.o ax/ax_hw.o ax/ax_modes.o ax_test.o
 OBJECTS		= $(addprefix $(OUTPUT_PATH),$(objects))
 
 # Assemble a list of c and h files that are used in this project

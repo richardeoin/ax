@@ -31,12 +31,12 @@
 #include <math.h>
 #endif
 
-#include "ax.h"
-#include "ax_hw.h"
-#include "ax_reg.h"
-#include "ax_reg_values.h"
-#include "ax_fifo.h"
-#include "ax_modes.h"
+#include "ax/ax.h"
+#include "ax/ax_hw.h"
+#include "ax/ax_reg.h"
+#include "ax/ax_reg_values.h"
+#include "ax/ax_fifo.h"
+#include "ax/ax_modes.h"
 
 #define TCXO 1
 

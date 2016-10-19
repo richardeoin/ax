@@ -30,9 +30,9 @@
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 
-#include "ax.h"
-#include "ax_hw.h"
-#include "ax_modes.h"
+#include "ax/ax.h"
+#include "ax/ax_hw.h"
+#include "ax/ax_modes.h"
 
 
 #define SPI_CHANNEL	0           /* channel */
@@ -42,6 +42,10 @@
 void wiringpi_spi_transfer(unsigned char* data, uint8_t length)
 {
   wiringPiSPIDataRW(SPI_CHANNEL, data, length);
+}
+void rx_callback(unsigned char* data, uint8_t length)
+{
+  printf("Rx: %s\n", (char*)data);
 }
 
 

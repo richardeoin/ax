@@ -22,45 +22,16 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "ax.h"
-#include "ax_reg_values.h"
+#ifndef AX_MODES
+#define AX_MODES
 
-/**
- * Each struct represents a useful mode
- */
+#include "ax/ax.h"
 
 /* FSK test */
-struct ax_modulation fsk1_modulation = {
-  .modulation = AX_MODULATION_FSK,
-  .encoding = AX_ENC_NRZ,
-  .framing = AX_FRAMING_MODE_HDLC | AX_FRAMING_CRCMODE_CCITT,
-  .bitrate = 2000,
-  .fec = 1,
-  .power = 0.1,
-  .parameters = { .fsk = { .modulation_index = 2.0/3 }},
-};
-
-
-/* PSK test - TODO FSKDEV register for PSK mode??? */
-struct ax_modulation psk1_modulation = {
-  .modulation = AX_MODULATION_PSK,
-  .encoding = AX_ENC_NRZI,
-  .framing = AX_FRAMING_MODE_HDLC | AX_FRAMING_CRCMODE_CCITT,
-  .bitrate = 2000,
-  .fec = 0,
-  .power = 0.1,
-  .parameters = { .fsk = { .modulation_index = 2.0/3 }},
-};
-
-
+extern struct ax_modulation fsk1_modulation;
+/* PSK test */
+extern struct ax_modulation psk1_modulation;
 /* APRS */
-struct ax_modulation aprs_modulation = {
-  .modulation = AX_MODULATION_AFSK,
-  .encoding = AX_ENC_NRZI,
-  .framing = AX_FRAMING_MODE_HDLC, /* also crc?? */
-  .bitrate = 1200,
-  .fec = 0,
-  .power = 1.0,
-  .parameters = { .afsk = {
-      .space = 1200, .mark = 2200, .deviation = 3000 }},
-};
+extern struct ax_modulation aprs_modulation;
+
+#endif /* AX_MODES */

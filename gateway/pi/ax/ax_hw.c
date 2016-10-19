@@ -28,10 +28,10 @@
 
 #include <stdio.h>
 
-#include "ax.h"
-#include "ax_hw.h"
-#include "ax_reg.h"
-#include "ax_fifo.h"
+#include "ax/ax.h"
+#include "ax/ax_hw.h"
+#include "ax/ax_reg.h"
+#include "ax/ax_fifo.h"
 
 /* Current status */
 uint16_t status = 0;
