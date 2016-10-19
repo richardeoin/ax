@@ -33,10 +33,10 @@
 struct ax_modulation fsk1_modulation = {
   .modulation = AX_MODULATION_FSK,
   .encoding = AX_ENC_NRZ,
-  .framing = AX_FRAMING_MODE_RAW,
+  .framing = AX_FRAMING_MODE_HDLC | AX_FRAMING_CRCMODE_CCITT,
   .bitrate = 2000,
-  .fec = 0,
-  .power = 1.0,
+  .fec = 1,
+  .power = 0.1,
   .parameters = { .fsk = { .modulation_index = 2.0/3 }},
 };
 
@@ -44,11 +44,11 @@ struct ax_modulation fsk1_modulation = {
 /* PSK test - TODO FSKDEV register for PSK mode??? */
 struct ax_modulation psk1_modulation = {
   .modulation = AX_MODULATION_PSK,
-  .encoding = AX_ENC_NRZ,
-  .framing = AX_FRAMING_MODE_RAW,
+  .encoding = AX_ENC_NRZI,
+  .framing = AX_FRAMING_MODE_HDLC | AX_FRAMING_CRCMODE_CCITT,
   .bitrate = 2000,
   .fec = 0,
-  .power = 1.0,
+  .power = 0.1,
   .parameters = { .fsk = { .modulation_index = 2.0/3 }},
 };
 

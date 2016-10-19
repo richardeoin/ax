@@ -108,9 +108,13 @@ uint16_t ax_fifo_rx_data(int channel, ax_rx_chunk* chunk)
 {
   uint8_t ptr[3];
 
-  if (ax_hw_read_register_16(channel, AX_REG_FIFOCOUNT) == 0) {
+  uint8_t fifocount = ax_hw_read_register_16(channel, AX_REG_FIFOCOUNT);
+
+  if (fifocount == 0) {
     return 0;                   /* nothing to read */
   }
+
+  debug_printf("got something. fifocount = %d\n", fifocount);
 
   chunk->chunk_t = ax_hw_read_register_8(channel, AX_REG_FIFODATA);
 
@@ -719,7 +723,7 @@ void ax_set_packet_controller_parameters()
 
   /* accept multiple chunks */
   ax_hw_write_register_8(0, AX_REG_PKTACCEPTFLAGS,
-                         AX_PKT_ACCEPT_MULTIPLE_CHUNKS);
+                         0x3F);  //ALL!!! //AX_PKT_ACCEPT_MULTIPLE_CHUNKS);
 }
 
 
@@ -1052,6 +1056,7 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
   /* Meta-data can be automatically added to FIFO, see PKTSTOREFLAGS */
 
   /* Place chip in FULLRX mode */
+  ax5043_set_registers(config, mod);
   ax_set_pwrmode(config, AX_PWRMODE_FULLRX);
 
   ax5043_set_registers_rx(config);    /* set rx registers??? */
@@ -1067,6 +1072,9 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
 
       /* Got something */
       if (rx_chunk.chunk_t == AX_FIFO_CHUNK_DATA) {
+
+        debug_printf("flags 0x%02x\n", rx_chunk.chunk.data.flags);
+        debug_printf("length %d\n", rx_chunk.chunk.data.length);
 
         for (int i = 0; i < rx_chunk.chunk.data.length; i++) {
           debug_printf("data %d: 0x%02x %c\n", i,

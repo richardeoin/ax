@@ -48,13 +48,14 @@ int main()
 
 
   ax_init(&config);
-  ax_tx_on(&config, &psk1_modulation);
+  //ax_tx_on(&config, &fsk1_modulation);
+  ax_rx_on(&config, &fsk1_modulation);
 
   while (1) {
-    sleep(1);
+    //sleep(1);
 
-    strcpy((char*)pkt, "-hello");
-    ax_tx_packet(&config, pkt, 5);
+    strcpy((char*)pkt, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+    ax_tx_packet(&config, pkt, 40);
   }
 
   return 0;

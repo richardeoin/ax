@@ -150,6 +150,8 @@ typedef struct ax_config {
 void ax_tx_on(ax_config* config, ax_modulation* mod);
 void ax_tx_packet(ax_config* config, uint8_t* packet, uint16_t length);
 
+void ax_rx_on(ax_config* config, ax_modulation* mod);
+
 void ax_init(ax_config* config);
 
 uint8_t ax_silicon_revision(int channel);
