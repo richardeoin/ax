@@ -36,7 +36,7 @@
 
 
 #define SPI_CHANNEL	0           /* channel */
-#define SPI_SPEED	500000      /* 500kHz */
+#define SPI_SPEED	5000000     /* 5MHz */
 
 
 void wiringpi_spi_transfer(unsigned char* data, uint8_t length)
