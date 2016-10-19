@@ -95,16 +95,8 @@ void ax_fifo_tx_data(uint8_t* data, uint8_t length)
   uint8_t header[5];
 
   header[0] = AX_FIFO_CHUNK_DATA;
-  header[1] = 2+1;              /* incl flags */
-  header[2] = AX_FIFO_TXDATA_PKTSTART | AX_FIFO_TXDATA_UNENC;
-  header[3] = 0x7E;
-  header[4] = 0x7E;             /* preamble */
-
-  ax_hw_write_fifo(0, header, 5);
-
-  header[0] = AX_FIFO_CHUNK_DATA;
   header[1] = length+1;         /* incl flags */
-  header[2] = AX_FIFO_TXDATA_PKTEND;
+  header[2] = AX_FIFO_TXDATA_PKTSTART |  AX_FIFO_TXDATA_PKTEND;
 
   ax_hw_write_fifo(0, header, 3);
   ax_hw_write_fifo(0, data, (uint8_t)length);
