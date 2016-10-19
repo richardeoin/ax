@@ -989,6 +989,7 @@ void ax_vco_ranging(ax_config* config)
   debug_printf("starting vco ranging...\n");
 
   /* Enable TCXO if used */
+  if (config->tcxo_enable) { config->tcxo_enable(); }
 
   /* Set PWRMODE to STANDBY */
   ax_set_pwrmode(config, AX_PWRMODE_STANDBY);
@@ -1014,6 +1015,7 @@ void ax_vco_ranging(ax_config* config)
   ax_set_pwrmode(config, AX_PWRMODE_POWERDOWN);
 
   /* Disable TCXO if used */
+  if (config->tcxo_disable) { config->tcxo_disable(); }
 }
 
 /**
@@ -1027,10 +1029,11 @@ void ax_tx_on(ax_config* config, ax_modulation* mod)
   ax5043_set_registers(config, mod);
   ax5043_set_registers_tx(config);    /* set tx registers??? */
 
+  /* Enable TCXO if used */
+  if (config->tcxo_enable) { config->tcxo_enable(); }
+
   /* Place chip in FULLTX mode */
   ax_set_pwrmode(config, AX_PWRMODE_FULLTX);
-
-  /* Enable TCXO if used */
 
   /* Wait for oscillator to start running  */
   ax_wait_for_oscillator();
@@ -1039,6 +1042,7 @@ void ax_tx_on(ax_config* config, ax_modulation* mod)
   //ax_set_pwrmode(AX_PWRMODE_DEEPSLEEP);
 
   /* Disable TCXO if used */
+  if (config->tcxo_disable) { config->tcxo_disable(); }
 }
 
 /**
@@ -1081,6 +1085,7 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
   ax5043_set_registers_rx(config);    /* set rx registers??? */
 
   /* Enable TCXO if used */
+  if (config->tcxo_enable) { config->tcxo_enable(); }
 
   /* Clear FIFO */
   ax_fifo_clear();
@@ -1109,6 +1114,9 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
       }
     }
   }
+
+  /* Disable TCXO if used */
+  if (config->tcxo_disable) { config->tcxo_disable(); }
 }
 
 /**

@@ -119,7 +119,8 @@ typedef struct ax_config {
   uint16_t load_capacitance;    /* if crystal, load capacitance to be applied (pF) */
   uint32_t error_ppm;           /* max. error of clock source, ppm */
   uint8_t f_xtaldiv;            /* xtal division factor, set automatically */
-
+  void* (*tcxo_enable)(void);    /* function to enable tcxo */
+  void* (*tcxo_disable)(void);   /* function to disable tcxo */
 
   /* pll vco */
   uint32_t f_pllrng;
