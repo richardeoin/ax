@@ -71,7 +71,7 @@ typedef struct ax_rx_chunk {
       uint8_t bgndnoise;
     } antrssi2;
     uint32_t timer;
-    uint32_t rffreqoffs;
+    int32_t rffreqoffs;
     uint32_t datarate;
     struct {
       uint8_t ant0rssi;

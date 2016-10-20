@@ -70,7 +70,8 @@ int main()
 
   config.spi_transfer = wiringpi_spi_transfer;
 
-  config.pkt_store_flags = AX_PKT_STORE_RSSI;
+  config.pkt_store_flags = AX_PKT_STORE_RSSI |
+    AX_PKT_STORE_RF_OFFSET;
 
   ax_init(&config);
   //ax_tx_on(&config, &fsk1_modulation);

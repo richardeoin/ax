@@ -116,6 +116,7 @@ void ax_fifo_tx_data(ax_config* config, uint8_t* data, uint8_t length)
 uint16_t ax_fifo_rx_data(ax_config* config, ax_rx_chunk* chunk)
 {
   uint8_t ptr[3];
+  uint32_t scratch;
 
   uint8_t fifocount = ax_hw_read_register_16(config, AX_REG_FIFOCOUNT);
   if (fifocount == 0) {
@@ -161,7 +162,10 @@ uint16_t ax_fifo_rx_data(ax_config* config, ax_rx_chunk* chunk)
       return 4;
       /* RFFREQOFFS */
     case AX_FIFO_CHUNK_RFFREQOFFS:
-      chunk->chunk.rffreqoffs = ax_hw_read_register_24(config, AX_REG_FIFODATA);
+      scratch = ax_hw_read_register_24(config, AX_REG_FIFODATA);
+      /* sign extend 24 -> 32 */
+      chunk->chunk.rffreqoffs = (scratch & 0x800000) ?
+        (0xFF000000 | scratch) : scratch;
       return 4;
       /* DATARATE */
     case AX_FIFO_CHUNK_DATARATE:
@@ -1083,8 +1087,10 @@ void ax_tx_packet(ax_config* config, uint8_t* packet, uint16_t length)
 void ax_rx_on(ax_config* config, ax_modulation* mod)
 {
   ax_rx_chunk rx_chunk;
+  float offset;
 
   /* TODO set defaults in modulation structure  */
+  mod->max_delta_carrier = 2*870; // 2*2ppm TODO ppm calculations
 
   /* Meta-data can be automatically added to FIFO, see PKTSTOREFLAGS */
 
@@ -1125,6 +1131,15 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
 
         case AX_FIFO_CHUNK_RSSI:
           debug_printf("rssi %d dB\n", rx_chunk.chunk.rssi);
+          break;
+
+        case AX_FIFO_CHUNK_RFFREQOFFS:
+          debug_printf("rf offset %d \n", rx_chunk.chunk.rffreqoffs);
+          break;
+
+        case AX_FIFO_CHUNK_FREQOFFS:
+          offset = rx_chunk.chunk.freqoffs * 2000;
+          debug_printf("freq offset %f \n", offset / (1 << 16));
           break;
 
         default:
@@ -1188,7 +1203,6 @@ int ax_init(ax_config* config)
   }
 
 
-  //config.max_delta_carrier = 870; // 2ppm TODO ppm calculations
 
   /* Reset the chip */
 
