@@ -32,10 +32,10 @@
 /* FSK test */
 struct ax_modulation fsk1_modulation = {
   .modulation = AX_MODULATION_FSK,
-  .encoding = AX_ENC_NRZ,
+  .encoding = AX_ENC_NRZI,
   .framing = AX_FRAMING_MODE_HDLC | AX_FRAMING_CRCMODE_CCITT,
   .bitrate = 2000,
-  .fec = 1,
+  .fec = 0,
   .power = 0.1,
   .parameters = { .fsk = { .modulation_index = 2.0/3 }},
 };
