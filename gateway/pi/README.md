@@ -58,3 +58,9 @@ uses wiring pi
 #### `ax_off(ax_config* config)`
 
 * switch to POWERDOWN/DEEPSLEEP mode
+
+## Notes
+
+In HDLC mode, bit stuffing seems to affect the AFC loop. In particular
+the value of TRK RF FREQ is affected. If the AFC loop is disabled (MAX
+RF OFFSET = 0) then the receiver will struggle with bit-stuffed packets.

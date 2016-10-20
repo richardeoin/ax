@@ -1134,7 +1134,7 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
           break;
 
         case AX_FIFO_CHUNK_RFFREQOFFS:
-          debug_printf("rf offset %d \n", rx_chunk.chunk.rffreqoffs);
+          debug_printf("rf offset %d Hz\n", rx_chunk.chunk.rffreqoffs);
           break;
 
         case AX_FIFO_CHUNK_FREQOFFS:
