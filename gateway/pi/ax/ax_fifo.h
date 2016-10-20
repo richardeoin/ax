@@ -64,7 +64,7 @@ typedef struct ax_rx_chunk {
       uint16_t length;
       uint8_t data[0x100];
     } data;
-    uint8_t rssi;
+    int16_t rssi;
     uint16_t freqoffs;
     struct {
       uint8_t rssi;

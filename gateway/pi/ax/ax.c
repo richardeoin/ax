@@ -141,7 +141,8 @@ uint16_t ax_fifo_rx_data(ax_config* config, ax_rx_chunk* chunk)
       return 3 + chunk->chunk.data.length;
       /* RSSI */
     case AX_FIFO_CHUNK_RSSI:
-      chunk->chunk.rssi = ax_hw_read_register_8(config, AX_REG_FIFODATA);
+      /* 8-bit register value is always negative */
+      chunk->chunk.rssi = 0xFF00 | ax_hw_read_register_8(config, AX_REG_FIFODATA);
       return 2;
       /* FREQOFFS */
     case AX_FIFO_CHUNK_FREQOFFS:
@@ -745,6 +746,10 @@ void ax_set_packet_controller_parameters(ax_config* config)
   ax_hw_write_register_8(config, AX_REG_PKTCHUNKSIZE,
                          AX_PKT_MAXIMUM_CHUNK_SIZE_240_BYTES);
 
+  /* metadata to store */
+  ax_hw_write_register_8(config, AX_REG_PKTSTOREFLAGS,
+                         config->pkt_store_flags);
+
   /* accept multiple chunks */
   ax_hw_write_register_8(config, AX_REG_PKTACCEPTFLAGS,
                          0x3F);  //ALL!!! //AX_PKT_ACCEPT_MULTIPLE_CHUNKS);
@@ -1100,22 +1105,31 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
     if (ax_fifo_rx_data(config, &rx_chunk)) {
 
       /* Got something from FIFO */
-      if (rx_chunk.chunk_t == AX_FIFO_CHUNK_DATA) {
+      switch (rx_chunk.chunk_t) {
+        case AX_FIFO_CHUNK_DATA:
 
-        debug_printf("flags 0x%02x\n", rx_chunk.chunk.data.flags);
-        debug_printf("length %d\n", rx_chunk.chunk.data.length);
+          debug_printf("flags 0x%02x\n", rx_chunk.chunk.data.flags);
+          debug_printf("length %d\n", rx_chunk.chunk.data.length);
 
-        switch (mod->framing & 0x7) {
-          default:              /* anything else, unsure */
-            /* print byte-by-byte */
-            for (int i = 0; i < rx_chunk.chunk.data.length; i++) {
-              debug_printf("data %d: 0x%02x %c\n", i,
-                           rx_chunk.chunk.data.data[i+1],
-                           rx_chunk.chunk.data.data[i+1]);
-            }
-        }
-      } else {
-        debug_printf("some other chunk type 0x%02x\n", rx_chunk.chunk_t);
+          switch (mod->framing & 0x7) {
+            default:              /* anything else, unsure */
+              /* print byte-by-byte */
+              for (int i = 0; i < rx_chunk.chunk.data.length; i++) {
+                debug_printf("data %d: 0x%02x %c\n", i,
+                             rx_chunk.chunk.data.data[i+1],
+                             rx_chunk.chunk.data.data[i+1]);
+              }
+          }
+
+          break;
+
+        case AX_FIFO_CHUNK_RSSI:
+          debug_printf("rssi %d dB\n", rx_chunk.chunk.rssi);
+          break;
+
+        default:
+          debug_printf("some other chunk type 0x%02x\n", rx_chunk.chunk_t);
+          break;
       }
     }
   }
@@ -1158,7 +1172,7 @@ int ax_init(ax_config* config)
   debug_printf("Scratch 0x%X\n", scratch);
 
   if (scratch != AX_SCRATCH) {
-   debug_printf("Bad scratch value.\n");
+    debug_printf("Bad scratch value.\n");
 
     return AX_INIT_BAD_SCRATCH;
   }

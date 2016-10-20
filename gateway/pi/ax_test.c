@@ -33,6 +33,7 @@
 #include "ax/ax.h"
 #include "ax/ax_hw.h"
 #include "ax/ax_modes.h"
+#include "ax/ax_reg_values.h"
 
 
 #define SPI_CHANNEL	0           /* channel */
@@ -68,6 +69,8 @@ int main()
   config.synthesiser.B.frequency = 434600000;
 
   config.spi_transfer = wiringpi_spi_transfer;
+
+  config.pkt_store_flags = AX_PKT_STORE_RSSI;
 
   ax_init(&config);
   //ax_tx_on(&config, &fsk1_modulation);
