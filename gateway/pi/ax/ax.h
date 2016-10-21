@@ -64,6 +64,9 @@ typedef struct ax_modulation {
   uint32_t max_delta_carrier;   /* max. delta from carrier centre, autoset if 0 */
   /* larger increases the time for the AFC to achieve lock */
 
+  uint8_t decimation;           /* set automatically */
+  uint32_t rxdatarate;          /* set automatically */
+
 } ax_modulation;
 
 /**
@@ -134,7 +137,7 @@ typedef struct ax_config {
   uint32_t f_pllrng;
 
   /* rx parameters */
-  uint8_t decimation;
+
 
 } ax_config;
 

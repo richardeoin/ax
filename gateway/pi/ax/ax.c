@@ -37,6 +37,7 @@
 #include "ax/ax_reg_values.h"
 #include "ax/ax_fifo.h"
 #include "ax/ax_modes.h"
+#include "ax/ax_calc.h"
 
 #define TCXO 1
 
@@ -360,7 +361,7 @@ void ax_set_afsk_rx_parameters(ax_config* config, ax_modulation* mod)
 
   /* Mark */
   afskmark = (uint16_t)((((float)mark * (1 << 16) *
-                          config->decimation * config->f_xtaldiv) /
+                          mod->decimation * config->f_xtaldiv) /
                          (float)config->f_xtal) + 0.5);
   ax_hw_write_register_16(config, AX_REG_AFSKMARK, afskmark);
 
@@ -368,7 +369,7 @@ void ax_set_afsk_rx_parameters(ax_config* config, ax_modulation* mod)
 
   /* Space */
   afskspace = (uint16_t)((((float)space * (1 << 16) *
-                           config->decimation * config->f_xtaldiv) /
+                           mod->decimation * config->f_xtaldiv) /
                           (float)config->f_xtal) + 0.5);
   ax_hw_write_register_16(config, AX_REG_AFSKSPACE, afskspace);
 
@@ -376,7 +377,7 @@ void ax_set_afsk_rx_parameters(ax_config* config, ax_modulation* mod)
 
   /* Detector Bandwidth */
   float bw = (float)config->f_xtal /
-    (32 * mod->bitrate * config->f_xtaldiv * config->decimation);
+    (32 * mod->bitrate * config->f_xtaldiv * mod->decimation);
 
 #ifdef USE_MATH_H
   afskshift = (uint8_t)(2 * log2(bw));
@@ -394,7 +395,7 @@ void ax_set_afsk_rx_parameters(ax_config* config, ax_modulation* mod)
  */
 void ax_set_rx_parameters(ax_config* config, ax_modulation* mod)
 {
-  uint32_t rxdatarate, maxrfoffset;
+  uint32_t maxrfoffset;
   uint32_t rx_bandwidth;
   uint32_t if_frequency, iffreq;
   uint32_t f_baseband, decimation;
@@ -476,18 +477,18 @@ void ax_set_rx_parameters(ax_config* config, ax_modulation* mod)
     decimation = 127;
     debug_printf("decimation capped at 127(!)\n");
   }
-  config->decimation = decimation;
-  ax_hw_write_register_8(config, AX_REG_DECIMATION, config->decimation);
+  mod->decimation = decimation;
+  ax_hw_write_register_8(config, AX_REG_DECIMATION, mod->decimation);
   debug_printf("decimation = %d\n", decimation);
 
 
   /* RX Data Rate */
-  rxdatarate = (uint32_t)((((float)config->f_xtal * 128) /
-                           ((float)config->f_xtaldiv * mod->bitrate *
-                            config->decimation)) + 0.5);
-  ax_hw_write_register_24(config, AX_REG_RXDATARATE, rxdatarate);
+  mod->rxdatarate = (uint32_t)((((float)config->f_xtal * 128) /
+                                ((float)config->f_xtaldiv * mod->bitrate *
+                                 mod->decimation)) + 0.5);
+  ax_hw_write_register_24(config, AX_REG_RXDATARATE, mod->rxdatarate);
 
-  debug_printf("rx data rate %d = 0x%04x\n", mod->bitrate, rxdatarate);
+  debug_printf("rx data rate %d = 0x%04x\n", mod->bitrate, mod->rxdatarate);
 
 
   /* Max Data Rate offset */
@@ -513,7 +514,7 @@ void ax_set_rx_parameters(ax_config* config, ax_modulation* mod)
       fskd &= ~1;               /* clear LSB */
       ax_hw_write_register_16(config, AX_REG_FSKDMAX,  fskd & 0xFFFF);
       ax_hw_write_register_16(config, AX_REG_FSKDMIN, ~fskd & 0xFFFF);
-      //debug_printf("min fsk demod dev 0x%04x\n", ~fskd & 0xFFFF);
+      debug_printf("min fsk demod dev 0x%04x\n", ~fskd & 0xFFFF);
       break;
   }
 
@@ -522,55 +523,146 @@ void ax_set_rx_parameters(ax_config* config, ax_modulation* mod)
 }
 
 /**
- * Work in progress
+ * 5.15 Rx Parameter Sets
  */
-void ax_set_rx_parameter_set(ax_config* config)
+enum ax_parameter_set_type {
+  AX_PARAMETER_SET_INITIAL_SETTLING,
+  AX_PARAMETER_SET_AFTER_PATTERN1,
+  AX_PARAMETER_SET_DURING,
+  AX_PARAMETER_SET_CONTINUOUS,
+};
+void ax_set_rx_parameter_set(ax_config* config,
+                             ax_modulation* mod,
+                             enum ax_parameter_set_type type)
 {
+  uint16_t ps;
+  uint8_t agc_attack, agc_decay, agcgain;
+  uint32_t tmg_corr_frac;
+  uint32_t time_gain, dr_gain;
+  uint8_t timegain, drgain;
+  uint16_t freqdev;
+
+  /* Modulation index for FSK modes */
+  float m = 0.0;
+  switch (mod->modulation) {
+    case AX_MODULATION_FSK:
+      m = mod->parameters.fsk.modulation_index; break;
+    case AX_MODULATION_MSK:
+      m = 0.5; break;
+  }
+
+  /* PARAMETER SET */
+  switch (type) {
+    case AX_PARAMETER_SET_INITIAL_SETTLING: /* use set 0 for initial settling */
+      ps = AX_REG_RX_PARAMETER0; break;
+    case AX_PARAMETER_SET_AFTER_PATTERN1: /* use set 1 after pattern 1 */
+      ps = AX_REG_RX_PARAMETER1; break;
+    case AX_PARAMETER_SET_DURING:
+    case AX_PARAMETER_SET_CONTINUOUS: /* use set 3 during packet */
+      ps = AX_REG_RX_PARAMETER3; break;
+  }
+
   /* AGC Gain Attack/Decay */
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_AGCGAIN, 0xFF);
   /**
-   * 0xFF freezes the ADC.  during preamble it's set for f_3dB of the
+   * 0xFF freezes the AGC.  during preamble it's set for f_3dB of the
    * attack to be BITRATE, and f_3dB of the decay to be BITRATE/100
    */
+  agc_attack = ax_rx_agcgain(config, mod->bitrate); /* attack f_3dB: bitrate */
+  agc_decay = agc_attack + 7;                       /* decay f_3dB: 128x slower */
+
+  switch (type) {
+    case AX_PARAMETER_SET_DURING: /* freeze AGC gain during packet */
+      agc_attack = agc_decay = 0xF; break;
+    case AX_PARAMETER_SET_CONTINUOUS: /* 4x slowdown compared to normal search */
+      agc_attack += 2;
+      agc_decay += 2;
+      break;
+    default: break;
+  }
+  /* limit attack > ~1kHz, decay > ~10Hz. could be relaxed?? */
+  if (agc_attack > 0x8) { agc_attack = 0x8; }
+  if (agc_decay  > 0xE) { agc_decay  = 0xE; }
+
+  agcgain = ((agc_decay & 0xF) << 8) | (agc_attack & 0xF);
+  ax_hw_write_register_8(config, ps + AX_RX_AGCGAIN, agcgain);
+
+
   /* AGC target value */
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_AGCTARGET, 0x84);
   /**
    * Always set to 132, which gives target output of 304 from 1023 counts
    */
+  ax_hw_write_register_8(config, ps + AX_RX_AGCTARGET, 0x84);
 
-  /* ADC digital threashold range */
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_AGCAHYST, 0x00);
+
+  /* AGC digital threashold range */
   /**
    * Always set to zero, the analogue ADC always follows immediately
    */
+  ax_hw_write_register_8(config, ps + AX_RX_AGCAHYST, 0x00);
+
 
   /* AGC minmax */
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_AGCMINMAX, 0x00);
   /**
-   * Always set to zero, this is probably best
+   * Always set to zero, this is probably best.
    */
+  ax_hw_write_register_8(config, ps + AX_RX_AGCMINMAX, 0x00);
+
 
   /* Gain of timing recovery loop */
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_TIMEGAIN, 0xF5);
   /**
-   * Values - 0xF8, 0xF6, 0xF5
    * TMGCORRFRAC - 4, 16, 32
    * tightning the loop...
    */
+  switch (type) {
+    case AX_PARAMETER_SET_INITIAL_SETTLING:
+      tmg_corr_frac = 4;        /* fast lock */
+      break;
+    case AX_PARAMETER_SET_AFTER_PATTERN1:
+      tmg_corr_frac = 16;
+      break;
+    default:
+      tmg_corr_frac = 32;       /* low sampling time jitter */
+      break;
+  }
+  time_gain = (uint32_t)((float)mod->rxdatarate / tmg_corr_frac);
+  if (time_gain >= mod->rxdatarate - (1<<12)) { /* see 5.15.3 */
+    /* effectively increase tmg_corr_frac to meet restriction */
+    timegain = mod->rxdatarate - (1<<12);
+  }
+  timegain = ax_value_to_mantissa_exp_4_4(time_gain);
+  debug_printf("time gain %d = 0x%02x\n", time_gain, timegain);
+  ax_hw_write_register_8(config, ps + AX_RX_TIMEGAIN, timegain);
+
 
   /* Gain of datarate recovery loop */
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_DRGAIN, 0xF0);
   /**
-   * Values - 0xF2, 0xF1, 0xF0
    * TMGCORRFRAC - 256, 512, 1024
    * tightning the loop...
    */
+  switch (type) {
+    case AX_PARAMETER_SET_INITIAL_SETTLING:
+      tmg_corr_frac = 256;        /* fast lock */
+      break;
+    case AX_PARAMETER_SET_AFTER_PATTERN1:
+      tmg_corr_frac = 512;
+      break;
+    default:
+      tmg_corr_frac = 1024;       /* low datarate jitter */
+      break;
+  }
+  dr_gain = (uint32_t)((float)mod->rxdatarate / tmg_corr_frac);
+  drgain = ax_value_to_mantissa_exp_4_4(dr_gain);
 
-  /* Gain of phase recovery look / decimation filter fractional b/w */
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_PHASEGAIN, 0xC3);
+  debug_printf("datarate gain %d = 0x%02x\n", dr_gain, drgain);
+  ax_hw_write_register_8(config, ps + AX_RX_DRGAIN, drgain);
+
+
+  /* Gain of phase recovery loop / decimation filter fractional b/w */
   /**
-   * Always 0xC3
+   * Usually 0xC3. TODO ASK
    */
+  ax_hw_write_register_8(config, ps + AX_RX_PHASEGAIN, 0xC3);
+
 
   ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FREQUENCYGAINA, 0x0F);
   /* Always 0x0F (baseband frequency loop disabled) */
@@ -585,10 +677,29 @@ void ax_set_rx_parameter_set(ax_config* config)
   /* Always 0x6 */
 
   /* Receiver Frequency Deviation */
-  ax_hw_write_register_16(config, AX_REG_RX_PARAMETER1 + AX_RX_FREQDEV, 0x0043);
   /**
    * Disable (0x00) for first pre-amble, then equal to deviation of signal???
    */
+  switch (mod->modulation) {
+    case AX_MODULATION_FSK:
+    case AX_MODULATION_MSK:
+    case AX_MODULATION_AFSK:    /* also afsk?? */
+      switch (type) {
+        case AX_PARAMETER_SET_INITIAL_SETTLING:
+        case AX_PARAMETER_SET_CONTINUOUS:
+          freqdev = 0; break; /* disable to avoid locking at wrong offset */
+        case AX_PARAMETER_SET_AFTER_PATTERN1:
+        case AX_PARAMETER_SET_DURING:
+          freqdev = (uint16_t)((m * 128 * 0.7) + 0.5); /* k_sf = 0.7 */
+      }
+      break;
+
+    default:
+      freqdev = 0;              /* no frequency deviation */
+  }
+  debug_printf("freqdev 0x%03x\n", freqdev);
+  ax_hw_write_register_16(config, ps + AX_RX_FREQDEV, 0x0043);
+
 
   ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FOURFSK, 0x16);
   ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_BBOFFSRES, 0x00);
@@ -934,6 +1045,7 @@ void ax5043_set_registers(ax_config* config, ax_modulation* mod)
   ax_hw_write_register_16(config, AX_REG_RX_PARAMETER1 + AX_RX_FREQDEV, 0x0043);
   ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FOURFSK, 0x16);
   ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_BBOFFSRES, 0x00);
+  ax_set_rx_parameter_set(config, mod, AX_PARAMETER_SET_DURING);
 
   /* ax_hw_write_register_8(config, AX_REG_MODCFGF, 0x03); */
   /* ax_hw_write_register_24(config, AX_REG_FSKDEV, 0x0002AB); */
