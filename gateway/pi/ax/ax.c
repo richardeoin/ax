@@ -583,7 +583,7 @@ void ax_set_rx_parameter_set(ax_config* config,
   if (agc_attack > 0x8) { agc_attack = 0x8; }
   if (agc_decay  > 0xE) { agc_decay  = 0xE; }
 
-  agcgain = ((agc_decay & 0xF) << 8) | (agc_attack & 0xF);
+  agcgain = ((agc_decay & 0xF) << 4) | (agc_attack & 0xF);
   ax_hw_write_register_8(config, ps + AX_RX_AGCGAIN, agcgain);
 
 
