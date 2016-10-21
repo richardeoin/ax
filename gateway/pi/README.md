@@ -3,9 +3,7 @@
 uses wiring pi
 
 * checks for AX5043 / AX5243 on SPI channels 0 and 1
-* TODO: initialisation
-* TODO: transmit
-* TODO: receive
+* transmit and receive
 
 ### File Structure
 
@@ -15,6 +13,8 @@ uses wiring pi
 * ax_test.c - test for pi
 * ax_reg.h - register addresses
 * ax_reg_values.h - register values
+* ax_calc.h - calculations for register values
+* ax_fifo.h - constants and structures for FIFO
 
 ### API
 
