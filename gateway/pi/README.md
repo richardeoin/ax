@@ -64,3 +64,6 @@ uses wiring pi
 In HDLC mode, bit stuffing seems to affect the AFC loop. In particular
 the value of TRK RF FREQ is affected. If the AFC loop is disabled (MAX
 RF OFFSET = 0) then the receiver will struggle with bit-stuffed packets.
+
+There's minimum IF frequencies - 3.18kHz for FSK modes and 9.38kHz for
+ASK/PSK. These might reduce sensitivity at small bandwidths!

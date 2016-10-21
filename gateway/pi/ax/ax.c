@@ -395,15 +395,90 @@ void ax_set_afsk_rx_parameters(ax_config* config, ax_modulation* mod)
 void ax_set_rx_parameters(ax_config* config, ax_modulation* mod)
 {
   uint32_t rxdatarate, maxrfoffset;
+  uint32_t rx_bandwidth;
+  uint32_t if_frequency, iffreq;
+  uint32_t f_baseband, decimation;
+  uint32_t fskd;
+
+  /* Modulation index for FSK modes */
+  float m = 0.0;
+  switch (mod->modulation) {
+    case AX_MODULATION_FSK:
+      m = mod->parameters.fsk.modulation_index; break;
+    case AX_MODULATION_MSK:
+      m = 0.5; break;
+  }
+
+  /* RX Bandwidth */
+  switch (mod->modulation) {
+    case AX_MODULATION_ASK:
+    case AX_MODULATION_ASK_COHERENT:
+    case AX_MODULATION_PSK:
+      rx_bandwidth = mod->bitrate; /* bitrate */
+      break;
+
+    case AX_MODULATION_FSK:
+    case AX_MODULATION_MSK:     /* bitrate * (5/6 + m) */
+      rx_bandwidth = mod->bitrate * ((5.0/6) + m);
+      break;
+
+    case AX_MODULATION_AFSK:    /* bitrate * (5/6 + dev?) */
+      rx_bandwidth = mod->bitrate * /* maybe this works???? */
+        ((5.0/6) + mod->parameters.afsk.deviation);
+      break;
+
+    default:
+      debug_printf("No clue about rx bandwidth for this mode.. Guessing\n");
+      rx_bandwidth = 4*mod->bitrate; /* vague guess */
+  }
+
+  /* Baseband frequency */
+  f_baseband = 5 * rx_bandwidth;
+  debug_printf("f baseband = %d Hz\n", f_baseband);
 
   /* IF Frequency */
-  ax_hw_write_register_16(config, AX_REG_IFFREQ, 0x00C8);
-  /* 0xC8 = 200. Therefore f_IF = 3122 Hz */
+  switch (mod->modulation) {
+    case AX_MODULATION_ASK:
+    case AX_MODULATION_ASK_COHERENT:
+    case AX_MODULATION_PSK:
+      if_frequency = 7000+mod->bitrate; /* guess?? */
+      if (if_frequency < 9380) {
+        if_frequency = 9380;     /* minimum 9380 Hz */
+      }
+      break;
+
+    case AX_MODULATION_FSK:
+    case AX_MODULATION_MSK:
+    case AX_MODULATION_AFSK:
+      if_frequency = (5 * rx_bandwidth) / 6;
+      if (if_frequency < 3180) {
+        if_frequency = 3180;     /* minimum 3180 Hz */
+      }
+      break;
+
+    default:
+      debug_printf("No clue about IF frequency for this mode.. Guessing\n");
+      if_frequency = rx_bandwidth;
+  }
+
+
+  /* IF Frequency */
+  iffreq = (uint32_t)((((float)if_frequency * config->f_xtaldiv *
+                        (1 << 20)) / (float)config->f_xtal) + 0.5);
+  ax_hw_write_register_16(config, AX_REG_IFFREQ, iffreq);
+  debug_printf("IF frequency %d Hz = 0x%04x\n", if_frequency, iffreq);
+
 
   /* Decimation */
-  ax_hw_write_register_8(config, AX_REG_DECIMATION, 0x44);
-  config->decimation = 0x44;
-  /* 68x decimation */
+  decimation = (uint32_t)(((float)config->f_xtal /
+                           (16.0 * config->f_xtaldiv * f_baseband)) + 0.5);
+  if (decimation > 127) {
+    decimation = 127;
+    debug_printf("decimation capped at 127(!)\n");
+  }
+  config->decimation = decimation;
+  ax_hw_write_register_8(config, AX_REG_DECIMATION, config->decimation);
+  debug_printf("decimation = %d\n", decimation);
 
 
   /* RX Data Rate */
@@ -426,14 +501,21 @@ void ax_set_rx_parameters(ax_config* config, ax_modulation* mod)
   ax_hw_write_register_24(config, AX_REG_MAXRFOFFSET,
                           AX_MAXRFOFFSET_FREQOFFSCORR_FIRST_LO | maxrfoffset);
 
-  debug_printf("max rf offset %d = 0x%04x\n",
+  debug_printf("max rf offset %d Hz = 0x%04x\n",
                mod->max_delta_carrier, maxrfoffset);
 
 
-  /* FSK Deviation */
-  ax_hw_write_register_16(config, AX_REG_FSKDMAX, 0x00A6);
-  ax_hw_write_register_16(config, AX_REG_FSKDMIN, 0xFF5A);
-  /* 0xA6 = 166. In Manual Mode??? Only for 4FSK??? */
+  /* Maximum deviation of FSK Demodulator */
+  switch (mod->modulation) {
+    case AX_MODULATION_FSK:
+    case AX_MODULATION_MSK:
+      fskd = (260 * m);         /* 260 provides a little wiggle room */
+      fskd &= ~1;               /* clear LSB */
+      ax_hw_write_register_16(config, AX_REG_FSKDMAX,  fskd & 0xFFFF);
+      ax_hw_write_register_16(config, AX_REG_FSKDMIN, ~fskd & 0xFFFF);
+      //debug_printf("min fsk demod dev 0x%04x\n", ~fskd & 0xFFFF);
+      break;
+  }
 
   /* Bypass the Amplitude Lowpass filter */
   ax_hw_write_register_8(config, AX_REG_AMPLFILTER, 0x00);
