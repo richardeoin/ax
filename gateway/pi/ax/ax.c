@@ -540,7 +540,11 @@ void ax_set_rx_parameter_set(ax_config* config,
   uint32_t tmg_corr_frac;
   uint32_t time_gain, dr_gain;
   uint8_t timegain, drgain;
+  uint8_t phasegain, filteridx;
+  uint32_t rffreq_gain_f;
+  uint8_t rffreq_recovery_gain;
   uint16_t freqdev;
+  uint8_t amplgain, amplflags;
 
   /* Modulation index for FSK modes */
   float m = 0.0;
@@ -661,22 +665,95 @@ void ax_set_rx_parameter_set(ax_config* config,
   /**
    * Usually 0xC3. TODO ASK
    */
-  ax_hw_write_register_8(config, ps + AX_RX_PHASEGAIN, 0xC3);
+  switch (mod->modulation) {
+    case AX_MODULATION_ASK:
+    case AX_MODULATION_PSK:     /* Maybe also PSK?? */
+      /* TODO reduce decim fractional bandwidth when decimation reg overflows... */
+      filteridx = 0x3;          /* decimation filter fractional bandwidth */
+      phasegain = 0x0;          /* gain of the phase recovery loop */
+      break;
+    default:
+      filteridx = 0x3;          /* decimation filter fractional bandwidth */
+      phasegain = 0x3;          /* gain of the phase recovery loop */
+      break;
+  }
+  ax_hw_write_register_8(config, ps + AX_RX_PHASEGAIN,
+                         ((filteridx & 0x3) << 6) | (phasegain & 0xF));
 
 
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FREQUENCYGAINA, 0x0F);
-  /* Always 0x0F (baseband frequency loop disabled) */
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FREQUENCYGAINB, 0x1F);
-  /* Always 0x1F (baseband frequency loop disabled) */
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FREQUENCYGAINC, 0x0D);
+  /**
+   * Always 0x0F (baseband frequency loop disabled)
+   */
+  ax_hw_write_register_8(config, ps + AX_RX_FREQUENCYGAINA, 0x0F);
+  /**
+   * Always 0x1F (baseband frequency loop disabled)
+   */
+  ax_hw_write_register_8(config, ps + AX_RX_FREQUENCYGAINB, 0x1F);
+
+
+  /* Gain of RF frequency recovery loop */
+  switch (mod->modulation) {
+    case AX_MODULATION_FSK:
+    case AX_MODULATION_MSK:
+    case AX_MODULATION_AFSK: /* not sure where this comes from, not documented */
+      rffreq_gain_f = mod->bitrate;
+      break;
+    default:
+      rffreq_gain_f = mod->bitrate * 4;
+      break;
+  }
+  rffreq_recovery_gain = ax_rx_freqgain_rf_recovery_gain(config, rffreq_gain_f);
+
+  switch (type) {
+    case AX_PARAMETER_SET_DURING:
+    case AX_PARAMETER_SET_CONTINUOUS:
+      rffreq_recovery_gain += 4; /* 16x reduction in 'rffreq_gain_f' */
+      break;
+    default: break;
+  }
+
+  /* limit to 13 */
+  if (rffreq_recovery_gain > 0xD) { rffreq_recovery_gain = 0xD; }
+
+  debug_printf("rffreq_recovery_gain 0x%02x\n", rffreq_recovery_gain);
+
   /* 0xB, 0xB, 0xD */
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FREQUENCYGAIND, 0x0D);
-  /* 0xB, 0xB, 0xD */
+  /* Same for phase and frequency detectors  */
+  ax_hw_write_register_8(config, ps + AX_RX_FREQUENCYGAINC,
+                         rffreq_recovery_gain);
+  ax_hw_write_register_8(config, ps + AX_RX_FREQUENCYGAIND,
+                         rffreq_recovery_gain);
 
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_AMPLITUDEGAIN, 0x06);
-  /* Always 0x6 */
 
-  /* Receiver Frequency Deviation */
+  /* Amplitude Recovery Loop */
+  switch (mod->modulation) {
+    case AX_MODULATION_ASK:
+    case AX_MODULATION_PSK:     /* try to jump, averaging */
+      amplflags = AX_AMPLGAIN_TRY_TO_CORRECT_AMPLITUDE_ON_AGC_JUMP |
+        AX_AMPLGAIN_AMPLITUDE_RECOVERY_AVERAGING;
+
+      switch (type) {
+        case AX_PARAMETER_SET_INITIAL_SETTLING:
+        case AX_PARAMETER_SET_AFTER_PATTERN1:
+          amplgain = 2;         /* reduced gain */
+          break;
+        case AX_PARAMETER_SET_DURING:
+        case AX_PARAMETER_SET_CONTINUOUS:
+          amplgain = 8;         /* increased gain */
+          break;
+      }
+
+      break;
+    default:           /* don't try to jump, peak det, default gain */
+      amplflags = AX_AMPLGAIN_AMPLITUDE_RECOVERY_PEAKDET;
+      amplgain = 6;
+      break;
+  }
+  ax_hw_write_register_8(config, ps + AX_RX_AMPLITUDEGAIN,
+                         amplflags | amplgain);
+
+
+  /* FSK Receiver Frequency Deviation */
   /**
    * Disable (0x00) for first pre-amble, then equal to deviation of signal???
    */
@@ -700,10 +777,14 @@ void ax_set_rx_parameter_set(ax_config* config,
   debug_printf("freqdev 0x%03x\n", freqdev);
   ax_hw_write_register_16(config, ps + AX_RX_FREQDEV, 0x0043);
 
+  /* TODO FOUR FSK */
+  ax_hw_write_register_8(config, ps + AX_RX_FOURFSK, 0x16);
 
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FOURFSK, 0x16);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_BBOFFSRES, 0x00);
-
+  /* BB Gain Block Offset Compensation Resistors */
+  /**
+   * Always 0x00
+   */
+  ax_hw_write_register_8(config, ps + AX_RX_BBOFFSRES, 0x00);
 }
 
 
