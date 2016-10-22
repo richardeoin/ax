@@ -46,7 +46,7 @@ static uint8_t ax_rx_agcgain(ax_config* config, uint32_t f_3dB)
 /**
  * 5.15.24 FREQGAINC/D
  */
-static uint8_t ax_rx_freqgain_rf_recovery_gain(ax_config* config, uint8_t freq)
+static uint8_t ax_rx_freqgain_rf_recovery_gain(ax_config* config, uint32_t freq)
 {
   float ratio = (float)config->f_xtal / (config->f_xtaldiv * 4 * freq);
 
