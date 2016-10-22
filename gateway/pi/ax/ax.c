@@ -579,15 +579,16 @@ void ax_set_rx_parameter_set(ax_config* config,
       agc_attack = agc_decay = 0xF; break;
     case AX_PARAMETER_SET_CONTINUOUS: /* 4x slowdown compared to normal search */
       agc_attack += 2;
-      agc_decay += 2;
+      agc_decay += 2;           /* fallthrough */
+    default:
+      /* limit attack > ~1kHz, decay > ~10Hz. could be relaxed?? */
+      if (agc_attack > 0x8) { agc_attack = 0x8; }
+      if (agc_decay  > 0xE) { agc_decay  = 0xE; }
       break;
-    default: break;
   }
-  /* limit attack > ~1kHz, decay > ~10Hz. could be relaxed?? */
-  if (agc_attack > 0x8) { agc_attack = 0x8; }
-  if (agc_decay  > 0xE) { agc_decay  = 0xE; }
 
   agcgain = ((agc_decay & 0xF) << 4) | (agc_attack & 0xF);
+  debug_printf("agcgain 0x%02x\n", agcgain);
   ax_hw_write_register_8(config, ps + AX_RX_AGCGAIN, agcgain);
 
 
@@ -1030,7 +1031,7 @@ void ax_set_packet_controller_parameters(ax_config* config)
 
   /* accept multiple chunks */
   ax_hw_write_register_8(config, AX_REG_PKTACCEPTFLAGS,
-                         0x3F);  //ALL!!! //AX_PKT_ACCEPT_MULTIPLE_CHUNKS);
+                         0x29);  //SOME!!! //AX_PKT_ACCEPT_MULTIPLE_CHUNKS);
 }
 
 
@@ -1094,6 +1095,7 @@ void ax5043_set_registers(ax_config* config, ax_modulation* mod)
   ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_AMPLITUDEGAIN, 0x06);
   ax_hw_write_register_16(config, AX_REG_RX_PARAMETER0 + AX_RX_FREQDEV, 0x0000);
   ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_BBOFFSRES, 0x00);
+  //ax_set_rx_parameter_set(config, mod, AX_PARAMETER_SET_INITIAL_SETTLING);
   /* RX 1 */
   ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_AGCGAIN, 0xD7);
   ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_AGCTARGET, 0x84);
@@ -1110,22 +1112,23 @@ void ax5043_set_registers(ax_config* config, ax_modulation* mod)
   ax_hw_write_register_16(config, AX_REG_RX_PARAMETER1 + AX_RX_FREQDEV, 0x0043);
   ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_FOURFSK, 0x16);
   ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_BBOFFSRES, 0x00);
+  //ax_set_rx_parameter_set(config, mod, AX_PARAMETER_SET_AFTER_PATTERN1);
   /* RX 3 */
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_AGCGAIN, 0xFF);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_AGCTARGET, 0x84);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_AGCAHYST, 0x00);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_AGCMINMAX, 0x00);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_TIMEGAIN, 0xF5);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_DRGAIN, 0xF0);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_PHASEGAIN, 0xC3);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FREQUENCYGAINA, 0x0F);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FREQUENCYGAINB, 0x1F);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FREQUENCYGAINC, 0x0D);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FREQUENCYGAIND, 0x0D);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_AMPLITUDEGAIN, 0x06);
-  ax_hw_write_register_16(config, AX_REG_RX_PARAMETER1 + AX_RX_FREQDEV, 0x0043);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FOURFSK, 0x16);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_BBOFFSRES, 0x00);
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_AGCGAIN, 0xFF); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_AGCTARGET, 0x84); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_AGCAHYST, 0x00); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_AGCMINMAX, 0x00); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_TIMEGAIN, 0xF5); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_DRGAIN, 0xF0); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_PHASEGAIN, 0xC3); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FREQUENCYGAINA, 0x0F); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FREQUENCYGAINB, 0x1F); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FREQUENCYGAINC, 0x0D); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FREQUENCYGAIND, 0x0D); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_AMPLITUDEGAIN, 0x06); */
+  /* ax_hw_write_register_16(config, AX_REG_RX_PARAMETER1 + AX_RX_FREQDEV, 0x0043); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_FOURFSK, 0x16); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_BBOFFSRES, 0x00); */
   ax_set_rx_parameter_set(config, mod, AX_PARAMETER_SET_DURING);
 
   /* ax_hw_write_register_8(config, AX_REG_MODCFGF, 0x03); */
@@ -1395,11 +1398,13 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
           switch (mod->framing & 0x7) {
             default:              /* anything else, unsure */
               /* print byte-by-byte */
-              for (int i = 0; i < rx_chunk.chunk.data.length; i++) {
-                debug_printf("data %d: 0x%02x %c\n", i,
-                             rx_chunk.chunk.data.data[i+1],
-                             rx_chunk.chunk.data.data[i+1]);
-              }
+              /* for (int i = 0; i < rx_chunk.chunk.data.length; i++) { */
+              /*   debug_printf("data %d: 0x%02x %c\n", i, */
+              /*                rx_chunk.chunk.data.data[i+1], */
+              /*                rx_chunk.chunk.data.data[i+1]); */
+              /* } */
+              rx_chunk.chunk.data.data[rx_chunk.chunk.data.length - 2] = 0;
+              printf("Data: %s\n", rx_chunk.chunk.data.data + 1);
           }
 
           break;
