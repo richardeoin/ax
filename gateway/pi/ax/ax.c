@@ -768,7 +768,7 @@ void ax_set_rx_parameter_set(ax_config* config,
           freqdev = 0; break; /* disable to avoid locking at wrong offset */
         case AX_PARAMETER_SET_AFTER_PATTERN1:
         case AX_PARAMETER_SET_DURING:
-          freqdev = (uint16_t)((m * 128 * 0.7) + 0.5); /* k_sf = 0.7 */
+          freqdev = (uint16_t)((m * 128 * 0.8) + 0.5); /* k_sf = 0.8 */
       }
       break;
 
@@ -776,7 +776,7 @@ void ax_set_rx_parameter_set(ax_config* config,
       freqdev = 0;              /* no frequency deviation */
   }
   debug_printf("freqdev 0x%03x\n", freqdev);
-  ax_hw_write_register_16(config, ps + AX_RX_FREQDEV, 0x0043);
+  ax_hw_write_register_16(config, ps + AX_RX_FREQDEV, freqdev);
 
   /* TODO FOUR FSK */
   ax_hw_write_register_8(config, ps + AX_RX_FOURFSK, 0x16);
