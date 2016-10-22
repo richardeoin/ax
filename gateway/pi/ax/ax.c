@@ -1083,36 +1083,36 @@ void ax5043_set_registers(ax_config* config, ax_modulation* mod)
   /* 0, 1, 3, 3 */
 
   /* RX 0 */
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_AGCGAIN, 0xD7);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_AGCTARGET, 0x84);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_TIMEGAIN, 0xF8);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_DRGAIN, 0xF2);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_PHASEGAIN, 0xC3);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_FREQUENCYGAINA, 0x0F);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_FREQUENCYGAINB, 0x1F);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_FREQUENCYGAINC, 0x0B);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_FREQUENCYGAIND, 0x0B);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_AMPLITUDEGAIN, 0x06);
-  ax_hw_write_register_16(config, AX_REG_RX_PARAMETER0 + AX_RX_FREQDEV, 0x0000);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_BBOFFSRES, 0x00);
-  //ax_set_rx_parameter_set(config, mod, AX_PARAMETER_SET_INITIAL_SETTLING);
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_AGCGAIN, 0xD7); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_AGCTARGET, 0x84); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_TIMEGAIN, 0xF8); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_DRGAIN, 0xF2); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_PHASEGAIN, 0xC3); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_FREQUENCYGAINA, 0x0F); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_FREQUENCYGAINB, 0x1F); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_FREQUENCYGAINC, 0x0B); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_FREQUENCYGAIND, 0x0B); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_AMPLITUDEGAIN, 0x06); */
+  /* ax_hw_write_register_16(config, AX_REG_RX_PARAMETER0 + AX_RX_FREQDEV, 0x0000); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER0 + AX_RX_BBOFFSRES, 0x00); */
+  ax_set_rx_parameter_set(config, mod, AX_PARAMETER_SET_INITIAL_SETTLING);
   /* RX 1 */
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_AGCGAIN, 0xD7);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_AGCTARGET, 0x84);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_AGCAHYST, 0x00);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_AGCMINMAX, 0x00);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_TIMEGAIN, 0xF6);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_DRGAIN, 0xF1);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_PHASEGAIN, 0xC3);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_FREQUENCYGAINA, 0x0F);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_FREQUENCYGAINB, 0x1F);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_FREQUENCYGAINC, 0x0B);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_FREQUENCYGAIND, 0x0B);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_AMPLITUDEGAIN, 0x06);
-  ax_hw_write_register_16(config, AX_REG_RX_PARAMETER1 + AX_RX_FREQDEV, 0x0043);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_FOURFSK, 0x16);
-  ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_BBOFFSRES, 0x00);
-  //ax_set_rx_parameter_set(config, mod, AX_PARAMETER_SET_AFTER_PATTERN1);
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_AGCGAIN, 0xD7); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_AGCTARGET, 0x84); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_AGCAHYST, 0x00); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_AGCMINMAX, 0x00); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_TIMEGAIN, 0xF6); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_DRGAIN, 0xF1); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_PHASEGAIN, 0xC3); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_FREQUENCYGAINA, 0x0F); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_FREQUENCYGAINB, 0x1F); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_FREQUENCYGAINC, 0x0B); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_FREQUENCYGAIND, 0x0B); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_AMPLITUDEGAIN, 0x06); */
+  /* ax_hw_write_register_16(config, AX_REG_RX_PARAMETER1 + AX_RX_FREQDEV, 0x0043); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_FOURFSK, 0x16); */
+  /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER1 + AX_RX_BBOFFSRES, 0x00); */
+  ax_set_rx_parameter_set(config, mod, AX_PARAMETER_SET_AFTER_PATTERN1);
   /* RX 3 */
   /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_AGCGAIN, 0xFF); */
   /* ax_hw_write_register_8(config, AX_REG_RX_PARAMETER3 + AX_RX_AGCTARGET, 0x84); */
