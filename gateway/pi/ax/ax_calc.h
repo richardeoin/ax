@@ -64,7 +64,21 @@ static uint8_t ax_value_to_mantissa_exp_4_4(uint32_t value)
     value >>= 1; exp++;
   }
 
-  return ((value & 0xF) << 4) | exp;
+  return ((value & 0xF) << 4) | exp; /* mantissa, exponent */
 }
+/**
+ * Converts a value to 3-bit exponent and 5-bit mantissa
+ */
+static uint8_t ax_value_to_exp_mantissa_3_5(uint32_t value)
+{
+  uint8_t exp = 0;
+
+  while (value > 31 && exp < 7) {
+    value >>= 1; exp++;
+  }
+
+  return ((exp & 0x7) << 5) | value; /* exponent, mantissa */
+}
+
 
 #endif  /* AX_CALC_H */

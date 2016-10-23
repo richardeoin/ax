@@ -1028,22 +1028,103 @@ void ax_set_match_parameters(ax_config* config)
 /**
  * 5.22 set packet controller parameters
  */
-void ax_set_packet_controller_parameters(ax_config* config)
+void ax_set_packet_controller_parameters(ax_config* config, ax_modulation* mod)
 {
-  ax_hw_write_register_8(config, AX_REG_TMGTXBOOST, 0x33); /* 38us pll boost time */
-  ax_hw_write_register_8(config, AX_REG_TMGTXSETTLE, 0x14); /* 20us tx pll settle time  */
-  ax_hw_write_register_8(config, AX_REG_TMGRXBOOST, 0x33);  /* 38us rx pll boost time */
-  ax_hw_write_register_8(config, AX_REG_TMGRXSETTLE, 0x14); /* 20us rx pll settle time */
-  ax_hw_write_register_8(config, AX_REG_TMGRXOFFSACQ, 0x00); /* 0us bb dc offset aquis tim */
-  ax_hw_write_register_8(config, AX_REG_TMGRXCOARSEAGC, 0x73); /* 152 us rx agc coarse  */
-  ax_hw_write_register_8(config, AX_REG_TMGRXRSSI, 0x03);      /* 3us rssi setting time */
-  ax_hw_write_register_8(config, AX_REG_TMGRXPREAMBLE2, 0x17); /* 23 bit preamble timeout */
-  ax_hw_write_register_8(config, AX_REG_RSSIABSTHR, 0xDD);     /* rssi threashold = 221 */
+  uint8_t pkt_misc_flags = 0;
+  uint16_t tx_pll_boost_time, tx_pll_settle_time;
+  uint16_t rx_pll_boost_time, rx_pll_settle_time;
+  uint16_t rx_coarse_agc;
+  uint16_t rx_agc_settling, rx_rssi_settling;
+  uint16_t preamble_1_timeout, preamble_2_timeout;
+
+  /* tx pll boost time */
+  tx_pll_boost_time = 38;
+  ax_hw_write_register_8(config, AX_REG_TMGTXBOOST,
+                         ax_value_to_exp_mantissa_3_5(tx_pll_boost_time));
+
+  /* tx pll settle time */
+  tx_pll_settle_time = 20;
+  ax_hw_write_register_8(config, AX_REG_TMGTXSETTLE,
+                         ax_value_to_exp_mantissa_3_5(tx_pll_settle_time));
+
+  /* rx pll boost time */
+  rx_pll_boost_time = 38;
+  ax_hw_write_register_8(config, AX_REG_TMGRXBOOST,
+                         ax_value_to_exp_mantissa_3_5(rx_pll_boost_time));
+
+  /* rx pll settle time */
+  rx_pll_settle_time = 20;
+  ax_hw_write_register_8(config, AX_REG_TMGRXSETTLE,
+                         ax_value_to_exp_mantissa_3_5(rx_pll_settle_time));
+
+
+  /* 0us bb dc offset aquis tim */
+  ax_hw_write_register_8(config, AX_REG_TMGRXOFFSACQ, 0x00);
+
+
+  /* rx agc coarse  */
+  rx_coarse_agc = 152;          /* 152 µs */
+  ax_hw_write_register_8(config, AX_REG_TMGRXCOARSEAGC,
+                         ax_value_to_exp_mantissa_3_5(rx_coarse_agc));
+
+
+  /* rx agc */
+  if (0) {                      /* TODO wake on radio */
+    /* increasing settling time for narrow bandwidths */
+    pkt_misc_flags |= AX_PKT_FLAGS_RSSI_UNITS_BIT_TIME;
+    rx_agc_settling = 15;       /* guess */
+  } else {
+    rx_agc_settling = 0;
+  }
+  ax_hw_write_register_8(config, AX_REG_TMGRXAGC,
+                         ax_value_to_exp_mantissa_3_5(rx_agc_settling));
+
+
+  /* rx rssi settling time */
+  if (0) {                      /* TODO wake on radio */
+    /* 3 bits time rssi setting time */
+    pkt_misc_flags |= AX_PKT_FLAGS_RSSI_UNITS_BIT_TIME;
+    rx_rssi_settling = 3;
+  } else {
+    /* 3us rssi setting time */
+    pkt_misc_flags |= AX_PKT_FLAGS_RSSI_UNITS_MICROSECONDS;
+    rx_rssi_settling = 3;
+  }
+  ax_hw_write_register_8(config, AX_REG_TMGRXRSSI,
+                         ax_value_to_exp_mantissa_3_5(rx_rssi_settling));
+
+
+  /* preamble 1 timeout */
+  if (0) {                      /* TODO wake on radio */
+    preamble_1_timeout = 25;
+  } else {
+    preamble_1_timeout = 0;
+  }
+  ax_hw_write_register_8(config, AX_REG_TMGRXPREAMBLE1,
+                         ax_value_to_exp_mantissa_3_5(preamble_1_timeout));
+
+  /* preamble 2 timeout */
+  preamble_2_timeout = 23;      /* const. */
+  ax_hw_write_register_8(config, AX_REG_TMGRXPREAMBLE2,
+                         ax_value_to_exp_mantissa_3_5(preamble_2_timeout));
+
+
+
+  /* rssi threashold = 221 */
+  /**
+   * 3log2(b/w) + x
+   */
+  ax_hw_write_register_8(config, AX_REG_RSSIABSTHR, 0xDD);
+
+  /* 0 - don't detect busy channel */
   ax_hw_write_register_8(config, AX_REG_BGNDRSSITHR, 0x00);
 
   /* max chunk size = 240 bytes */
   ax_hw_write_register_8(config, AX_REG_PKTCHUNKSIZE,
                          AX_PKT_MAXIMUM_CHUNK_SIZE_240_BYTES);
+
+  /* write pkt_misc_flags */
+  ax_hw_write_register_8(config, AX_REG_PKTMISCFLAGS, pkt_misc_flags);
 
   /* metadata to store */
   ax_hw_write_register_8(config, AX_REG_PKTSTOREFLAGS,
@@ -1059,6 +1140,25 @@ void ax_set_packet_controller_parameters(ax_config* config)
 void ax_set_digital_to_analog_converter(ax_config* config)
 {
   ax_hw_write_register_8(config, AX_REG_DACCONFIG, 0x00);
+}
+/**
+ * 5.26 'performance tuning'
+ */
+void ax_set_performance_tuning(ax_config* config)
+{
+  /**
+   * TODO
+   */
+  ax_hw_write_register_8(config, AX_REG_REF, 0x03); /* 0xF0D */
+
+  ax_hw_write_register_8(config, 0xF1C, 0x07); /* const */
+  ax_hw_write_register_8(config, 0xF21, 0x68); /* !! */
+  ax_hw_write_register_8(config, 0xF22, 0xFF); /* !! */
+  ax_hw_write_register_8(config, 0xF23, 0x84); /* !! */
+  ax_hw_write_register_8(config, 0xF26, 0x98); /* !! */
+
+  ax_hw_write_register_8(config, 0xF44, 0x25); /* !! */
+  //ax_hw_write_register_8(config, 0xF44, 0x24); /* !! */
 }
 
 
@@ -1118,24 +1218,13 @@ void ax5043_set_registers(ax_config* config, ax_modulation* mod)
   ax_set_match_parameters(config);
 
   // TMGRX, RSSIABSTHR, PKTCHUNKSIZE, PKTACCEPTFLAGS
-  ax_set_packet_controller_parameters(config);
+  ax_set_packet_controller_parameters(config, mod);
 
   // DACCONFIG
   ax_set_digital_to_analog_converter(config);
 
-  /**
-   * TODO
-   */
-  ax_hw_write_register_8(config, AX_REG_REF, 0x03); /* 0xF0D */
-
-  ax_hw_write_register_8(config, 0xF1C, 0x07); /* const */
-  ax_hw_write_register_8(config, 0xF21, 0x68); /* !! */
-  ax_hw_write_register_8(config, 0xF22, 0xFF); /* !! */
-  ax_hw_write_register_8(config, 0xF23, 0x84); /* !! */
-  ax_hw_write_register_8(config, 0xF26, 0x98); /* !! */
-
-  ax_hw_write_register_8(config, 0xF44, 0x25); /* !! */
-  //ax_hw_write_register_8(config, 0xF44, 0x24); /* !! */
+  // 0xFxx
+  ax_set_performance_tuning(config);
 }
 
 
