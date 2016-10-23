@@ -51,6 +51,8 @@ typedef struct ax_modulation {
 
   float power;                  /* TX output power */
 
+  uint8_t continuous;           /* 0 = occasional packets, 1 = continuous tx */
+
   union {
     struct {                    /* FSK */
       float modulation_index;

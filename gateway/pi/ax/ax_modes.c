@@ -38,6 +38,7 @@ struct ax_modulation fsk1_modulation = {
   .fec = 0,
   .power = 0.1,
   .parameters = { .fsk = { .modulation_index = 2.0/3 }},
+  .continuous = 1,
 };
 
 
