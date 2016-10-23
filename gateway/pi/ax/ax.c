@@ -917,9 +917,9 @@ void ax_set_pll_parameters(ax_config* config)
   pllrngclk_div = AX_PLLRNGCLK_DIV_2048;
   ax_hw_write_register_8(config, AX_REG_PLLRNGCLK, pllrngclk_div);
   /* approx 8kHz for 16MHz clock */
-
   config->f_pllrng = config->f_xtal / (1 << (8 + pllrngclk_div));
-  /* TODO: config->f_pllrng should be less than 1/10 of the loop filter b/w */
+  /* NOTE: config->f_pllrng should be less than 1/10 of the loop filter b/w */
+  /* 8kHz is fine, as minimum loop filter b/w is 100kHz */
   debug_printf("Ranging clock f_pllrng %d Hz\n", config->f_pllrng);
 }
 /**
