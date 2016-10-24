@@ -132,7 +132,8 @@ typedef struct ax_config {
   void (*spi_transfer)(unsigned char*, uint8_t);
 
   /* receive */
-  void* (*rx_callback)(unsigned char*, uint8_t);
+  void (*rx_callback)(unsigned char*, uint8_t, void*);
+  void* callback_userdata;
   uint8_t pkt_store_flags;      /* PKTSTOREFLAGS */
 
   /* pll vco */

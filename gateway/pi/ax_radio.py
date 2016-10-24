@@ -22,6 +22,12 @@
 
 from _ax_radio import lib,ffi
 
+@ffi.def_extern()
+def global_rx_callback(data, length, userdata):
+    radio = ffi.from_handle(userdata)
+    radio.process_rx_callback(data, length)
+
+
 class AxRadio:
     def __init__(self, channel=0, frequency=434600000):
 
@@ -59,6 +65,8 @@ class AxRadio:
         # set default modulation parameters
         self.modulation()
 
+    def process_rx_callback(self, data, length): # called by global_rx_callback
+        None
 
     def modulation(self, bitrate=2000):
         self.mod.modulation = 8
@@ -79,6 +87,12 @@ class AxRadio:
         lib.ax_tx_packet(self.config, bytes_to_transmit, len(bytes_to_transmit))
 
     def receive(self):              # receive
+        # register rx callback
+        userdata = ffi.new_handle(self)
+        self._userdata = userdata     # must keep this alive!
+        self.config.rx_callback = lib.global_rx_callback
+        self.config.callback_userdata = userdata
+
         lib.ax_rx_on(self.config, self.mod)
 
 if __name__ == "__main__":
