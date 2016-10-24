@@ -1225,15 +1225,19 @@ void ax5043_set_registers_rx(ax_config* config)
  * MAJOR FUNCTIONS ------------------------------------------
  */
 
+enum ax_vco_ranging_result {
+  AX_VCO_RANGING_SUCCESS,
+  AX_VCO_RANGING_FAILED,
+};
 /**
  * Performs a ranging operation
  *
  * updates values in synth structure
  */
-void ax_do_vco_ranging(ax_config* config,
-                       uint16_t pllranging,
-                       ax_synthesiser* synth,
-                       enum ax_vco_type vco_type)
+enum ax_vco_ranging_result ax_do_vco_ranging(ax_config* config,
+                                             uint16_t pllranging,
+                                             ax_synthesiser* synth,
+                                             enum ax_vco_type vco_type)
 {
   uint8_t r;
 
@@ -1262,22 +1266,26 @@ void ax_do_vco_ranging(ax_config* config,
   if (r & AX_PLLRANGING_RNGERR) {
     /* ranging error */
     debug_printf("Ranging error!\n");
-  } else {
-    debug_printf("Ranging done\n");
+    return AX_VCO_RANGING_FAILED;
   }
-  debug_printf("r = 0x%02x\n", r);
+
+  debug_printf("Ranging done r = 0x%02x\n", r);
 
   /* Update vco_range */
   synth->vco_range = r & 0xF;
   synth->vco_range_known = 1;
+
+  return AX_VCO_RANGING_SUCCESS;
 }
 /**
  * Ranges both VCOs
  *
  * re-ranging is required for > 5MHz in 868/915 or > 2.5MHz in 433
  */
-void ax_vco_ranging(ax_config* config)
+enum ax_vco_ranging_result ax_vco_ranging(ax_config* config)
 {
+  enum ax_vco_ranging_result resultA, resultB;
+
   debug_printf("starting vco ranging...\n");
 
   /* Enable TCXO if used */
@@ -1297,17 +1305,23 @@ void ax_vco_ranging(ax_config* config)
   ax_wait_for_oscillator(config);
 
   /* do ranging */
-  ax_do_vco_ranging(config, AX_REG_PLLRANGINGA,
-                    &config->synthesiser.A, config->synthesiser.vco_type);
-  ax_do_vco_ranging(config, AX_REG_PLLRANGINGB,
-                    &config->synthesiser.B, config->synthesiser.vco_type);
-
+  resultA = ax_do_vco_ranging(config, AX_REG_PLLRANGINGA,
+                              &config->synthesiser.A, config->synthesiser.vco_type);
+  resultB = ax_do_vco_ranging(config, AX_REG_PLLRANGINGB,
+                              &config->synthesiser.B, config->synthesiser.vco_type);
 
   /* Set PWRMODE to POWERDOWN */
   ax_set_pwrmode(config, AX_PWRMODE_POWERDOWN);
 
   /* Disable TCXO if used */
   if (config->tcxo_disable) { config->tcxo_disable(); }
+
+  if ((resultA == AX_VCO_RANGING_SUCCESS) &&
+      (resultB == AX_VCO_RANGING_SUCCESS)) {
+    return AX_VCO_RANGING_SUCCESS; /* currently assume with need both VCOs */
+  }
+
+  return AX_VCO_RANGING_FAILED;
 }
 
 /**
@@ -1502,8 +1516,9 @@ int ax_init(ax_config* config)
   ax_set_xtal_parameters(config);
 
   /* Perform auto-ranging for both VCOs */
-  ax_vco_ranging(config);
-
+  if (ax_vco_ranging(config) != AX_VCO_RANGING_SUCCESS) {
+    return AX_INIT_VCO_RANGING_FAILED; /* ranging fail */
+  }
 
   return AX_INIT_OK;
 }

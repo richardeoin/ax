@@ -59,14 +59,14 @@ class AxRadio:
            init_status == lib.AX_INIT_BAD_REVISION:
             raise RuntimeError('Read bad scratch or revision value. '
                                'Is the radio plugged in correctly?')
+        elif init_status == lib.AX_INIT_VCO_RANGING_FAILED:
+            raise RuntimeError('VCO ranging failed. Try a different frequency '
+                               'or changing `vco_type` and `rf_div`')
 
         self.in_transmit_mode = False
 
         # set default modulation parameters
         self.modulation()
-
-    def process_rx_callback(self, data, length): # called by global_rx_callback
-        None
 
     def modulation(self, bitrate=2000):
         self.mod.modulation = 8

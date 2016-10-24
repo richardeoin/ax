@@ -37,6 +37,7 @@ typedef enum ax_init_status {
   AX_INIT_BAD_SCRATCH,
   AX_INIT_BAD_REVISION,
   AX_INIT_SET_SPI,
+  AX_INIT_VCO_RANGING_FAILED,
 } ax_init_status;
 
 /**
