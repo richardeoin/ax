@@ -156,6 +156,9 @@ void ax_tx_packet(ax_config* config, uint8_t* packet, uint16_t length);
 /* receive */
 void ax_rx_on(ax_config* config, ax_modulation* mod);
 
+/* turn off */
+void ax_off(ax_config* config);
+
 /* init */
 int ax_init(ax_config* config);
 
