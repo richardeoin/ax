@@ -129,7 +129,7 @@ typedef struct ax_config {
   void* (*tcxo_disable)(void);   /* function to disable tcxo */
 
   /* spi transfer */
-  void* (*spi_transfer)(unsigned char*, uint8_t);
+  void (*spi_transfer)(unsigned char*, uint8_t);
 
   /* receive */
   void* (*rx_callback)(unsigned char*, uint8_t);
