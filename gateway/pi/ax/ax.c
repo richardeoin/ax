@@ -39,8 +39,6 @@
 #include "ax/ax_modes.h"
 #include "ax/ax_calc.h"
 
-#define TCXO 1
-
 #include <stdio.h>
 #define debug_printf printf
 
@@ -53,35 +51,6 @@ void ax_set_synthesiser_parameters(ax_config* config,
                                    ax_synthesiser_parameters* params,
                                    ax_synthesiser* synth,
                                    enum ax_vco_type vco_type);
-
-
-
-/* __reentrantb void ax5043_set_registers_rxwor(void) __reentrant */
-/* { */
-/* 	AX_REG_TMGRXAGC                = 0x3E; */
-/* 	AX_REG_TMGRXPREAMBLE1          = 0x19; */
-/* 	AX_REG_PKTMISCFLAGS            = 0x03; */
-/* } */
-
-
-/* __reentrantb void ax5043_set_registers_rxcont(void) __reentrant */
-/* { */
-/* 	AX_REG_TMGRXAGC                = 0x00; */
-/* 	AX_REG_TMGRXPREAMBLE1          = 0x00; */
-/* 	AX_REG_PKTMISCFLAGS            = 0x00; */
-/* } */
-
-
-/* __reentrantb void ax5043_set_registers_rxcont_singleparamset(void) __reentrant */
-/* { */
-/* 	AX_REG_RXPARAMSETS             = 0xFF; */
-/* 	AX_REG_FREQDEV13               = 0x00; */
-/* 	AX_REG_FREQDEV03               = 0x00; */
-/* 	AX_REG_AGCGAIN3                = 0xE8; */
-/* } */
-
-
-
 
 /**
  * FIFO -----------------------------------------------------
