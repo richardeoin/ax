@@ -120,5 +120,9 @@ class AxRadio:
         lib.ax_rx_on(self.config, self.mod)
 
 if __name__ == "__main__":
+
+    def rx_callback(data, length):
+        print(data)
+
     radio = AxRadio()
-    radio.receive(None)
+    radio.receive(rx_callback)
