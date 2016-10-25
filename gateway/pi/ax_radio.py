@@ -49,8 +49,8 @@ class AxRadio:
         # set frequencies
         self.config.synthesiser.A.frequency = frequency
         self.config.synthesiser.B.frequency = frequency
-        #self.config.pkt_store_flags = lib.AX_PKT_STORE_RSSI | \
-        #                         lib.AX_PKT_STORE_RF_OFFSET
+        self.config.pkt_store_flags = lib.AX_PKT_STORE_RSSI | \
+                                lib.AX_PKT_STORE_RF_OFFSET
 
         # actually initialise the radio
         init_status = lib.ax_init(self.config)
@@ -86,15 +86,21 @@ class AxRadio:
 
         lib.ax_tx_packet(self.config, bytes_to_transmit, len(bytes_to_transmit))
 
-    def receive(self):              # receive
+
+    def process_rx_callback(self, data, length): # called by global_rx_callback
+        if self.rx_func:
+            self.rx_func(data, length)
+
+    def receive(self, rx_func):              # receive
         # register rx callback
         userdata = ffi.new_handle(self)
         self._userdata = userdata     # must keep this alive!
         self.config.rx_callback = lib.global_rx_callback
         self.config.callback_userdata = userdata
+        self.rx_func = rx_func
 
         lib.ax_rx_on(self.config, self.mod)
 
 if __name__ == "__main__":
     radio = AxRadio()
-    radio.receive()
+    radio.receive(None)

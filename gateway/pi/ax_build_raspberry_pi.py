@@ -26,16 +26,27 @@ ffibuilder = FFI()
 
 # headers we'd like to use from python
 ax_headers = ["ax/ax.h"]
-#              "ax/ax.h", "ax/ax_hw.h", "ax/ax_modes.h",
-#              "ax/ax_reg.h", "ax/ax_reg_values.h"]
-
 for header in ax_headers:
     header = open(header, 'r').read()
     h = re.sub('[#].*\n', '', header) # remove header guards
     ffibuilder.cdef(h)
 
+# definitions we'd like to use from python
+defs = ""
+for line in open('ax/ax_reg_values.h', 'r'):
+    if line.startswith("#define"):
+        defs += line        # collect #defines
+defs = re.sub('\/\*.*\*\/', '', defs) # strip comments
+defs = re.sub('\/\/.*\n', '', defs) # strip comments
+# reformat to enum
+defs = re.sub(r'#define (AX_[^\s]+)\s+(.*)\n', r'  \1 = \2,\n', defs)
+# replace (n<<m) with n*2^m
+defs = re.sub(r'\((\d+)\s+<<\s+(\d+)\)',
+              lambda m: str(int(m.group(1))*2**int(m.group(2))), defs)
+definitions_enum = "enum ax_reg_values {" + defs + "};"
+ffibuilder.cdef(definitions_enum)
 
-# functions to setup spi callbacks
+# functions we'd like to use from python
 status_enum = """
 enum ax_set_spi_transfer_status {
   AX_SET_SPI_TRANSFER_OK,
@@ -86,7 +97,8 @@ enum ax_set_spi_transfer_status
 
 # source files to build
 ax_sources = ["ax/ax.c", "ax/ax_hw.c", "ax/ax_modes.c"]
-ffibuilder.set_source("_ax_radio", status_enum + spi_callbacks_source,
+ffibuilder.set_source("_ax_radio",
+                      definitions_enum + status_enum + spi_callbacks_source,
                       sources=ax_sources, libraries=['wiringPi'], include_dirs=['.'])
 
 # main
