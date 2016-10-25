@@ -1421,6 +1421,12 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
               printf("Data: %s\n", rx_chunk.chunk.data.data + 1);
           }
 
+          if (config->rx_callback) {
+            config->rx_callback(rx_chunk.chunk.data.data + 1,
+                                rx_chunk.chunk.data.length - 2,
+                                config->callback_userdata);
+          }
+
           break;
 
         case AX_FIFO_CHUNK_RSSI:
