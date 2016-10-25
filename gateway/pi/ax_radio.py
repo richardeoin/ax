@@ -21,6 +21,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 from _ax_radio import lib,ffi
+from enum import Enum
 
 @ffi.def_extern()
 def global_rx_callback(data, length, userdata):
@@ -29,7 +30,12 @@ def global_rx_callback(data, length, userdata):
 
 
 class AxRadio:
-    def __init__(self, channel=0, frequency=434600000):
+    Modulations = Enum('Modulation', 'FSK PSK AFSK')
+    VcoTypes = Enum('VcoType', 'Undefined Internal Inductor External')
+
+    def __init__(self,
+                 channel=0,
+                 frequency=434600000, vco_type=VcoTypes.Undefined):
 
         self.config = ffi.new('ax_config*')
         self.mod = ffi.new('ax_modulation*')
@@ -49,6 +55,17 @@ class AxRadio:
         # set frequencies
         self.config.synthesiser.A.frequency = frequency
         self.config.synthesiser.B.frequency = frequency
+        if vco_type == self.VcoTypes.Undefined: # guess VCO type
+            if frequency > 400e6:
+                vco_type = self.VcoTypes.Internal
+            else:
+                vco_type = self.VcoTypes.Inductor
+        if vco_type == self.VcoTypes.Inductor:
+            self.config.synthesiser.vco_type = lib.AX_VCO_INTERNAL_EXTERNAL_INDUCTOR
+        elif vco_type == self.VcoTypes.External:
+            self.config.synthesiser.vco_type = lib.AX_VCO_EXTERNAL
+
+        # report rssi and rf frequency offset
         self.config.pkt_store_flags = lib.AX_PKT_STORE_RSSI | \
                                 lib.AX_PKT_STORE_RF_OFFSET
 
@@ -69,9 +86,10 @@ class AxRadio:
         self.modulation()
 
     def modulation(self, bitrate=2000):
-        self.mod.modulation = 8
-        self.mod.encoding = 3
-        self.mod.framing = 20
+        self.mod.modulation = lib.AX_MODULATION_FSK
+        self.mod.encoding = lib.AX_ENC_NRZI
+        self.mod.framing = lib.AX_FRAMING_MODE_HDLC | \
+                           lib.AX_FRAMING_CRCMODE_CCITT
         self.mod.bitrate = bitrate
         self.mod.fec = 0
         self.mod.power = 0.1
