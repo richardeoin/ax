@@ -57,11 +57,11 @@ struct ax_modulation psk1_modulation = {
 /* APRS */
 struct ax_modulation aprs_modulation = {
   .modulation = AX_MODULATION_AFSK,
-  .encoding = AX_ENC_NRZI,
-  .framing = AX_FRAMING_MODE_HDLC, /* also crc?? */
+  .encoding = AX_ENC_NRZ,
+  .framing = AX_FRAMING_MODE_HDLC | AX_FRAMING_CRCMODE_CCITT,
   .bitrate = 1200,
   .fec = 0,
-  .power = 1.0,
+  .power = 0.1,
   .parameters = { .afsk = {
-      .space = 1200, .mark = 2200, .deviation = 3000 }},
+      .space = 2200, .mark = 1200, .deviation = 3000 }},
 };
