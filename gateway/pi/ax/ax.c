@@ -810,6 +810,7 @@ void ax_set_afsk_tx_parameters(ax_config* config, ax_modulation* mod)
  */
 void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
 {
+  uint8_t modcfga;
   uint16_t pwr;
   uint32_t deviation;
   uint32_t fskdev, txrate;
@@ -823,8 +824,15 @@ void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
   }
 
   /* amplitude shaping mode of transmitter */
-  ax_hw_write_register_8(config, AX_REG_MODCFGA,
-                         AX_MODCFGA_TXDIFF | AX_MODCFGA_AMPLSHAPE_RAISED_COSINE);
+  switch (mod->modulation) {
+    case AX_MODULATION_FSK:
+      modcfga = AX_MODCFGA_TXDIFF | AX_MODCFGA_AMPLSHAPE_RAISED_COSINE;
+      break;
+    default:
+      modcfga = AX_MODCFGA_TXDIFF;
+      break;
+  }
+  ax_hw_write_register_8(config, AX_REG_MODCFGA, modcfga);
 
   /* TX deviation */
   switch (mod->modulation) {
@@ -844,6 +852,9 @@ void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
 
       fskdev = (uint32_t)((((float)deviation * (1 << 24) * 0.858785) /
                            (float)config->f_xtal) + 0.5);
+
+      /* additionally set mark and space frequencies */
+      ax_set_afsk_tx_parameters(config, mod);
       break;
   }
   ax_hw_write_register_24(config, AX_REG_FSKDEV, fskdev);
