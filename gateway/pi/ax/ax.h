@@ -106,6 +106,15 @@ typedef struct ax_synthesiser {
   uint8_t vco_range;       /* determined by autoranging */
 } ax_synthesiser;
 
+/**
+ * Represents a received packet and its metadata
+ */
+typedef struct ax_packet {
+  unsigned char data[0x200];
+  uint16_t length;
+  int16_t rssi;
+  int32_t rffreqoffs;
+} ax_packet;
 
 /**
  * configuration
@@ -133,8 +142,6 @@ typedef struct ax_config {
   void (*spi_transfer)(unsigned char*, uint8_t);
 
   /* receive */
-  void (*rx_callback)(unsigned char*, uint8_t, void*);
-  void* callback_userdata;
   uint8_t pkt_store_flags;      /* PKTSTOREFLAGS */
 
   /* pll vco */
@@ -156,6 +163,7 @@ void ax_tx_packet(ax_config* config, uint8_t* packet, uint16_t length);
 
 /* receive */
 void ax_rx_on(ax_config* config, ax_modulation* mod);
+int ax_rx_packet(ax_config* config, ax_packet* rx_pkt);
 
 /* turn off */
 void ax_off(ax_config* config);

@@ -55,6 +55,12 @@ uses wiring pi
 * switch to WOR mode
 * re-runs autoranging if PLL fails to lock
 
+#### `ax_rx_packet(ax_config* config, ax_packet** ptr)`
+
+* checks fifo for packets
+* returns 1 if packet was received, 0 otherwise
+* should be called in a while loop, to fully empty the FIFO
+
 #### `ax_off(ax_config* config)`
 
 * switch to POWERDOWN/DEEPSLEEP mode

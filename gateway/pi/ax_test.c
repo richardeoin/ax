@@ -56,8 +56,8 @@ int main()
     fprintf(stderr, "Failed to open SPI port.  Try loading spi library with 'gpio load spi'");
   }
 
-
-  uint8_t pkt[0x100];
+  ax_packet rx_pkt;
+  uint8_t tx_pkt[0x100];
 
   ax_config config;
   memset(&config, 0, sizeof(ax_config));
@@ -74,14 +74,18 @@ int main()
     AX_PKT_STORE_RF_OFFSET;
 
   ax_init(&config);
-  //ax_tx_on(&config, &fsk1_modulation);
+
+  /* ax_tx_on(&config, &fsk1_modulation); */
+  /* while (1) { */
+  /*   strcpy((char*)pkt, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"); */
+  /*   ax_tx_packet(&config, pkt, 40); */
+  /* } */
+
   ax_rx_on(&config, &fsk1_modulation);
-
   while (1) {
-    //sleep(1);
-
-    strcpy((char*)pkt, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-    ax_tx_packet(&config, pkt, 40);
+    while (ax_rx_packet(&config, &rx_pkt)) {
+      printf("rx!\n");
+    }
   }
 
   return 0;

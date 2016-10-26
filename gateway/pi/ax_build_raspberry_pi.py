@@ -59,9 +59,6 @@ ffibuilder.cdef("""
 enum ax_set_spi_transfer_status
      ax_set_spi_transfer(ax_config* config, int channel);
 """)
-ffibuilder.cdef("""
-extern "Python" void global_rx_callback(unsigned char*, uint8_t, void*);
-""")
 spi_callbacks_source = """
 #include <wiringPi.h>
 #include <wiringPiSPI.h>

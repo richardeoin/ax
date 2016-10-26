@@ -1328,6 +1328,9 @@ enum ax_vco_ranging_result ax_vco_ranging(ax_config* config)
  * PUBLIC FUNCTIONS ------------------------------------------
  */
 
+/**
+ * Configure and switch to FULLTX
+ */
 void ax_tx_on(ax_config* config, ax_modulation* mod)
 {
   debug_printf("going for transmit...\n");
@@ -1374,13 +1377,10 @@ void ax_tx_packet(ax_config* config, uint8_t* packet, uint16_t length)
 }
 
 /**
- * First attempt at receiver, don't care about power
+ * Configure and switch to FULLRX
  */
 void ax_rx_on(ax_config* config, ax_modulation* mod)
 {
-  ax_rx_chunk rx_chunk;
-  float offset;
-
   /* TODO set defaults in modulation structure  */
   mod->max_delta_carrier = 2*870; // 2*2ppm TODO ppm calculations
 
@@ -1397,6 +1397,16 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
 
   /* Clear FIFO */
   ax_fifo_clear(config);
+}
+
+/**
+ * Reads packets from the FIFO
+ */
+int ax_rx_packet(ax_config* config, ax_packet* rx_pkt)
+{
+  ax_rx_chunk rx_chunk;
+  uint16_t length;
+  float offset;
 
   while (1) {
     /* Check if FIFO is not empty */
@@ -1405,27 +1415,25 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
       /* Got something from FIFO */
       switch (rx_chunk.chunk_t) {
         case AX_FIFO_CHUNK_DATA:
+          length = rx_chunk.chunk.data.length;
 
           debug_printf("flags 0x%02x\n", rx_chunk.chunk.data.flags);
           debug_printf("length %d\n", rx_chunk.chunk.data.length);
 
-          switch (mod->framing & 0x7) {
-            default:              /* anything else, unsure */
-              /* print byte-by-byte */
-              /* for (int i = 0; i < rx_chunk.chunk.data.length; i++) { */
-              /*   debug_printf("data %d: 0x%02x %c\n", i, */
-              /*                rx_chunk.chunk.data.data[i+1], */
-              /*                rx_chunk.chunk.data.data[i+1]); */
-              /* } */
-              rx_chunk.chunk.data.data[rx_chunk.chunk.data.length - 2] = 0;
-              printf("Data: %s\n", rx_chunk.chunk.data.data + 1);
-          }
+          /* print byte-by-byte */
+          /* for (int i = 0; i < rx_chunk.chunk.data.length; i++) { */
+          /*   debug_printf("data %d: 0x%02x %c\n", i, */
+          /*                rx_chunk.chunk.data.data[i+1], */
+          /*                rx_chunk.chunk.data.data[i+1]); */
+          /* } */
+          rx_chunk.chunk.data.data[rx_chunk.chunk.data.length - 2] = 0;
+          printf("Data: %s\n", rx_chunk.chunk.data.data + 1);
 
-          if (config->rx_callback) {
-            config->rx_callback(rx_chunk.chunk.data.data + 1,
-                                rx_chunk.chunk.data.length - 2,
-                                config->callback_userdata);
-          }
+          /* populate rx_pkt */
+          memcpy(rx_pkt->data, rx_chunk.chunk.data.data + 1, length - 2);
+          rx_pkt->length = length - 2;
+
+          return 1;
 
           break;
 
@@ -1446,6 +1454,9 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
           debug_printf("some other chunk type 0x%02x\n", rx_chunk.chunk_t);
           break;
       }
+    } else {
+      /* nothing to read from fifo */
+      return 0;
     }
   }
 

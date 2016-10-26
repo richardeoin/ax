@@ -22,12 +22,7 @@
 
 from _ax_radio import lib,ffi
 from enum import Enum
-
-@ffi.def_extern()
-def global_rx_callback(data, length, userdata):
-    radio = ffi.from_handle(userdata)
-    radio.process_rx_callback(data, length)
-
+import time
 
 class AxRadio:
     Modulations = Enum('Modulation', 'FSK PSK AFSK')
@@ -105,24 +100,23 @@ class AxRadio:
         lib.ax_tx_packet(self.config, bytes_to_transmit, len(bytes_to_transmit))
 
 
-    def process_rx_callback(self, data, length): # called by global_rx_callback
-        if self.rx_func:
-            self.rx_func(data, length)
-
-    def receive(self, rx_func):              # receive
-        # register rx callback
-        userdata = ffi.new_handle(self)
-        self._userdata = userdata     # must keep this alive!
-        self.config.rx_callback = lib.global_rx_callback
-        self.config.callback_userdata = userdata
-        self.rx_func = rx_func
+    def receive(self, rx_func): # receive
+        pkt = ffi.new('ax_packet*')
 
         lib.ax_rx_on(self.config, self.mod)
+
+        while 1:
+            while lib.ax_rx_packet(self.config, pkt): # empty the fifo
+                data = bytes(pkt.data[0:pkt.length])
+                rx_func(data, pkt.length)
+
+            time.sleep(0.025)         # 25ms sleep
 
 if __name__ == "__main__":
 
     def rx_callback(data, length):
-        print(data)
+        print(length)
+        print(data.decode('utf-8'))
 
     radio = AxRadio()
     radio.receive(rx_callback)
