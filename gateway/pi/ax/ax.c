@@ -412,9 +412,8 @@ void ax_set_rx_parameters(ax_config* config, ax_modulation* mod)
       rx_bandwidth = mod->bitrate * ((5.0/6) + m);
       break;
 
-    case AX_MODULATION_AFSK:    /* bitrate * (5/6 + dev?) */
-      rx_bandwidth = mod->bitrate * /* maybe this works???? */
-        ((5.0/6) + mod->parameters.afsk.deviation);
+    case AX_MODULATION_AFSK:    /* deviation?? */
+      rx_bandwidth = mod->parameters.afsk.deviation; /* maybe?? */
       break;
 
     default:
@@ -507,6 +506,11 @@ void ax_set_rx_parameters(ax_config* config, ax_modulation* mod)
       break;
   }
 
+  /* AFSK */
+  if (mod->modulation == AX_MODULATION_AFSK) {
+    ax_set_afsk_rx_parameters(config, mod);
+  }
+
   /* Bypass the Amplitude Lowpass filter */
   ax_hw_write_register_8(config, AX_REG_AMPLFILTER, 0x00);
 }
@@ -542,6 +546,8 @@ void ax_set_rx_parameter_set(ax_config* config,
       m = mod->parameters.fsk.modulation_index; break;
     case AX_MODULATION_MSK:
       m = 0.5; break;
+    case AX_MODULATION_AFSK:
+      m = (float)mod->parameters.afsk.deviation / mod->bitrate;
   }
 
   /* PARAMETER SET */
