@@ -61,17 +61,32 @@ void ax_set_synthesiser_parameters(ax_config* config,
  */
 void ax_fifo_tx_data(ax_config* config, uint8_t* data, uint8_t length)
 {
-  uint8_t header[5];
+  uint8_t header[8];
 
   if (length < (256-3)) {       /* All in one go */
 
     /* wait for space */
-    while (ax_hw_read_register_16(config, AX_REG_FIFOCOUNT) > (256-length));
+    uint8_t fifocount = ax_hw_read_register_16(config, AX_REG_FIFOCOUNT);
+    while (fifocount > (256-length)) {
+      fifocount = ax_hw_read_register_16(config, AX_REG_FIFOCOUNT);
+    }
+
+    /* preamble */
+    /* header[0] = AX_FIFO_CHUNK_DATA; */
+    /* header[1] = 5+1;         /\* incl flags *\/ */
+    /* header[2] = AX_FIFO_TXDATA_PKTSTART | AX_FIFO_TXDATA_UNENC | */
+    /*   AX_FIFO_TXDATA_NOCRC; */
+    /* header[3] = 0x7E; */
+    /* header[4] = 0x7E; */
+    /* header[5] = 0x7E; */
+    /* header[6] = 0x7E; */
+    /* header[7] = 0x7E; */
+    /* ax_hw_write_fifo(config, header, 8); */
 
     /* header */
     header[0] = AX_FIFO_CHUNK_DATA;
     header[1] = length+1;         /* incl flags */
-    header[2] = AX_FIFO_TXDATA_PKTSTART |  AX_FIFO_TXDATA_PKTEND;
+    header[2] = AX_FIFO_TXDATA_PKTSTART | AX_FIFO_TXDATA_PKTEND;
 
     ax_hw_write_fifo(config, header, 3);
     ax_hw_write_fifo(config, data, (uint8_t)length);
@@ -198,7 +213,7 @@ uint8_t ax_scratch(ax_config* config)
 void ax_set_pwrmode(ax_config* config, uint8_t pwrmode)
 {
   config->pwrmode = pwrmode;
-  ax_hw_write_register_8(config, AX_REG_PWRMODE, pwrmode); /* TODO R-m-w */
+  ax_hw_write_register_8(config, AX_REG_PWRMODE, 0x60 | pwrmode); /* TODO R-m-w */
 }
 
 
@@ -1138,10 +1153,15 @@ void ax_set_performance_tuning(ax_config* config)
   ax_hw_write_register_8(config, AX_REG_REF, 0x03); /* 0xF0D */
 
   ax_hw_write_register_8(config, 0xF1C, 0x07); /* const */
-  ax_hw_write_register_8(config, 0xF21, 0x68); /* !! */
-  ax_hw_write_register_8(config, 0xF22, 0xFF); /* !! */
-  ax_hw_write_register_8(config, 0xF23, 0x84); /* !! */
-  ax_hw_write_register_8(config, 0xF26, 0x98); /* !! */
+
+  /* ax_hw_write_register_8(config, 0xF21, 0x68); /\* !! *\/ */
+  /* ax_hw_write_register_8(config, 0xF22, 0xFF); /\* !! *\/ */
+  /* ax_hw_write_register_8(config, 0xF23, 0x84); /\* !! *\/ */
+  /* ax_hw_write_register_8(config, 0xF26, 0x98); /\* !! *\/ */
+  ax_hw_write_register_8(config, 0xF21, 0x5c); /* !! */
+  ax_hw_write_register_8(config, 0xF22, 0x53); /* !! */
+  ax_hw_write_register_8(config, 0xF23, 0x76); /* !! */
+  ax_hw_write_register_8(config, 0xF26, 0x92); /* !! */
 
   ax_hw_write_register_8(config, 0xF44, 0x25); /* !! */
   //ax_hw_write_register_8(config, 0xF44, 0x24); /* !! */
@@ -1438,19 +1458,19 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt)
           debug_printf("length %d\n", rx_chunk.chunk.data.length);
 
           /* print byte-by-byte */
-          /* for (int i = 0; i < rx_chunk.chunk.data.length; i++) { */
-          /*   debug_printf("data %d: 0x%02x %c\n", i, */
-          /*                rx_chunk.chunk.data.data[i+1], */
-          /*                rx_chunk.chunk.data.data[i+1]); */
-          /* } */
-          rx_chunk.chunk.data.data[rx_chunk.chunk.data.length - 2] = 0;
-          printf("Data: %s\n", rx_chunk.chunk.data.data + 1);
+          for (int i = 0; i < rx_chunk.chunk.data.length; i++) {
+            debug_printf("data %d: 0x%02x %c\n", i,
+                         rx_chunk.chunk.data.data[i+1],
+                         rx_chunk.chunk.data.data[i+1]);
+          }
+          /* rx_chunk.chunk.data.data[rx_chunk.chunk.data.length - 2] = 0; */
+          /* printf("Data: %s\n", rx_chunk.chunk.data.data + 1); */
 
-          /* populate rx_pkt */
-          memcpy(rx_pkt->data, rx_chunk.chunk.data.data + 1, length - 2);
-          rx_pkt->length = length - 2;
+          /* /\* populate rx_pkt *\/ */
+          /* memcpy(rx_pkt->data, rx_chunk.chunk.data.data + 1, length - 2); */
+          /* rx_pkt->length = length - 2; */
 
-          return 1;
+          /* return 1; */
 
           break;
 

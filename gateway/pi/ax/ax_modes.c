@@ -57,7 +57,7 @@ struct ax_modulation psk1_modulation = {
 /* APRS */
 struct ax_modulation aprs_modulation = {
   .modulation = AX_MODULATION_AFSK,
-  .encoding = AX_ENC_NRZ,
+  .encoding = AX_ENC_NRZI,
   .framing = AX_FRAMING_MODE_HDLC | AX_FRAMING_CRCMODE_CCITT,
   .bitrate = 1200,
   .fec = 0,

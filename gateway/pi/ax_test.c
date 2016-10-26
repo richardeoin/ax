@@ -50,6 +50,45 @@ void rx_callback(unsigned char* data, uint8_t length)
 }
 
 
+uint8_t ax25_frame[0x100];
+#define AX25_CONTROL_WORD   0x03 /* Use Unnumbered Information (UI) frames */
+#define AX25_PROTOCOL_ID    0xF0 /* No third level protocol */
+
+int aprs(void) {
+  char addresses[50];
+  char information[50];
+  uint32_t i = 0;
+  uint16_t fcs;
+
+  /* Encode the destination / source / path addresses */
+  uint32_t addresses_len = sprintf(addresses, "%-6s%c%-6s%c%-6s%c",
+                                   "APRS", 0,
+                                   "Q0QQQ", 2,
+                                   "WIDE2", 1);
+  uint32_t information_len = 5;
+  strcpy(information, "HELLO");
+
+  /* Process addresses */
+  for (i = 0; i < addresses_len; i++) {
+
+    if ((i % 7) == 6) {         /* Secondary Station ID */
+      ax25_frame[i] = ((addresses[i] << 1) & 0x1F) | 0x60;
+    } else {
+      ax25_frame[i] = (addresses[i] << 1);
+    }
+  }
+  ax25_frame[i-1] |= 0x1;     /* Set HLDC bit */
+
+  ax25_frame[i++] = AX25_CONTROL_WORD;
+  ax25_frame[i++] = AX25_PROTOCOL_ID;
+
+  /* Process information */
+  memcpy(ax25_frame+i, information, information_len);
+  i += information_len;
+
+  return i;
+}
+
 int main()
 {
   if (wiringPiSPISetup(0, SPI_SPEED) < 0) {
@@ -75,11 +114,14 @@ int main()
 
   ax_init(&config);
 
-  /* ax_tx_on(&config, &fsk1_modulation); */
-  /* while (1) { */
-  /*   strcpy((char*)pkt, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"); */
-  /*   ax_tx_packet(&config, pkt, 40); */
-  /* } */
+  ax_tx_on(&config, &aprs_modulation);
+  while (1) {
+    int aprs_len = aprs();
+    ax_tx_packet(&config, ax25_frame, aprs_len);
+
+    /* strcpy((char*)pkt, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"); */
+    /* ax_tx_packet(&config, pkt, 40); */
+  }
 
   ax_rx_on(&config, &fsk1_modulation);
   while (1) {
