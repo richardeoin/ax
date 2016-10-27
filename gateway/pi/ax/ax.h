@@ -159,7 +159,8 @@ typedef struct ax_config {
 
 /* transmit */
 void ax_tx_on(ax_config* config, ax_modulation* mod);
-void ax_tx_packet(ax_config* config, uint8_t* packet, uint16_t length);
+void ax_tx_packet(ax_config* config, ax_modulation* mod,
+                  uint8_t* packet, uint16_t length);
 
 /* receive */
 void ax_rx_on(ax_config* config, ax_modulation* mod);
@@ -169,6 +170,6 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt);
 void ax_off(ax_config* config);
 
 /* init */
-int ax_init(ax_config* config);
+int ax_init(ax_config* config, ax_modulation* mod);
 
 #endif  /* AX_H */

@@ -59,7 +59,8 @@ void ax_set_synthesiser_parameters(ax_config* config,
 /**
  * write tx data
  */
-void ax_fifo_tx_data(ax_config* config, uint8_t* data, uint8_t length)
+void ax_fifo_tx_data(ax_config* config, ax_modulation* mod,
+                     uint8_t* data, uint8_t length)
 {
   uint8_t header[8];
 
@@ -67,28 +68,53 @@ void ax_fifo_tx_data(ax_config* config, uint8_t* data, uint8_t length)
 
     /* wait for space */
     uint8_t fifocount = ax_hw_read_register_16(config, AX_REG_FIFOCOUNT);
-    while (fifocount > (256-length)) {
+    while (fifocount > (256 - (length+20))) {
       fifocount = ax_hw_read_register_16(config, AX_REG_FIFOCOUNT);
     }
 
-    /* preamble */
-    /* header[0] = AX_FIFO_CHUNK_DATA; */
-    /* header[1] = 5+1;         /\* incl flags *\/ */
-    /* header[2] = AX_FIFO_TXDATA_PKTSTART | AX_FIFO_TXDATA_UNENC | */
-    /*   AX_FIFO_TXDATA_NOCRC; */
-    /* header[3] = 0x7E; */
-    /* header[4] = 0x7E; */
-    /* header[5] = 0x7E; */
-    /* header[6] = 0x7E; */
-    /* header[7] = 0x7E; */
-    /* ax_hw_write_fifo(config, header, 8); */
+    switch (mod->framing & 0xE) {
+      case AX_FRAMING_MODE_HDLC:
+        /* ax handles framing for us */
+        break;
+      default:
+        /* preamble */
+        header[0] = AX_FIFO_CHUNK_REPEATDATA;
+        header[1] = AX_FIFO_TXDATA_UNENC | AX_FIFO_TXDATA_RAW | AX_FIFO_TXDATA_NOCRC;
+        header[2] = 4;
+        header[3] = 0xAA;
+        ax_hw_write_fifo(config, header, 4);
+
+        /* sync word */
+        header[0] = AX_FIFO_CHUNK_DATA;
+        header[1] = 4+1;         /* incl flags */
+        header[2] = AX_FIFO_TXDATA_RAW | AX_FIFO_TXDATA_NOCRC;
+        header[3] = 0x33;
+        header[4] = 0x55;
+        header[5] = 0x33;
+        header[6] = 0x55;
+        ax_hw_write_fifo(config, header, header[1]+2);
+        break;
+    }
 
     /* header */
-    header[0] = AX_FIFO_CHUNK_DATA;
-    header[1] = length+1;         /* incl flags */
-    header[2] = AX_FIFO_TXDATA_PKTSTART | AX_FIFO_TXDATA_PKTEND;
+    switch (mod->framing & 0xE) {
+      case AX_FRAMING_MODE_HDLC:
+        /* no length byte */
+        header[0] = AX_FIFO_CHUNK_DATA;
+        header[1] = length+1;         /* incl flags */
+        header[2] = AX_FIFO_TXDATA_PKTSTART | AX_FIFO_TXDATA_PKTEND;
+        ax_hw_write_fifo(config, header, 3);
+        break;
+      default:
+        /* include length byte */
+        header[0] = AX_FIFO_CHUNK_DATA;
+        header[1] = 1+length+1;         /* incl flags */
+        header[2] = AX_FIFO_TXDATA_PKTSTART | AX_FIFO_TXDATA_PKTEND;
+        header[3] = length+1;   /* incl length byte */
+        ax_hw_write_fifo(config, header, 4);
+        break;
+    }
 
-    ax_hw_write_fifo(config, header, 3);
     ax_hw_write_fifo(config, data, (uint8_t)length);
 
   } else {
@@ -1013,18 +1039,33 @@ void ax_set_packet_parameters(ax_config* config)
 /**
  * 5.21 set match parameters
  */
-void ax_set_match_parameters(ax_config* config)
+void ax_set_match_parameters(ax_config* config, ax_modulation* mod)
 {
-  /* match 1, then match 0 */
+  switch (mod->framing & 0xE) {
+    case AX_FRAMING_MODE_HDLC:    /* HDLC */
+      ax_hw_write_register_16(config, AX_REG_MATCH1PAT, 0x7E7E);
+      /* Raw received bits, 11-bit pattern */
+      ax_hw_write_register_8(config, AX_REG_MATCH1LEN, 0x8A);
+      /* signal a match if recevied bitstream matches for more than 10 bits */
+      ax_hw_write_register_8(config, AX_REG_MATCH1MAX, 0x0A);
+      break;
 
-  ax_hw_write_register_32(config, AX_REG_MATCH0PAT, 0xAACCAACC);
-  ax_hw_write_register_16(config, AX_REG_MATCH1PAT, 0x7E7E);
+    default:                      /* Preamble and Sync Vector */
+      /* Match 1 - initial preamble */
+      ax_hw_write_register_16(config, AX_REG_MATCH1PAT, 0x5555);
+      /* Raw received bits, 11-bit pattern */
+      ax_hw_write_register_8(config, AX_REG_MATCH1LEN, 0x8A);
+      /* signal a match if recevied bitstream matches for more than 10 bits */
+      ax_hw_write_register_8(config, AX_REG_MATCH1MAX, 0x0A);
 
-  ax_hw_write_register_8(config, AX_REG_MATCH1LEN, 0x8A);
-  /* Raw received bits, 11-bit pattern */
-
-  ax_hw_write_register_8(config, AX_REG_MATCH1MAX, 0x0A);
-  /* signal a match if recevied bitstream matches for 10-bits or more */
+      /* Match 0 - sync vector */
+      ax_hw_write_register_32(config, AX_REG_MATCH0PAT, 0x55335533);
+      /* decoded bits, 32-bit pattern */
+      ax_hw_write_register_8(config, AX_REG_MATCH0LEN, 0x1F);
+      /* signal a match if recevied bitstream matches for more than 30 bits */
+      ax_hw_write_register_8(config, AX_REG_MATCH0MAX, 0x1E);
+      break;
+  }
 }
 /**
  * 5.22 set packet controller parameters
@@ -1221,7 +1262,7 @@ void ax5043_set_registers(ax_config* config, ax_modulation* mod)
   ax_set_packet_parameters(config);
 
   // MATCH0PAT, MATCH1PAT
-  ax_set_match_parameters(config);
+  ax_set_match_parameters(config, mod);
 
   // TMGRX, RSSIABSTHR, PKTCHUNKSIZE, PKTACCEPTFLAGS
   ax_set_packet_controller_parameters(config, mod);
@@ -1372,7 +1413,7 @@ void ax_tx_on(ax_config* config, ax_modulation* mod)
 {
   debug_printf("going for transmit...\n");
 
-  ax5043_set_registers(config, mod);
+  //ax5043_set_registers(config, mod);
   ax5043_set_registers_tx(config);    /* set tx registers??? */
 
   /* Enable TCXO if used */
@@ -1394,7 +1435,8 @@ void ax_tx_on(ax_config* config, ax_modulation* mod)
 /**
  * Loads packet into the FIFO for transmission
  */
-void ax_tx_packet(ax_config* config, uint8_t* packet, uint16_t length)
+void ax_tx_packet(ax_config* config, ax_modulation* mod,
+                  uint8_t* packet, uint16_t length)
 {
   if (config->pwrmode != AX_PWRMODE_FULLTX) {
     debug_printf("PWRMODE must be FULLTX before writing to FIFO!\n");
@@ -1405,7 +1447,7 @@ void ax_tx_packet(ax_config* config, uint8_t* packet, uint16_t length)
   while (!(ax_hw_read_register_8(config, AX_REG_POWSTAT) & AX_POWSTAT_SVMODEM));
 
   /* Write preamble and packet to the FIFO */
-  ax_fifo_tx_data(config, packet, length);
+  ax_fifo_tx_data(config, mod, packet, length);
 
   /* Commit FIFO contents */
   ax_fifo_commit(config);
@@ -1424,7 +1466,7 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
   /* Meta-data can be automatically added to FIFO, see PKTSTOREFLAGS */
 
   /* Place chip in FULLRX mode */
-  ax5043_set_registers(config, mod);
+  //ax5043_set_registers(config, mod);
   ax_set_pwrmode(config, AX_PWRMODE_FULLRX);
 
   ax5043_set_registers_rx(config);    /* set rx registers??? */
@@ -1434,6 +1476,9 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
 
   /* Clear FIFO */
   ax_fifo_clear(config);
+
+  /* Tune Baseband - Experimental */
+  //ax_hw_write_register_8(config, AX_REG_BBTUNE, 0x10);
 }
 
 /**
@@ -1523,7 +1568,7 @@ void ax_off(ax_config* config)
  * * check SPI interface functions
  * * range VCOs
  */
-int ax_init(ax_config* config)
+int ax_init(ax_config* config, ax_modulation* mod)
 {
   /* must set spi_transfer */
   if (!config->spi_transfer) {
@@ -1562,12 +1607,14 @@ int ax_init(ax_config* config)
   ax_hw_write_register_8(config, AX_REG_PWRMODE, AX_PWRMODE_RST);
 
   /* AX is now in reset */
+  for (int i = 0; i < 1000; i++);
 
   /* Set the PWRMODE register to POWERDOWN, also clears RST bit */
   ax_set_pwrmode(config, AX_PWRMODE_POWERDOWN);
 
   /* Program parameters.. (these could initially come from windows software, or be calculated) */
   ax_set_xtal_parameters(config);
+  ax5043_set_registers(config, mod);
 
   /* Perform auto-ranging for both VCOs */
   if (ax_vco_ranging(config) != AX_VCO_RANGING_SUCCESS) {
