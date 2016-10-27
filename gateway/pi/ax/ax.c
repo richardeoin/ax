@@ -1062,8 +1062,8 @@ void ax_set_match_parameters(ax_config* config, ax_modulation* mod)
       ax_hw_write_register_32(config, AX_REG_MATCH0PAT, 0x55335533);
       /* decoded bits, 32-bit pattern */
       ax_hw_write_register_8(config, AX_REG_MATCH0LEN, 0x1F);
-      /* signal a match if recevied bitstream matches for more than 30 bits */
-      ax_hw_write_register_8(config, AX_REG_MATCH0MAX, 0x1E);
+      /* signal a match if recevied bitstream matches for more than 28 bits */
+      ax_hw_write_register_8(config, AX_REG_MATCH0MAX, 0x1C);
       break;
   }
 }
