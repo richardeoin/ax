@@ -55,6 +55,19 @@ struct ax_modulation gmsk_modulation = {
 };
 
 
+/* GMSK HDLC FEC test */
+struct ax_modulation gmsk_hdlc_fec_modulation = {
+  .modulation = AX_MODULATION_MSK,
+  .encoding = AX_ENC_NRZ + AX_ENC_SCRAM,
+  .framing = AX_FRAMING_MODE_HDLC | AX_FRAMING_CRCMODE_CCITT,
+  .shaping = AX_MODCFGF_FREQSHAPE_GAUSSIAN_BT_0_5,
+  .bitrate = 2000,
+  .fec = 1,
+  .power = 0.1,
+  .continuous = 0,
+};
+
+
 /* APRS */
 struct ax_modulation aprs_modulation = {
   .modulation = AX_MODULATION_AFSK,

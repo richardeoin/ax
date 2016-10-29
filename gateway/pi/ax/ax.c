@@ -74,7 +74,7 @@ void ax_fifo_tx_data(ax_config* config, ax_modulation* mod,
 
     switch (mod->framing & 0xE) {
       case AX_FRAMING_MODE_HDLC:
-        /* ax handles framing for us */
+        /* preamble */
         header[0] = AX_FIFO_CHUNK_REPEATDATA;
         header[1] = AX_FIFO_TXDATA_UNENC | AX_FIFO_TXDATA_RAW | AX_FIFO_TXDATA_NOCRC;
         header[2] = 9;
@@ -258,9 +258,19 @@ void ax_set_modulation_parameters(ax_config* config, ax_modulation* mod)
   ax_hw_write_register_8(config, AX_REG_MODULATION, mod->modulation);
 
   /* encoding (inv, diff, scram, manch..) */
+  if (mod->fec) {                 /* FEC doesn't play with inversion */
+    debug_printf("WARNING: Inversion is not supported in FEC! NOT INVERTING\n");
+    mod->encoding &= ~AX_ENC_INV; /* clear inv bit */
+  }
   ax_hw_write_register_8(config, AX_REG_ENCODING, mod->encoding);
 
   /* framing */
+  if (mod->fec && ((mod->framing & 0xE) != AX_FRAMING_MODE_HDLC)) {
+    /* FEC needs HDLC framing */
+    debug_printf("WARNING: FEC needs HDLC! Forcing HDLC framing..\n");
+    mod->framing &= ~0xE;
+    mod->framing |= AX_FRAMING_MODE_HDLC;
+  }
   ax_hw_write_register_8(config, AX_REG_FRAMING, mod->framing);
 
   if ((mod->framing & 0xE) == AX_FRAMING_MODE_RAW_SOFT_BITS) {
@@ -1028,9 +1038,9 @@ void ax_set_match_parameters(ax_config* config, ax_modulation* mod)
     case AX_FRAMING_MODE_HDLC:    /* HDLC */
       ax_hw_write_register_16(config, AX_REG_MATCH1PAT, 0x7E7E);
       /* Raw received bits, 11-bit pattern */
-      ax_hw_write_register_8(config, AX_REG_MATCH1LEN, 0x0A);
+      ax_hw_write_register_8(config, AX_REG_MATCH1LEN, 0x8A);
       /* signal a match if recevied bitstream matches for more than 10 bits */
-      ax_hw_write_register_8(config, AX_REG_MATCH1MAX, 0x08);
+      ax_hw_write_register_8(config, AX_REG_MATCH1MAX, 0x0A);
       break;
 
     default:                      /* Preamble and Sync Vector */
