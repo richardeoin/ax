@@ -75,6 +75,11 @@ void ax_fifo_tx_data(ax_config* config, ax_modulation* mod,
     switch (mod->framing & 0xE) {
       case AX_FRAMING_MODE_HDLC:
         /* ax handles framing for us */
+        header[0] = AX_FIFO_CHUNK_REPEATDATA;
+        header[1] = AX_FIFO_TXDATA_UNENC | AX_FIFO_TXDATA_RAW | AX_FIFO_TXDATA_NOCRC;
+        header[2] = 9;
+        header[3] = 0x7E;
+        ax_hw_write_fifo(config, header, 4);
         break;
       default:
         /* preamble */
@@ -267,8 +272,10 @@ void ax_set_modulation_parameters(ax_config* config, ax_modulation* mod)
 
   /* fec */
   if (mod->fec) {
-    ax_hw_write_register_8(config, AX_REG_FEC, /* positive interleaver sync, 1/2 soft rx */
+    /* positive interleaver sync, 1/2 soft rx */
+    ax_hw_write_register_8(config, AX_REG_FEC,
                            AX_FEC_POS | AX_FEC_ENA | (1 << 1));
+    ax_hw_write_register_8(config, AX_REG_FECSYNC, 98);
   }
 }
 
@@ -729,6 +736,10 @@ void ax_set_rx_parameter_set(ax_config* config,
     default: break;
   }
 
+  if (mod->fec) {
+    rffreq_recovery_gain += 2;
+  }
+
   /* limit to 13 */
   if (rffreq_recovery_gain > 0xD) { rffreq_recovery_gain = 0xD; }
 
@@ -1017,9 +1028,9 @@ void ax_set_match_parameters(ax_config* config, ax_modulation* mod)
     case AX_FRAMING_MODE_HDLC:    /* HDLC */
       ax_hw_write_register_16(config, AX_REG_MATCH1PAT, 0x7E7E);
       /* Raw received bits, 11-bit pattern */
-      ax_hw_write_register_8(config, AX_REG_MATCH1LEN, 0x8A);
+      ax_hw_write_register_8(config, AX_REG_MATCH1LEN, 0x0A);
       /* signal a match if recevied bitstream matches for more than 10 bits */
-      ax_hw_write_register_8(config, AX_REG_MATCH1MAX, 0x0A);
+      ax_hw_write_register_8(config, AX_REG_MATCH1MAX, 0x08);
       break;
 
     default:                      /* Preamble and Sync Vector */
@@ -1087,6 +1098,10 @@ void ax_set_packet_controller_parameters(ax_config* config, ax_modulation* mod)
     /* increasing settling time for narrow bandwidths */
     pkt_misc_flags |= AX_PKT_FLAGS_RSSI_UNITS_BIT_TIME;
     rx_agc_settling = 15;       /* guess */
+
+    if (mod->fec) {
+      rx_agc_settling *= 4;     /* 4 times for FEC */
+    }
   } else {
     rx_agc_settling = 0;
   }
@@ -1492,6 +1507,9 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt)
                          rx_chunk.chunk.data.data[i+1],
                          rx_chunk.chunk.data.data[i+1]);
           }
+
+          debug_printf("FEC FEC FEC 0x%02x\n",
+                       ax_hw_read_register_8(config, AX_REG_FECSTATUS));
           /* rx_chunk.chunk.data.data[rx_chunk.chunk.data.length - 2] = 0; */
           /* printf("Data: %s\n", rx_chunk.chunk.data.data + 1); */
 
