@@ -64,7 +64,7 @@ struct ax_modulation gmsk_hdlc_fec_modulation = {
   .bitrate = 20000,
   .fec = 1,
   .power = 0.1,
-  .continuous = 0,
+  .continuous = 1,
 };
 
 
