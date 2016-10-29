@@ -47,7 +47,8 @@ typedef struct ax_modulation {
   uint8_t modulation;           /* modulation */
   uint8_t encoding;             /* encoding */
   uint8_t framing;              /* framing */
-  uint32_t bitrate;             /* link bitrate provided to user */
+  uint8_t shaping;              /* shaping */
+  uint32_t bitrate;             /* symbol bitrate provided to user */
   uint8_t fec;                  /* 0 = no fec, 1 = fec enabled */
 
   float power;                  /* TX output power */
@@ -69,6 +70,8 @@ typedef struct ax_modulation {
 
   uint8_t decimation;           /* set automatically */
   uint32_t rxdatarate;          /* set automatically */
+
+  float m;                      /* fsk modes */
 
 } ax_modulation;
 

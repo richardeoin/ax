@@ -431,15 +431,6 @@ void ax_set_rx_parameters(ax_config* config, ax_modulation* mod)
   uint32_t f_baseband, decimation;
   uint32_t fskd;
 
-  /* Modulation index for FSK modes */
-  float m = 0.0;
-  switch (mod->modulation) {
-    case AX_MODULATION_FSK:
-      m = mod->parameters.fsk.modulation_index; break;
-    case AX_MODULATION_MSK:
-      m = 0.5; break;
-  }
-
   /* RX Bandwidth */
   switch (mod->modulation) {
     case AX_MODULATION_ASK:
@@ -450,7 +441,7 @@ void ax_set_rx_parameters(ax_config* config, ax_modulation* mod)
 
     case AX_MODULATION_FSK:
     case AX_MODULATION_MSK:     /* bitrate * (5/6 + m) */
-      rx_bandwidth = mod->bitrate * ((5.0/6) + m);
+      rx_bandwidth = mod->bitrate * ((5.0/6) + mod->m);
       break;
 
     case AX_MODULATION_AFSK:    /* deviation?? */
@@ -539,7 +530,7 @@ void ax_set_rx_parameters(ax_config* config, ax_modulation* mod)
   switch (mod->modulation) {
     case AX_MODULATION_FSK:
     case AX_MODULATION_MSK:
-      fskd = (260 * m);         /* 260 provides a little wiggle room */
+      fskd = (260 * mod->m);   /* 260 provides a little wiggle room */
       fskd &= ~1;               /* clear LSB */
       ax_hw_write_register_16(config, AX_REG_FSKDMAX,  fskd & 0xFFFF);
       ax_hw_write_register_16(config, AX_REG_FSKDMIN, ~fskd & 0xFFFF);
@@ -579,17 +570,6 @@ void ax_set_rx_parameter_set(ax_config* config,
   uint8_t rffreq_recovery_gain;
   uint16_t freqdev;
   uint8_t amplgain, amplflags;
-
-  /* Modulation index for FSK modes */
-  float m = 0.0;
-  switch (mod->modulation) {
-    case AX_MODULATION_FSK:
-      m = mod->parameters.fsk.modulation_index; break;
-    case AX_MODULATION_MSK:
-      m = 0.5; break;
-    case AX_MODULATION_AFSK:
-      m = (float)mod->parameters.afsk.deviation / mod->bitrate;
-  }
 
   /* PARAMETER SET */
   switch (type) {
@@ -804,7 +784,7 @@ void ax_set_rx_parameter_set(ax_config* config,
           freqdev = 0; break; /* disable to avoid locking at wrong offset */
         case AX_PARAMETER_SET_AFTER_PATTERN1:
         case AX_PARAMETER_SET_DURING:
-          freqdev = (uint16_t)((m * 128 * 0.8) + 0.5); /* k_sf = 0.8 */
+          freqdev = (uint16_t)((mod->m * 128 * 0.8) + 0.5); /* k_sf = 0.8 */
       }
       break;
 
@@ -863,20 +843,12 @@ void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
   uint32_t fskdev, txrate;
 
   /* frequency shaping mode of transmitter */
-  switch (mod->modulation) {
-    case AX_MODULATION_FSK:
-      ax_hw_write_register_8(config, AX_REG_MODCFGF,
-                             AX_MODCFGF_FREQSHAPE_GAUSSIAN_BT_0_5);
-      break;
-  }
+  ax_hw_write_register_8(config, AX_REG_MODCFGF, mod->shaping & 0x3);
 
   /* amplitude shaping mode of transmitter */
   switch (mod->modulation) {
-    case AX_MODULATION_FSK:
-      modcfga = AX_MODCFGA_TXDIFF | AX_MODCFGA_AMPLSHAPE_RAISED_COSINE;
-      break;
     default:
-      modcfga = AX_MODCFGA_TXDIFF;
+      modcfga = AX_MODCFGA_TXDIFF | AX_MODCFGA_AMPLSHAPE_RAISED_COSINE;
       break;
   }
   ax_hw_write_register_8(config, AX_REG_MODCFGA, modcfga);
@@ -886,9 +858,10 @@ void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
     case AX_MODULATION_PSK:     /* PSK */
       fskdev = 0;
       break;
+    case AX_MODULATION_MSK:     /* MSK */
     case AX_MODULATION_FSK:     /* FSK */
 
-      deviation = (mod->parameters.fsk.modulation_index * 0.5 * mod->bitrate);
+      deviation = (mod->m * 0.5 * mod->bitrate);
 
       fskdev = (uint32_t)((((float)deviation * (1 << 24)) /
                            (float)config->f_xtal) + 0.5);
@@ -905,7 +878,6 @@ void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
       break;
   }
   ax_hw_write_register_24(config, AX_REG_FSKDEV, fskdev);
-  /* 0x2AB = 683. f_deviation = 666Hz... */
   debug_printf("fskdev %d = 0x%06x\n", deviation, fskdev);
 
 
@@ -1226,6 +1198,18 @@ void ax_wait_for_oscillator(ax_config* config)
 
 void ax5043_set_registers(ax_config* config, ax_modulation* mod)
 {
+  /* Modulation index for FSK modes */
+  switch (mod->modulation) {
+    case AX_MODULATION_FSK:
+      mod->m = mod->parameters.fsk.modulation_index; break;
+    case AX_MODULATION_MSK:
+      mod->m = 0.5; break;
+    case AX_MODULATION_AFSK:
+      mod->m = (float)mod->parameters.afsk.deviation / mod->bitrate;
+    default:
+      mod->m = 0;
+  }
+
   // MODULATION, ENCODING, FRAMING, FEC
   ax_set_modulation_parameters(config, mod);
 
