@@ -547,6 +547,7 @@ void ax_set_rx_parameters(ax_config* config, ax_modulation* mod)
   switch (mod->modulation) {
     case AX_MODULATION_FSK:
     case AX_MODULATION_MSK:
+    case AX_MODULATION_AFSK:
       fskd = (260 * mod->m);   /* 260 provides a little wiggle room */
       fskd &= ~1;               /* clear LSB */
       ax_hw_write_register_16(config, AX_REG_FSKDMAX,  fskd & 0xFFFF);
