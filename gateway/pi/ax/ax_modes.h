@@ -27,10 +27,12 @@
 
 #include "ax/ax.h"
 
-/* GFSK test */
+/* GFSK HDLC test */
 extern struct ax_modulation gfsk_hdlc_modulation;
 /* GMSK test */
 extern struct ax_modulation gmsk_modulation;
+/* GMSK HDLC FEC test */
+extern struct ax_modulation gmsk_hdlc_fec_modulation;
 /* APRS */
 extern struct ax_modulation aprs_modulation;
 

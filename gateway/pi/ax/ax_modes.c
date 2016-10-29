@@ -32,11 +32,11 @@
 /* GFSK test, m = 0.667 */
 struct ax_modulation gfsk_hdlc_modulation = {
   .modulation = AX_MODULATION_FSK,
-  .encoding = AX_ENC_NRZ,
+  .encoding = AX_ENC_NRZI,
   .framing = AX_FRAMING_MODE_HDLC | AX_FRAMING_CRCMODE_CCITT,
   .shaping = AX_MODCFGF_FREQSHAPE_GAUSSIAN_BT_0_5,
   .bitrate = 2000,
-  .fec = 1,
+  .fec = 0,
   .power = 0.1,
   .parameters = { .fsk = { .modulation_index = 2.0/3 }},
   .continuous = 0,
@@ -61,7 +61,7 @@ struct ax_modulation gmsk_hdlc_fec_modulation = {
   .encoding = AX_ENC_NRZ + AX_ENC_SCRAM,
   .framing = AX_FRAMING_MODE_HDLC | AX_FRAMING_CRCMODE_CCITT,
   .shaping = AX_MODCFGF_FREQSHAPE_GAUSSIAN_BT_0_5,
-  .bitrate = 2000,
+  .bitrate = 20000,
   .fec = 1,
   .power = 0.1,
   .continuous = 0,

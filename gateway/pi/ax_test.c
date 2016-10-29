@@ -112,19 +112,19 @@ int main()
   config.pkt_store_flags = AX_PKT_STORE_RSSI |
     AX_PKT_STORE_RF_OFFSET;
 
-  ax_init(&config, &gmsk_modulation);
+  ax_init(&config, &gmsk_hdlc_fec_modulation);
 
-  ax_tx_on(&config, &gmsk_modulation);
-  while (1) {
-    /* int aprs_len = aprs(); */
-    /* ax_tx_packet(&config, &msk1_modulation, ax25_frame, aprs_len); */
+  /* ax_tx_on(&config, &gmsk_hdlc_fec_modulation); */
+  /* while (1) { */
+  /*   /\* int aprs_len = aprs(); *\/ */
+  /*   /\* ax_tx_packet(&config, &msk1_modulation, ax25_frame, aprs_len); *\/ */
 
-                        ////////////////////////////////////////
-    strcpy((char*)tx_pkt, "ughdffgiuhdfudshfdjshfdjshfsudhfdskjfdfd");
-    ax_tx_packet(&config, &gmsk_modulation, tx_pkt, 40);
-  }
+  /*                          //////////////////////////////////////// */
+  /*   strcpy((char*)tx_pkt, "ughdffgiuhdfudshfdjshfdjshfsudhfdskjfdfd"); */
+  /*   ax_tx_packet(&config, &gmsk_hdlc_fec_modulation, tx_pkt, 40); */
+  /* } */
 
-  ax_rx_on(&config, &gmsk_modulation);
+  ax_rx_on(&config, &gmsk_hdlc_fec_modulation);
   while (1) {
     while (ax_rx_packet(&config, &rx_pkt)) {
       printf("rx!\n");
