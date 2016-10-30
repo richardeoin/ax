@@ -77,16 +77,21 @@ class AxRadio:
 
         self.in_transmit_mode = False
 
-        # set default modulation parameters
+        # set modulation parameters
         self.modulation()
 
-    def modulation(self, bitrate=2000):
-        self.mod.modulation = lib.AX_MODULATION_FSK
-        self.mod.encoding = lib.AX_ENC_NRZI
+        # calculate tweakable parameters
+        lib.ax_default_params(self.config, self.mod)
+
+
+    def modulation(self, bitrate=20000):
+        self.mod.modulation = lib.AX_MODULATION_MSK
+        self.mod.encoding = lib.AX_ENC_NRZ | lib.AX_ENC_SCRAM
         self.mod.framing = lib.AX_FRAMING_MODE_HDLC | \
                            lib.AX_FRAMING_CRCMODE_CCITT
+        self.mod.shaping = lib.AX_MODCFGF_FREQSHAPE_GAUSSIAN_BT_0_5
         self.mod.bitrate = bitrate
-        self.mod.fec = 0
+        self.mod.fec = 1
         self.mod.power = 0.1
         self.mod.parameters.fsk.modulation_index = 2/3
         self.mod.continuous = 1

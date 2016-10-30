@@ -33,11 +33,17 @@ The following proceedure should be preformed to wake from DEEPSLEEP.
 * starts up oscilator and performs VCO ranging
 * switch to POWERDOWN/DEEPSLEEP mode
 
-#### `ax_adjust_frequency(ax_config* config, enum ax_pll pll, uint32_t frequency)`
+#### `ax_default_params(ax_config* config, ax_modulation* mod)`
+
+* must have called `ax_init` first
+* sets tweakable values in `mod->par` to their default values
+
+#### `ax_adjust_frequency(ax_config* config, uint32_t frequency)`
 
 * check frequency change is less than 5MHz in 868/915 or 2.5MHz in 433
 * re-calculate register values for new frequency
 * write new values to chip (if not in DEEPSLEEP)
+* (currently just frequency synth A)
 
 #### `ax_tx_on(ax_config* config, ax_modulation* modulation)`
 

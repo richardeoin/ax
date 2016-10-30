@@ -1261,7 +1261,7 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt)
           memcpy(rx_pkt->data, rx_chunk.chunk.data.data + 1, length - 2);
           rx_pkt->length = length - 2;
 
-          /* return 1; */
+          return 1;
 
           break;
 

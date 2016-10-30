@@ -93,7 +93,7 @@ enum ax_set_spi_transfer_status
 """
 
 # source files to build
-ax_sources = ["ax/ax.c", "ax/ax_hw.c", "ax/ax_modes.c"]
+ax_sources = ["ax/ax.c", "ax/ax_hw.c", "ax/ax_modes.c", "ax/ax_params.c"]
 ffibuilder.set_source("_ax_radio",
                       definitions_enum + status_enum + spi_callbacks_source,
                       sources=ax_sources, libraries=['wiringPi'], include_dirs=['.'])
