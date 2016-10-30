@@ -224,6 +224,38 @@ void ax_fifo_commit(ax_config* config)
  */
 
 /**
+ * Converts a value to 4-bit mantissa and 4-bit exponent
+ */
+static uint8_t ax_value_to_mantissa_exp_4_4(uint32_t value)
+{
+  uint8_t exp = 0;
+
+  while (value > 15 && exp < 15) {
+    value >>= 1; exp++;
+  }
+
+  return ((value & 0xF) << 4) | exp; /* mantissa, exponent */
+}
+/**
+ * Converts a value to 3-bit exponent and 5-bit mantissa
+ */
+static uint8_t ax_value_to_exp_mantissa_3_5(uint32_t value)
+{
+  uint8_t exp = 0;
+
+  while (value > 31 && exp < 7) {
+    value >>= 1; exp++;
+  }
+
+  return ((exp & 0x7) << 5) | value; /* exponent, mantissa */
+}
+
+
+/**
+ * REGISTERS -----------------------------------------------
+ */
+
+/**
  * 5.1 revision and interface probing
  */
 uint8_t ax_silicon_revision(ax_config* config)
@@ -246,8 +278,6 @@ void ax_set_pwrmode(ax_config* config, uint8_t pwrmode)
   config->pwrmode = pwrmode;
   ax_hw_write_register_8(config, AX_REG_PWRMODE, 0x60 | pwrmode); /* TODO R-m-w */
 }
-
-
 
 /**
  * 5.5 - 5.6 set modulation and fec parameters
@@ -1209,9 +1239,9 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt)
           /* rx_chunk.chunk.data.data[rx_chunk.chunk.data.length - 2] = 0; */
           /* printf("Data: %s\n", rx_chunk.chunk.data.data + 1); */
 
-          /* /\* populate rx_pkt *\/ */
-          /* memcpy(rx_pkt->data, rx_chunk.chunk.data.data + 1, length - 2); */
-          /* rx_pkt->length = length - 2; */
+          /* populate rx_pkt */
+          memcpy(rx_pkt->data, rx_chunk.chunk.data.data + 1, length - 2);
+          rx_pkt->length = length - 2;
 
           /* return 1; */
 

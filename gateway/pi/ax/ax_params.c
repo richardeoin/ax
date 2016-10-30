@@ -185,6 +185,28 @@ enum ax_parameter_set_type {
   AX_PARAMETER_SET_DURING,
   AX_PARAMETER_SET_CONTINUOUS,
 };
+/**
+ * 5.15.15 AGCGAIN
+ */
+static uint8_t ax_rx_agcgain(ax_config* config, uint32_t f_3dB)
+{
+  const float PI = 3.1415927;
+
+  float ratio = (64.0 * PI * config->f_xtaldiv * f_3dB) /
+    (float)config->f_xtal;
+
+  return (uint8_t)(-log2(1 - sqrt(1 - ratio)));
+}
+/**
+ * 5.15.24 FREQGAINC/D
+ */
+static uint8_t ax_rx_freqgain_rf_recovery_gain(ax_config* config, uint32_t freq)
+{
+  float ratio = (float)config->f_xtal / (config->f_xtaldiv * 4 * freq);
+
+  return (uint8_t)(log2(ratio) + 0.5);
+}
+
 void ax_param_rx_parameter_set(ax_config* config, ax_modulation* mod,
                                ax_rx_param_set* pars, ax_params* par,
                                enum ax_parameter_set_type type)

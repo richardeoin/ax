@@ -51,9 +51,8 @@ typedef struct ax_rx_param_set {
   uint8_t amplgain, amplflags;
   uint16_t freq_dev;
 } ax_rx_param_set;
-
 /**
- * Represents the parameters for an ax5243 radio
+ * Represents the tweakable parameters for an ax5243 radio
  */
 typedef struct ax_params {
   float m; // modulation index
@@ -112,7 +111,7 @@ typedef struct ax_modulation {
   uint8_t fec;                  /* 0 = no fec, 1 = fec enabled */
 
   float power;                  /* TX output power, as fraction of maximum */
-/* Pre-distortion is possible in hardware, but not supported here. */
+  /* Pre-distortion is possible in hardware, but not supported here. */
 
   uint8_t continuous;           /* 0 = occasional packets, 1 = continuous tx */
 
@@ -129,7 +128,7 @@ typedef struct ax_modulation {
   uint32_t max_delta_carrier;   /* max. delta from carrier centre, autoset if 0 */
   /* larger increases the time for the AFC to achieve lock */
 
-  ax_params par;
+  ax_params par;                /* tweakable parameters */
 
 } ax_modulation;
 
