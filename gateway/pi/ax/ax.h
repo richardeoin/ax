@@ -41,6 +41,66 @@ typedef enum ax_init_status {
 } ax_init_status;
 
 /**
+ * Represents a receive parameter set for an ax5243 radio
+ */
+typedef struct ax_rx_param_set {
+  uint8_t agc_attack, agc_decay;
+  uint32_t time_gain, dr_gain;
+  uint8_t phase_gain, filter_idx;
+  uint8_t rffreq_recovery_gain;
+  uint8_t amplgain, amplflags;
+  uint16_t freq_dev;
+} ax_rx_param_set;
+
+/**
+ * Represents the parameters for an ax5243 radio
+ */
+typedef struct ax_params {
+  float m; // modulation index
+
+  // 5.6 forward error correction
+  uint8_t fec_inp_shift;
+  uint8_t shortmem;
+
+  // 5.15 receiver parameters
+  uint32_t rx_bandwidth;
+  uint32_t f_baseband;
+  uint32_t if_frequency;
+  uint32_t iffreq;
+  uint32_t decimation;
+  uint32_t rx_data_rate;
+  uint32_t max_rf_offset;
+  uint32_t fskd;
+  uint8_t  ampl_filter;
+
+  // 5.15.10 afskctrl
+  uint8_t afskshift;
+
+  // 5.15.15+ receiver parameter sets
+  ax_rx_param_set rx_param_sets[4];
+
+  // 5.20 packet format
+  uint8_t fec_sync_dis;
+
+  // 5.21 match parameters
+  uint8_t match1_threashold;
+  uint8_t match0_threashold;
+
+  // 5.22 packet controller
+  uint8_t pkt_misc_flags;
+  uint16_t tx_pll_boost_time, tx_pll_settle_time;
+  uint16_t rx_pll_boost_time, rx_pll_settle_time;
+  uint16_t rx_coarse_agc;
+  uint16_t rx_agc_settling, rx_rssi_settling;
+  uint16_t preamble_1_timeout, preamble_2_timeout;
+  uint8_t rssi_abs_thr;
+
+  // 5.26 'performance tuning'
+  uint8_t perftuning_option;
+
+} ax_params;
+
+/**
  * Represents the chosen modulation scheme.
  */
 typedef struct ax_modulation {
@@ -51,7 +111,8 @@ typedef struct ax_modulation {
   uint32_t bitrate;             /* symbol bitrate provided to user */
   uint8_t fec;                  /* 0 = no fec, 1 = fec enabled */
 
-  float power;                  /* TX output power */
+  float power;                  /* TX output power, as fraction of maximum */
+/* Pre-distortion is possible in hardware, but not supported here. */
 
   uint8_t continuous;           /* 0 = occasional packets, 1 = continuous tx */
 
@@ -68,10 +129,7 @@ typedef struct ax_modulation {
   uint32_t max_delta_carrier;   /* max. delta from carrier centre, autoset if 0 */
   /* larger increases the time for the AFC to achieve lock */
 
-  uint8_t decimation;           /* set automatically */
-  uint32_t rxdatarate;          /* set automatically */
-
-  float m;                      /* fsk modes */
+  ax_params par;
 
 } ax_modulation;
 
@@ -149,9 +207,6 @@ typedef struct ax_config {
 
   /* pll vco */
   uint32_t f_pllrng;
-
-  /* rx parameters */
-
 
 } ax_config;
 

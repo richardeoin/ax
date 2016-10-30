@@ -22,8 +22,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef AX_CALC_H
-#define AX_CALC_H
+#ifndef AX_PARAMS_H
+#define AX_PARAMS_H
 
 #include <stdint.h>
 #include <math.h>
@@ -81,4 +81,7 @@ static uint8_t ax_value_to_exp_mantissa_3_5(uint32_t value)
 }
 
 
-#endif  /* AX_CALC_H */
+/* populates ax_params structure */
+void ax_populate_params(ax_config* config, ax_modulation* mod, ax_params* par);
+
+#endif  /* AX_PARAMS_H */

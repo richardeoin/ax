@@ -35,7 +35,7 @@ SOURCES		= $(shell $(FIND) . -name '*.c')
 INCLUDES	= $(shell $(FIND) . -name '*.h')
 
 # Object files
-objects		= ax/ax.o ax/ax_hw.o ax/ax_modes.o ax_test.o
+objects		= ax/ax.o ax/ax_hw.o ax/ax_modes.o ax/ax_params.o ax_test.o
 OBJECTS		= $(addprefix $(OUTPUT_PATH),$(objects))
 
 # Assemble a list of c and h files that are used in this project

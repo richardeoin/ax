@@ -37,7 +37,7 @@
 #include "ax/ax_reg_values.h"
 #include "ax/ax_fifo.h"
 #include "ax/ax_modes.h"
-#include "ax/ax_calc.h"
+#include "ax/ax_params.h"
 
 #include <stdio.h>
 #define debug_printf printf
@@ -404,11 +404,10 @@ void ax_set_afsk_rx_parameters(ax_config* config, ax_modulation* mod)
   uint16_t mark = mod->parameters.afsk.mark;
   uint16_t space = mod->parameters.afsk.space;
   uint16_t afskmark, afskspace;
-  uint8_t afskshift;
 
   /* Mark */
   afskmark = (uint16_t)((((float)mark * (1 << 16) *
-                          mod->decimation * config->f_xtaldiv) /
+                          mod->par.decimation * config->f_xtaldiv) /
                          (float)config->f_xtal) + 0.5);
   ax_hw_write_register_16(config, AX_REG_AFSKMARK, afskmark);
 
@@ -416,143 +415,47 @@ void ax_set_afsk_rx_parameters(ax_config* config, ax_modulation* mod)
 
   /* Space */
   afskspace = (uint16_t)((((float)space * (1 << 16) *
-                           mod->decimation * config->f_xtaldiv) /
+                           mod->par.decimation * config->f_xtaldiv) /
                           (float)config->f_xtal) + 0.5);
   ax_hw_write_register_16(config, AX_REG_AFSKSPACE, afskspace);
 
   debug_printf("afskspace (rx) %d = 0x%04x\n", space, afskspace);
 
   /* Detector Bandwidth */
-  float bw = (float)config->f_xtal /
-    (32 * mod->bitrate * config->f_xtaldiv * mod->decimation);
-
-#ifdef USE_MATH_H
-  afskshift = (uint8_t)(2 * log2(bw));
-#else
-  debug_printf("math.h required! define USE_MATH_H\n");
-  afskshift = 4;                /* or define manually */
-#endif
-
-  ax_hw_write_register_16(config, AX_REG_AFSKCTRL, afskshift);
-
-  debug_printf("afskshift (rx) %f = %d\n", bw, afskshift);
+  ax_hw_write_register_16(config, AX_REG_AFSKCTRL, mod->par.afskshift);
 }
 /**
  * 5.15 set receiver parameters
  */
 void ax_set_rx_parameters(ax_config* config, ax_modulation* mod)
 {
-  uint32_t maxrfoffset;
-  uint32_t rx_bandwidth;
-  uint32_t if_frequency, iffreq;
-  uint32_t f_baseband, decimation;
-  uint32_t fskd;
-
-  /* RX Bandwidth */
-  switch (mod->modulation) {
-    case AX_MODULATION_ASK:
-    case AX_MODULATION_ASK_COHERENT:
-    case AX_MODULATION_PSK:
-      rx_bandwidth = mod->bitrate; /* bitrate */
-      break;
-
-    case AX_MODULATION_FSK:
-    case AX_MODULATION_MSK:     /* bitrate * (5/6 + m) */
-      rx_bandwidth = mod->bitrate * ((5.0/6) + mod->m);
-      break;
-
-    case AX_MODULATION_AFSK:    /* deviation?? */
-      rx_bandwidth = mod->parameters.afsk.deviation; /* maybe?? */
-      break;
-
-    default:
-      debug_printf("No clue about rx bandwidth for this mode.. Guessing\n");
-      rx_bandwidth = 4*mod->bitrate; /* vague guess */
-  }
-
-  /* Baseband frequency */
-  f_baseband = 5 * rx_bandwidth;
-  debug_printf("f baseband = %d Hz\n", f_baseband);
-
   /* IF Frequency */
-  switch (mod->modulation) {
-    case AX_MODULATION_ASK:
-    case AX_MODULATION_ASK_COHERENT:
-    case AX_MODULATION_PSK:
-      if_frequency = 7000+mod->bitrate; /* guess?? */
-      if (if_frequency < 9380) {
-        if_frequency = 9380;     /* minimum 9380 Hz */
-      }
-      break;
+  ax_hw_write_register_16(config, AX_REG_IFFREQ, mod->par.iffreq);
 
-    case AX_MODULATION_FSK:
-    case AX_MODULATION_MSK:
-    case AX_MODULATION_AFSK:
-      if_frequency = (5 * rx_bandwidth) / 6;
-      if (if_frequency < 3180) {
-        if_frequency = 3180;     /* minimum 3180 Hz */
-      }
-      break;
-
-    default:
-      debug_printf("No clue about IF frequency for this mode.. Guessing\n");
-      if_frequency = rx_bandwidth;
-  }
-
-
-  /* IF Frequency */
-  iffreq = (uint32_t)((((float)if_frequency * config->f_xtaldiv *
-                        (1 << 20)) / (float)config->f_xtal) + 0.5);
-  ax_hw_write_register_16(config, AX_REG_IFFREQ, iffreq);
-  debug_printf("IF frequency %d Hz = 0x%04x\n", if_frequency, iffreq);
-
+  debug_printf("WRITE IFFREQ %d\n", mod->par.iffreq);
 
   /* Decimation */
-  decimation = (uint32_t)(((float)config->f_xtal /
-                           (16.0 * config->f_xtaldiv * f_baseband)) + 0.5);
-  if (decimation > 127) {
-    decimation = 127;
-    debug_printf("decimation capped at 127(!)\n");
-  }
-  mod->decimation = decimation;
-  ax_hw_write_register_8(config, AX_REG_DECIMATION, mod->decimation);
-  debug_printf("decimation = %d\n", decimation);
-
+  ax_hw_write_register_8(config, AX_REG_DECIMATION, mod->par.decimation);
 
   /* RX Data Rate */
-  mod->rxdatarate = (uint32_t)((((float)config->f_xtal * 128) /
-                                ((float)config->f_xtaldiv * mod->bitrate *
-                                 mod->decimation)) + 0.5);
-  ax_hw_write_register_24(config, AX_REG_RXDATARATE, mod->rxdatarate);
-
-  debug_printf("rx data rate %d = 0x%04x\n", mod->bitrate, mod->rxdatarate);
-
+  ax_hw_write_register_24(config, AX_REG_RXDATARATE, mod->par.rx_data_rate);
 
   /* Max Data Rate offset */
   ax_hw_write_register_24(config, AX_REG_MAXDROFFSET, 0x0);
   /* 0. Therefore < 1% */
 
-
   /* Max RF offset - Correct offset at first LO */
-  maxrfoffset = (uint32_t)((((float)mod->max_delta_carrier *
-                             (1 << 24)) / (float)config->f_xtal) + 0.5);
   ax_hw_write_register_24(config, AX_REG_MAXRFOFFSET,
-                          AX_MAXRFOFFSET_FREQOFFSCORR_FIRST_LO | maxrfoffset);
-
-  debug_printf("max rf offset %d Hz = 0x%04x\n",
-               mod->max_delta_carrier, maxrfoffset);
-
+                          (AX_MAXRFOFFSET_FREQOFFSCORR_FIRST_LO |
+                           mod->par.max_rf_offset));
 
   /* Maximum deviation of FSK Demodulator */
   switch (mod->modulation) {
     case AX_MODULATION_FSK:
     case AX_MODULATION_MSK:
     case AX_MODULATION_AFSK:
-      fskd = (260 * mod->m);   /* 260 provides a little wiggle room */
-      fskd &= ~1;               /* clear LSB */
-      ax_hw_write_register_16(config, AX_REG_FSKDMAX,  fskd & 0xFFFF);
-      ax_hw_write_register_16(config, AX_REG_FSKDMIN, ~fskd & 0xFFFF);
-      debug_printf("min fsk demod dev 0x%04x\n", ~fskd & 0xFFFF);
+      ax_hw_write_register_16(config, AX_REG_FSKDMAX,  mod->par.fskd & 0xFFFF);
+      ax_hw_write_register_16(config, AX_REG_FSKDMIN, ~mod->par.fskd & 0xFFFF);
       break;
   }
 
@@ -561,68 +464,22 @@ void ax_set_rx_parameters(ax_config* config, ax_modulation* mod)
     ax_set_afsk_rx_parameters(config, mod);
   }
 
-  /* Bypass the Amplitude Lowpass filter */
-  ax_hw_write_register_8(config, AX_REG_AMPLFILTER, 0x00);
+  /* Amplitude Lowpass filter */
+  ax_hw_write_register_8(config, AX_REG_AMPLFILTER, mod->par.ampl_filter);
 }
 
 /**
- * 5.15 Rx Parameter Sets
+ * 5.15.15+ rx parameter sets
  */
-enum ax_parameter_set_type {
-  AX_PARAMETER_SET_INITIAL_SETTLING,
-  AX_PARAMETER_SET_AFTER_PATTERN1,
-  AX_PARAMETER_SET_DURING,
-  AX_PARAMETER_SET_CONTINUOUS,
-};
 void ax_set_rx_parameter_set(ax_config* config,
-                             ax_modulation* mod,
-                             enum ax_parameter_set_type type)
+                             uint16_t ps, ax_rx_param_set* pars)
 {
-  uint16_t ps;
-  uint8_t agc_attack, agc_decay, agcgain;
-  uint32_t tmg_corr_frac;
-  uint32_t time_gain, dr_gain;
+  uint8_t agcgain;
   uint8_t timegain, drgain;
-  uint8_t phasegain, filteridx;
-  uint32_t rffreq_gain_f;
-  uint8_t rffreq_recovery_gain;
-  uint16_t freqdev;
-  uint8_t amplgain, amplflags;
 
-  /* PARAMETER SET */
-  switch (type) {
-    case AX_PARAMETER_SET_INITIAL_SETTLING: /* use set 0 for initial settling */
-      ps = AX_REG_RX_PARAMETER0; break;
-    case AX_PARAMETER_SET_AFTER_PATTERN1: /* use set 1 after pattern 1 */
-      ps = AX_REG_RX_PARAMETER1; break;
-    case AX_PARAMETER_SET_DURING:
-    case AX_PARAMETER_SET_CONTINUOUS: /* use set 3 during packet */
-      ps = AX_REG_RX_PARAMETER3; break;
-  }
 
   /* AGC Gain Attack/Decay */
-  /**
-   * 0xFF freezes the AGC.  during preamble it's set for f_3dB of the
-   * attack to be BITRATE, and f_3dB of the decay to be BITRATE/100
-   */
-  agc_attack = ax_rx_agcgain(config, mod->bitrate); /* attack f_3dB: bitrate */
-  agc_decay = agc_attack + 7;                       /* decay f_3dB: 128x slower */
-
-  switch (type) {
-    case AX_PARAMETER_SET_DURING: /* freeze AGC gain during packet */
-      agc_attack = agc_decay = 0xF; break;
-    case AX_PARAMETER_SET_CONTINUOUS: /* 4x slowdown compared to normal search */
-      agc_attack += 2;
-      agc_decay += 2;           /* fallthrough */
-    default:
-      /* limit attack > ~1kHz, decay > ~10Hz. could be relaxed?? */
-      if (agc_attack > 0x8) { agc_attack = 0x8; }
-      if (agc_decay  > 0xE) { agc_decay  = 0xE; }
-      break;
-  }
-
-  agcgain = ((agc_decay & 0xF) << 4) | (agc_attack & 0xF);
-  debug_printf("agcgain 0x%02x\n", agcgain);
+  agcgain = ((pars->agc_decay & 0xF) << 4) | (pars->agc_attack & 0xF);
   ax_hw_write_register_8(config, ps + AX_RX_AGCGAIN, agcgain);
 
 
@@ -648,72 +505,19 @@ void ax_set_rx_parameter_set(ax_config* config,
 
 
   /* Gain of timing recovery loop */
-  /**
-   * TMGCORRFRAC - 4, 16, 32
-   * tightning the loop...
-   */
-  switch (type) {
-    case AX_PARAMETER_SET_INITIAL_SETTLING:
-      tmg_corr_frac = 4;        /* fast lock */
-      break;
-    case AX_PARAMETER_SET_AFTER_PATTERN1:
-      tmg_corr_frac = 16;
-      break;
-    default:
-      tmg_corr_frac = 32;       /* low sampling time jitter */
-      break;
-  }
-  time_gain = (uint32_t)((float)mod->rxdatarate / tmg_corr_frac);
-  if (time_gain >= mod->rxdatarate - (1<<12)) { /* see 5.15.3 */
-    /* effectively increase tmg_corr_frac to meet restriction */
-    timegain = mod->rxdatarate - (1<<12);
-  }
-  timegain = ax_value_to_mantissa_exp_4_4(time_gain);
-  debug_printf("time gain %d = 0x%02x\n", time_gain, timegain);
+  timegain = ax_value_to_mantissa_exp_4_4(pars->time_gain);
   ax_hw_write_register_8(config, ps + AX_RX_TIMEGAIN, timegain);
 
 
   /* Gain of datarate recovery loop */
-  /**
-   * TMGCORRFRAC - 256, 512, 1024
-   * tightning the loop...
-   */
-  switch (type) {
-    case AX_PARAMETER_SET_INITIAL_SETTLING:
-      tmg_corr_frac = 256;        /* fast lock */
-      break;
-    case AX_PARAMETER_SET_AFTER_PATTERN1:
-      tmg_corr_frac = 512;
-      break;
-    default:
-      tmg_corr_frac = 1024;       /* low datarate jitter */
-      break;
-  }
-  dr_gain = (uint32_t)((float)mod->rxdatarate / tmg_corr_frac);
-  drgain = ax_value_to_mantissa_exp_4_4(dr_gain);
-
-  debug_printf("datarate gain %d = 0x%02x\n", dr_gain, drgain);
+  drgain = ax_value_to_mantissa_exp_4_4(pars->dr_gain);
   ax_hw_write_register_8(config, ps + AX_RX_DRGAIN, drgain);
 
 
   /* Gain of phase recovery loop / decimation filter fractional b/w */
-  /**
-   * Usually 0xC3. TODO ASK
-   */
-  switch (mod->modulation) {
-    case AX_MODULATION_ASK:
-    case AX_MODULATION_PSK:     /* Maybe also PSK?? */
-      /* TODO reduce decim fractional bandwidth when decimation reg overflows... */
-      filteridx = 0x3;          /* decimation filter fractional bandwidth */
-      phasegain = 0x0;          /* gain of the phase recovery loop */
-      break;
-    default:
-      filteridx = 0x3;          /* decimation filter fractional bandwidth */
-      phasegain = 0x3;          /* gain of the phase recovery loop */
-      break;
-  }
   ax_hw_write_register_8(config, ps + AX_RX_PHASEGAIN,
-                         ((filteridx & 0x3) << 6) | (phasegain & 0xF));
+                         ((pars->filter_idx & 0x3) << 6) |
+                         (pars->phase_gain & 0xF));
 
 
   /**
@@ -727,97 +531,26 @@ void ax_set_rx_parameter_set(ax_config* config,
 
 
   /* Gain of RF frequency recovery loop */
-  switch (mod->modulation) {
-    case AX_MODULATION_FSK:
-    case AX_MODULATION_MSK:
-    case AX_MODULATION_AFSK: /* not sure where this comes from, not documented */
-      rffreq_gain_f = mod->bitrate;
-      break;
-    default:
-      rffreq_gain_f = mod->bitrate * 4;
-      break;
-  }
-  rffreq_recovery_gain = ax_rx_freqgain_rf_recovery_gain(config, rffreq_gain_f);
-
-  switch (type) {
-    case AX_PARAMETER_SET_DURING:
-    case AX_PARAMETER_SET_CONTINUOUS:
-      rffreq_recovery_gain += 4; /* 16x reduction in 'rffreq_gain_f' */
-      break;
-    default: break;
-  }
-
-  if (mod->fec) {
-    rffreq_recovery_gain += 2;
-  }
-
-  /* limit to 13 */
-  if (rffreq_recovery_gain > 0xD) { rffreq_recovery_gain = 0xD; }
-
-  debug_printf("rffreq_recovery_gain 0x%02x\n", rffreq_recovery_gain);
-
-  /* 0xB, 0xB, 0xD */
   /* Same for phase and frequency detectors  */
   ax_hw_write_register_8(config, ps + AX_RX_FREQUENCYGAINC,
-                         rffreq_recovery_gain);
+                         pars->rffreq_recovery_gain);
   ax_hw_write_register_8(config, ps + AX_RX_FREQUENCYGAIND,
-                         rffreq_recovery_gain);
+                         pars->rffreq_recovery_gain);
 
+  debug_printf("WRITE RFFREQ RECOVERY GAIN %d\n", pars->rffreq_recovery_gain);
 
   /* Amplitude Recovery Loop */
-  switch (mod->modulation) {
-    case AX_MODULATION_ASK:
-    case AX_MODULATION_PSK:     /* try to jump, averaging */
-      amplflags = AX_AMPLGAIN_TRY_TO_CORRECT_AMPLITUDE_ON_AGC_JUMP |
-        AX_AMPLGAIN_AMPLITUDE_RECOVERY_AVERAGING;
-
-      switch (type) {
-        case AX_PARAMETER_SET_INITIAL_SETTLING:
-        case AX_PARAMETER_SET_AFTER_PATTERN1:
-          amplgain = 2;         /* reduced gain */
-          break;
-        case AX_PARAMETER_SET_DURING:
-        case AX_PARAMETER_SET_CONTINUOUS:
-          amplgain = 8;         /* increased gain */
-          break;
-      }
-
-      break;
-    default:           /* don't try to jump, peak det, default gain */
-      amplflags = AX_AMPLGAIN_AMPLITUDE_RECOVERY_PEAKDET;
-      amplgain = 6;
-      break;
-  }
   ax_hw_write_register_8(config, ps + AX_RX_AMPLITUDEGAIN,
-                         amplflags | amplgain);
+                         pars->amplflags | pars->amplgain);
 
 
   /* FSK Receiver Frequency Deviation */
-  /**
-   * Disable (0x00) for first pre-amble, then equal to deviation of signal???
-   */
-  switch (mod->modulation) {
-    case AX_MODULATION_FSK:
-    case AX_MODULATION_MSK:
-    case AX_MODULATION_AFSK:    /* also afsk?? */
-      switch (type) {
-        case AX_PARAMETER_SET_INITIAL_SETTLING:
-        case AX_PARAMETER_SET_CONTINUOUS:
-          freqdev = 0; break; /* disable to avoid locking at wrong offset */
-        case AX_PARAMETER_SET_AFTER_PATTERN1:
-        case AX_PARAMETER_SET_DURING:
-          freqdev = (uint16_t)((mod->m * 128 * 0.8) + 0.5); /* k_sf = 0.8 */
-      }
-      break;
+  ax_hw_write_register_16(config, ps + AX_RX_FREQDEV, pars->freq_dev);
 
-    default:
-      freqdev = 0;              /* no frequency deviation */
-  }
-  debug_printf("freqdev 0x%03x\n", freqdev);
-  ax_hw_write_register_16(config, ps + AX_RX_FREQDEV, freqdev);
 
   /* TODO FOUR FSK */
   ax_hw_write_register_8(config, ps + AX_RX_FOURFSK, 0x16);
+
 
   /* BB Gain Block Offset Compensation Resistors */
   /**
@@ -852,10 +585,6 @@ void ax_set_afsk_tx_parameters(ax_config* config, ax_modulation* mod)
 }
 /**
  * 5.16 set transmitter parameters
- *
- * * power - output power, as a fraction of maximum
- *
- * Pre-distortion is possible in hardware, but not supported here.
  */
 void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
 {
@@ -883,7 +612,7 @@ void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
     case AX_MODULATION_MSK:     /* MSK */
     case AX_MODULATION_FSK:     /* FSK */
 
-      deviation = (mod->m * 0.5 * mod->bitrate);
+      deviation = (mod->par.m * 0.5 * mod->bitrate);
 
       fskdev = (uint32_t)((((float)deviation * (1 << 24)) /
                            (float)config->f_xtal) + 0.5);
@@ -1015,10 +744,11 @@ void ax_set_baseband_parameters(ax_config* config)
 /**
  * 5.20 set packet format parameters
  */
-void ax_set_packet_parameters(ax_config* config)
+void ax_set_packet_parameters(ax_config* config, ax_modulation* mod)
 {
-  ax_hw_write_register_8(config, AX_REG_PKTADDRCFG, 0x01);
-  /* address at position 1 */
+  ax_hw_write_register_8(config, AX_REG_PKTADDRCFG,
+                         ((mod->par.fec_sync_dis & 1) << 5) |
+                         0x01); /* address at position 1 */
 
   ax_hw_write_register_8(config, AX_REG_PKTLENCFG, 0x80);
   /* 8 significant bits on length byte */
@@ -1031,17 +761,18 @@ void ax_set_packet_parameters(ax_config* config)
   /* 0xC8 = 200 bytes */
 }
 /**
- * 5.21 set match parameters
+ * 5.21 pattern match
  */
-void ax_set_match_parameters(ax_config* config, ax_modulation* mod)
+void ax_set_pattern_match_parameters(ax_config* config, ax_modulation* mod)
 {
   switch (mod->framing & 0xE) {
     case AX_FRAMING_MODE_HDLC:    /* HDLC */
       ax_hw_write_register_16(config, AX_REG_MATCH1PAT, 0x7E7E);
       /* Raw received bits, 11-bit pattern */
       ax_hw_write_register_8(config, AX_REG_MATCH1LEN, 0x8A);
-      /* signal a match if recevied bitstream matches for more than 10 bits */
-      ax_hw_write_register_8(config, AX_REG_MATCH1MAX, 0x0A);
+      /* signal a match if recevied bitstream matches for more than n bits */
+      ax_hw_write_register_8(config, AX_REG_MATCH1MAX,
+                             mod->par.match1_threashold);
       break;
 
     default:                      /* Preamble and Sync Vector */
@@ -1050,111 +781,67 @@ void ax_set_match_parameters(ax_config* config, ax_modulation* mod)
       /* Raw received bits, 11-bit pattern */
       ax_hw_write_register_8(config, AX_REG_MATCH1LEN, 0x8A);
       /* signal a match if recevied bitstream matches for more than 10 bits */
-      ax_hw_write_register_8(config, AX_REG_MATCH1MAX, 0x0A);
+      ax_hw_write_register_8(config, AX_REG_MATCH1MAX,
+                             mod->par.match1_threashold);
 
       /* Match 0 - sync vector */
       ax_hw_write_register_32(config, AX_REG_MATCH0PAT, 0x55335533);
       /* decoded bits, 32-bit pattern */
       ax_hw_write_register_8(config, AX_REG_MATCH0LEN, 0x1F);
       /* signal a match if recevied bitstream matches for more than 28 bits */
-      ax_hw_write_register_8(config, AX_REG_MATCH0MAX, 0x1C);
+      ax_hw_write_register_8(config, AX_REG_MATCH0MAX,
+                             mod->par.match0_threashold);
       break;
   }
 }
 /**
- * 5.22 set packet controller parameters
+ * 5.22 packet controller parameters
  */
 void ax_set_packet_controller_parameters(ax_config* config, ax_modulation* mod)
 {
-  uint8_t pkt_misc_flags = 0;
-  uint16_t tx_pll_boost_time, tx_pll_settle_time;
-  uint16_t rx_pll_boost_time, rx_pll_settle_time;
-  uint16_t rx_coarse_agc;
-  uint16_t rx_agc_settling, rx_rssi_settling;
-  uint16_t preamble_1_timeout, preamble_2_timeout;
-
   /* tx pll boost time */
-  tx_pll_boost_time = 38;
   ax_hw_write_register_8(config, AX_REG_TMGTXBOOST,
-                         ax_value_to_exp_mantissa_3_5(tx_pll_boost_time));
+                         ax_value_to_exp_mantissa_3_5(mod->par.tx_pll_boost_time));
+
+  debug_printf("WRITE TX PLL BOOST %d\n", mod->par.tx_pll_boost_time);
 
   /* tx pll settle time */
-  tx_pll_settle_time = 20;
   ax_hw_write_register_8(config, AX_REG_TMGTXSETTLE,
-                         ax_value_to_exp_mantissa_3_5(tx_pll_settle_time));
+                         ax_value_to_exp_mantissa_3_5(mod->par.tx_pll_settle_time));
 
   /* rx pll boost time */
-  rx_pll_boost_time = 38;
   ax_hw_write_register_8(config, AX_REG_TMGRXBOOST,
-                         ax_value_to_exp_mantissa_3_5(rx_pll_boost_time));
+                         ax_value_to_exp_mantissa_3_5(mod->par.rx_pll_boost_time));
 
   /* rx pll settle time */
-  rx_pll_settle_time = 20;
   ax_hw_write_register_8(config, AX_REG_TMGRXSETTLE,
-                         ax_value_to_exp_mantissa_3_5(rx_pll_settle_time));
-
+                         ax_value_to_exp_mantissa_3_5(mod->par.rx_pll_settle_time));
 
   /* 0us bb dc offset aquis tim */
   ax_hw_write_register_8(config, AX_REG_TMGRXOFFSACQ, 0x00);
 
-
-  /* rx agc coarse  */
-  rx_coarse_agc = 152;          /* 152 µs */
+  /* rx agc coarse*/
   ax_hw_write_register_8(config, AX_REG_TMGRXCOARSEAGC,
-                         ax_value_to_exp_mantissa_3_5(rx_coarse_agc));
+                         ax_value_to_exp_mantissa_3_5(mod->par.rx_coarse_agc));
 
-
-  /* rx agc */
-  if (0) {                      /* TODO wake on radio */
-    /* increasing settling time for narrow bandwidths */
-    pkt_misc_flags |= AX_PKT_FLAGS_RSSI_UNITS_BIT_TIME;
-    rx_agc_settling = 15;       /* guess */
-
-    if (mod->fec) {
-      rx_agc_settling *= 4;     /* 4 times for FEC */
-    }
-  } else {
-    rx_agc_settling = 0;
-  }
+  /* rx agc settling time */
   ax_hw_write_register_8(config, AX_REG_TMGRXAGC,
-                         ax_value_to_exp_mantissa_3_5(rx_agc_settling));
-
+                         ax_value_to_exp_mantissa_3_5(mod->par.rx_agc_settling));
 
   /* rx rssi settling time */
-  if (0) {                      /* TODO wake on radio */
-    /* 3 bits time rssi setting time */
-    pkt_misc_flags |= AX_PKT_FLAGS_RSSI_UNITS_BIT_TIME;
-    rx_rssi_settling = 3;
-  } else {
-    /* 3us rssi setting time */
-    pkt_misc_flags |= AX_PKT_FLAGS_RSSI_UNITS_MICROSECONDS;
-    rx_rssi_settling = 3;
-  }
   ax_hw_write_register_8(config, AX_REG_TMGRXRSSI,
-                         ax_value_to_exp_mantissa_3_5(rx_rssi_settling));
-
+                         ax_value_to_exp_mantissa_3_5(mod->par.rx_rssi_settling));
 
   /* preamble 1 timeout */
-  if (0) {                      /* TODO wake on radio */
-    preamble_1_timeout = 25;
-  } else {
-    preamble_1_timeout = 0;
-  }
   ax_hw_write_register_8(config, AX_REG_TMGRXPREAMBLE1,
-                         ax_value_to_exp_mantissa_3_5(preamble_1_timeout));
+                         ax_value_to_exp_mantissa_3_5(mod->par.preamble_1_timeout));
 
   /* preamble 2 timeout */
-  preamble_2_timeout = 23;      /* const. */
   ax_hw_write_register_8(config, AX_REG_TMGRXPREAMBLE2,
-                         ax_value_to_exp_mantissa_3_5(preamble_2_timeout));
+                         ax_value_to_exp_mantissa_3_5(mod->par.preamble_2_timeout));
 
-
-
-  /* rssi threashold = 221 */
-  /**
-   * 3log2(b/w) + x
-   */
-  ax_hw_write_register_8(config, AX_REG_RSSIABSTHR, 0xDD);
+  /* rssi threashold */
+  ax_hw_write_register_8(config, AX_REG_RSSIABSTHR, mod->par.rssi_abs_thr);
 
   /* 0 - don't detect busy channel */
   ax_hw_write_register_8(config, AX_REG_BGNDRSSITHR, 0x00);
@@ -1164,7 +851,7 @@ void ax_set_packet_controller_parameters(ax_config* config, ax_modulation* mod)
                          AX_PKT_MAXIMUM_CHUNK_SIZE_240_BYTES);
 
   /* write pkt_misc_flags */
-  ax_hw_write_register_8(config, AX_REG_PKTMISCFLAGS, pkt_misc_flags);
+  ax_hw_write_register_8(config, AX_REG_PKTMISCFLAGS, mod->par.pkt_misc_flags);
 
   /* metadata to store */
   ax_hw_write_register_8(config, AX_REG_PKTSTOREFLAGS,
@@ -1184,7 +871,7 @@ void ax_set_digital_to_analog_converter(ax_config* config)
 /**
  * 5.26 'performance tuning'
  */
-void ax_set_performance_tuning(ax_config* config)
+void ax_set_performance_tuning(ax_config* config, ax_modulation* mod)
 {
   /**
    * TODO
@@ -1193,14 +880,21 @@ void ax_set_performance_tuning(ax_config* config)
 
   ax_hw_write_register_8(config, 0xF1C, 0x07); /* const */
 
-  /* ax_hw_write_register_8(config, 0xF21, 0x68); /\* !! *\/ */
-  /* ax_hw_write_register_8(config, 0xF22, 0xFF); /\* !! *\/ */
-  /* ax_hw_write_register_8(config, 0xF23, 0x84); /\* !! *\/ */
-  /* ax_hw_write_register_8(config, 0xF26, 0x98); /\* !! *\/ */
-  ax_hw_write_register_8(config, 0xF21, 0x5c); /* !! */
-  ax_hw_write_register_8(config, 0xF22, 0x53); /* !! */
-  ax_hw_write_register_8(config, 0xF23, 0x76); /* !! */
-  ax_hw_write_register_8(config, 0xF26, 0x92); /* !! */
+  switch (mod->par.perftuning_option) {
+    case 1:
+      /* axradiolab */
+      ax_hw_write_register_8(config, 0xF21, 0x68); /* !! */
+      ax_hw_write_register_8(config, 0xF22, 0xFF); /* !! */
+      ax_hw_write_register_8(config, 0xF23, 0x84); /* !! */
+      ax_hw_write_register_8(config, 0xF26, 0x98); /* !! */
+      break;
+    default:
+      /* datasheet */
+      ax_hw_write_register_8(config, 0xF21, 0x5c); /* !! */
+      ax_hw_write_register_8(config, 0xF22, 0x53); /* !! */
+      ax_hw_write_register_8(config, 0xF23, 0x76); /* !! */
+      ax_hw_write_register_8(config, 0xF26, 0x92); /* !! */
+  }
 
   ax_hw_write_register_8(config, 0xF44, 0x25); /* !! */
   //ax_hw_write_register_8(config, 0xF44, 0x24); /* !! */
@@ -1224,18 +918,6 @@ void ax_wait_for_oscillator(ax_config* config)
 
 void ax5043_set_registers(ax_config* config, ax_modulation* mod)
 {
-  /* Modulation index for FSK modes */
-  switch (mod->modulation) {
-    case AX_MODULATION_FSK:
-      mod->m = mod->parameters.fsk.modulation_index; break;
-    case AX_MODULATION_MSK:
-      mod->m = 0.5; break;
-    case AX_MODULATION_AFSK:
-      mod->m = (float)mod->parameters.afsk.deviation / mod->bitrate;
-    default:
-      mod->m = 0;
-  }
-
   // MODULATION, ENCODING, FRAMING, FEC
   ax_set_modulation_parameters(config, mod);
 
@@ -1251,12 +933,13 @@ void ax5043_set_registers(ax_config* config, ax_modulation* mod)
   // AGC, TIMEGAIN, DRGAIN, PHASEGAIN, FREQUENCYGAIN, AMPLITUDEGAIN, FREQDEV
   if (mod->continuous) {        /* continuous transmission */
     ax_hw_write_register_8(config, AX_REG_RXPARAMSETS, 0xFF);  /* 3, 3, 3, 3 */
-    ax_set_rx_parameter_set(config, mod, AX_PARAMETER_SET_CONTINUOUS);
+    debug_printf("WRITE RFFREQ REC %d\n", mod->par.rx_param_sets[3].rffreq_recovery_gain);
+    ax_set_rx_parameter_set(config, AX_REG_RX_PARAMETER3, &mod->par.rx_param_sets[3]);
   } else {                      /* occasional packets */
     ax_hw_write_register_8(config, AX_REG_RXPARAMSETS, 0xF4);  /* 0, 1, 3, 3 */
-    ax_set_rx_parameter_set(config, mod, AX_PARAMETER_SET_INITIAL_SETTLING);
-    ax_set_rx_parameter_set(config, mod, AX_PARAMETER_SET_AFTER_PATTERN1);
-    ax_set_rx_parameter_set(config, mod, AX_PARAMETER_SET_DURING);
+    ax_set_rx_parameter_set(config, AX_REG_RX_PARAMETER0, &mod->par.rx_param_sets[0]);
+    ax_set_rx_parameter_set(config, AX_REG_RX_PARAMETER1, &mod->par.rx_param_sets[1]);
+    ax_set_rx_parameter_set(config, AX_REG_RX_PARAMETER3, &mod->par.rx_param_sets[3]);
   }
 
   // MODCFG, FSKDEV, TXRATE, TXPWRCOEFF
@@ -1269,10 +952,10 @@ void ax5043_set_registers(ax_config* config, ax_modulation* mod)
   ax_set_baseband_parameters(config);
 
   // PKTADDRCFG, PKTLENCFG
-  ax_set_packet_parameters(config);
+  ax_set_packet_parameters(config, mod);
 
   // MATCH0PAT, MATCH1PAT
-  ax_set_match_parameters(config, mod);
+  ax_set_pattern_match_parameters(config, mod);
 
   // TMGRX, RSSIABSTHR, PKTCHUNKSIZE, PKTACCEPTFLAGS
   ax_set_packet_controller_parameters(config, mod);
@@ -1281,7 +964,7 @@ void ax5043_set_registers(ax_config* config, ax_modulation* mod)
   ax_set_digital_to_analog_converter(config);
 
   // 0xFxx
-  ax_set_performance_tuning(config);
+  ax_set_performance_tuning(config, mod);
 }
 
 
@@ -1519,8 +1202,10 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt)
                          rx_chunk.chunk.data.data[i+1]);
           }
 
-          debug_printf("FEC FEC FEC 0x%02x\n",
-                       ax_hw_read_register_8(config, AX_REG_FECSTATUS));
+          if (0) {
+            debug_printf("FEC FEC FEC 0x%02x\n",
+                         ax_hw_read_register_8(config, AX_REG_FECSTATUS));
+          }
           /* rx_chunk.chunk.data.data[rx_chunk.chunk.data.length - 2] = 0; */
           /* printf("Data: %s\n", rx_chunk.chunk.data.data + 1); */
 
@@ -1583,6 +1268,9 @@ void ax_off(ax_config* config)
  */
 int ax_init(ax_config* config, ax_modulation* mod)
 {
+  /* TODO set defaults in modulation structure  */
+  mod->max_delta_carrier = 2*870; // 2*2ppm TODO ppm calculations
+
   /* must set spi_transfer */
   if (!config->spi_transfer) {
     return AX_INIT_SET_SPI;
@@ -1627,6 +1315,7 @@ int ax_init(ax_config* config, ax_modulation* mod)
 
   /* Program parameters.. (these could initially come from windows software, or be calculated) */
   ax_set_xtal_parameters(config);
+  ax_populate_params(config, mod, &mod->par);
   ax5043_set_registers(config, mod);
 
   /* Perform auto-ranging for both VCOs */
