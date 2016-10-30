@@ -1131,14 +1131,28 @@ enum ax_vco_ranging_result ax_vco_ranging(ax_config* config)
  */
 
 /**
+ * set tweakable parameters to their default values
+ */
+void ax_default_params(ax_config* config, ax_modulation* mod)
+{
+  ax_populate_params(config, mod, &mod->par);
+}
+
+/**
  * Configure and switch to FULLTX
  */
 void ax_tx_on(ax_config* config, ax_modulation* mod)
 {
+  if (mod->par.is_params_set != 0x51) {
+    debug_printf("mod->par must be set first! call ax_default_params...\n");
+    while(1);
+  }
+
   debug_printf("going for transmit...\n");
 
-  //ax_set_registers(config, mod);
-  ax_set_registers_tx(config);    /* set tx registers??? */
+  /* Registers */
+  ax_set_registers(config, mod);
+  ax_set_registers_tx(config);
 
   /* Enable TCXO if used */
   if (config->tcxo_enable) { config->tcxo_enable(); }
@@ -1184,10 +1198,16 @@ void ax_tx_packet(ax_config* config, ax_modulation* mod,
  */
 void ax_rx_on(ax_config* config, ax_modulation* mod)
 {
+  if (mod->par.is_params_set != 0x51) {
+    debug_printf("mod->par must be set first! call ax_default_params...\n");
+    while(1);
+  }
+
   /* Meta-data can be automatically added to FIFO, see PKTSTOREFLAGS */
 
+  ax_set_registers(config, mod);
+
   /* Place chip in FULLRX mode */
-  //ax_set_registers(config, mod);
   ax_set_pwrmode(config, AX_PWRMODE_FULLRX);
 
   ax_set_registers_rx(config);    /* set rx registers??? */
@@ -1294,7 +1314,7 @@ void ax_off(ax_config* config)
  * * check SPI interface functions
  * * range VCOs
  */
-int ax_init(ax_config* config, ax_modulation* mod)
+int ax_init(ax_config* config)
 {
   /* must set spi_transfer */
   if (!config->spi_transfer) {
@@ -1332,8 +1352,6 @@ int ax_init(ax_config* config, ax_modulation* mod)
   /* Set xtal parameters. The function sets values in config that we
    * need for other parameter calculations */
   ax_set_xtal_parameters(config);
-  ax_populate_params(config, mod, &mod->par);
-  ax_set_registers(config, mod);
 
   /* Perform auto-ranging for both VCOs */
   if (ax_vco_ranging(config) != AX_VCO_RANGING_SUCCESS) {

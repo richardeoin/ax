@@ -55,6 +55,7 @@ typedef struct ax_rx_param_set {
  * Represents the tweakable parameters for an ax5243 radio
  */
 typedef struct ax_params {
+  uint8_t is_params_set;           /* has this structure been set? */
   float m; // modulation index
 
   // 5.6 forward error correction
@@ -214,6 +215,9 @@ typedef struct ax_config {
  * FUNCTION PROTOTYPES ---------------------------------------------------------
  */
 
+/* tweakable parameters */
+void ax_default_params(ax_config* config, ax_modulation* mod);
+
 /* transmit */
 void ax_tx_on(ax_config* config, ax_modulation* mod);
 void ax_tx_packet(ax_config* config, ax_modulation* mod,
@@ -227,6 +231,6 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt);
 void ax_off(ax_config* config);
 
 /* init */
-int ax_init(ax_config* config, ax_modulation* mod);
+int ax_init(ax_config* config);
 
 #endif  /* AX_H */

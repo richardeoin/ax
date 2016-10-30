@@ -525,10 +525,10 @@ void ax_populate_params(ax_config* config, ax_modulation* mod, ax_params* par)
                               AX_PARAMETER_SET_DURING);
   }
 
-
-
   ax_param_packet_format(config, mod, par);
   ax_param_pattern_match(config, mod, par);
   ax_param_packet_controller(config, mod, par);
   ax_param_performace_tuning(config, mod, par);
+
+  par->is_params_set = 0x51;    /* yes, parameters are now set */
 }

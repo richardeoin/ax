@@ -112,8 +112,12 @@ int main()
   config.pkt_store_flags = AX_PKT_STORE_RSSI |
     AX_PKT_STORE_RF_OFFSET;
 
-  ax_init(&config, &gmsk_hdlc_fec_modulation);
 
+  /* ------- init ------- */
+  ax_init(&config);
+  ax_default_params(&config, &gmsk_hdlc_fec_modulation);
+
+  /* -------- tx -------- */
   /* ax_tx_on(&config, &gmsk_hdlc_fec_modulation); */
   /* while (1) { */
   /*   /\* int aprs_len = aprs(); *\/ */
@@ -124,6 +128,7 @@ int main()
   /*   ax_tx_packet(&config, &gmsk_hdlc_fec_modulation, tx_pkt, 40); */
   /* } */
 
+  /* -------- rx -------- */
   ax_rx_on(&config, &gmsk_hdlc_fec_modulation);
   while (1) {
     while (ax_rx_packet(&config, &rx_pkt)) {
