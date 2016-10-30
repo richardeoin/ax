@@ -224,6 +224,18 @@ void ax_fifo_commit(ax_config* config)
  */
 
 /**
+ * Wait for oscillator running and stable
+ */
+void ax_wait_for_oscillator(ax_config* config)
+{
+  int i = 0;
+  while (!(ax_hw_read_register_8(config, AX_REG_XTALSTATUS) & 1)) {
+    i++;
+  }
+
+  debug_printf("osc stable in %d cycles\n", i);
+}
+/**
  * Converts a value to 4-bit mantissa and 4-bit exponent
  */
 static uint8_t ax_value_to_mantissa_exp_4_4(uint32_t value)
@@ -932,21 +944,9 @@ void ax_set_performance_tuning(ax_config* config, ax_modulation* mod)
 
 
 /**
- * Wait for oscillator running and stable
+ * register settings
  */
-void ax_wait_for_oscillator(ax_config* config)
-{
-  int i = 0;
-  while (!(ax_hw_read_register_8(config, AX_REG_XTALSTATUS) & 1)) {
-    i++;
-  }
-
-  debug_printf("osc stable in %d cycles\n", i);
-}
-
-
-
-void ax5043_set_registers(ax_config* config, ax_modulation* mod)
+void ax_set_registers(ax_config* config, ax_modulation* mod)
 {
   // MODULATION, ENCODING, FRAMING, FEC
   ax_set_modulation_parameters(config, mod);
@@ -995,9 +995,10 @@ void ax5043_set_registers(ax_config* config, ax_modulation* mod)
   // 0xFxx
   ax_set_performance_tuning(config, mod);
 }
-
-
-void ax5043_set_registers_tx(ax_config* config)
+/**
+ * register settings for transmit
+ */
+void ax_set_registers_tx(ax_config* config)
 {
   ax_set_synthesiser_parameters(config,
                                 &synth_operation,
@@ -1007,9 +1008,10 @@ void ax5043_set_registers_tx(ax_config* config)
   ax_hw_write_register_8(config, 0xF00, 0x0F); /* const */
   ax_hw_write_register_8(config, 0xF18, 0x06); /* ?? */
 }
-
-
-void ax5043_set_registers_rx(ax_config* config)
+/**
+ * register settings for receive
+ */
+void ax_set_registers_rx(ax_config* config)
 {
   ax_set_synthesiser_parameters(config,
                                 &synth_operation,
@@ -1022,7 +1024,7 @@ void ax5043_set_registers_rx(ax_config* config)
 
 
 /**
- * MAJOR FUNCTIONS ------------------------------------------
+ * VCO FUNCTIONS ------------------------------------------
  */
 
 enum ax_vco_ranging_result {
@@ -1135,8 +1137,8 @@ void ax_tx_on(ax_config* config, ax_modulation* mod)
 {
   debug_printf("going for transmit...\n");
 
-  //ax5043_set_registers(config, mod);
-  ax5043_set_registers_tx(config);    /* set tx registers??? */
+  //ax_set_registers(config, mod);
+  ax_set_registers_tx(config);    /* set tx registers??? */
 
   /* Enable TCXO if used */
   if (config->tcxo_enable) { config->tcxo_enable(); }
@@ -1185,10 +1187,10 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
   /* Meta-data can be automatically added to FIFO, see PKTSTOREFLAGS */
 
   /* Place chip in FULLRX mode */
-  //ax5043_set_registers(config, mod);
+  //ax_set_registers(config, mod);
   ax_set_pwrmode(config, AX_PWRMODE_FULLRX);
 
-  ax5043_set_registers_rx(config);    /* set rx registers??? */
+  ax_set_registers_rx(config);    /* set rx registers??? */
 
   /* Enable TCXO if used */
   if (config->tcxo_enable) { config->tcxo_enable(); }
@@ -1331,7 +1333,7 @@ int ax_init(ax_config* config, ax_modulation* mod)
    * need for other parameter calculations */
   ax_set_xtal_parameters(config);
   ax_populate_params(config, mod, &mod->par);
-  ax5043_set_registers(config, mod);
+  ax_set_registers(config, mod);
 
   /* Perform auto-ranging for both VCOs */
   if (ax_vco_ranging(config) != AX_VCO_RANGING_SUCCESS) {
