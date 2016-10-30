@@ -1183,9 +1183,6 @@ void ax_tx_packet(ax_config* config, ax_modulation* mod,
  */
 void ax_rx_on(ax_config* config, ax_modulation* mod)
 {
-  /* TODO set defaults in modulation structure  */
-  mod->max_delta_carrier = 2*870; // 2*2ppm TODO ppm calculations
-
   /* Meta-data can be automatically added to FIFO, see PKTSTOREFLAGS */
 
   /* Place chip in FULLRX mode */
@@ -1298,9 +1295,6 @@ void ax_off(ax_config* config)
  */
 int ax_init(ax_config* config, ax_modulation* mod)
 {
-  /* TODO set defaults in modulation structure  */
-  mod->max_delta_carrier = 2*870; // 2*2ppm TODO ppm calculations
-
   /* must set spi_transfer */
   if (!config->spi_transfer) {
     return AX_INIT_SET_SPI;

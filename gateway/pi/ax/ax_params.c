@@ -133,6 +133,9 @@ void ax_param_receiver_parameters(ax_config* config, ax_modulation* mod,
 
 
   /* Max RF offset - Correct offset at first LO */
+  if (mod->max_delta_carrier == 0) { /* not set */
+    mod->max_delta_carrier = 1e3; /* 1kHz */
+  }
   par->max_rf_offset = (uint32_t)((((float)mod->max_delta_carrier *
                                     (1 << 24)) / (float)config->f_xtal) + 0.5);
   debug_printf("max rf offset %d Hz = 0x%04x\n",
