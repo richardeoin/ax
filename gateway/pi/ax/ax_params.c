@@ -1,5 +1,5 @@
 /*
- * Calcuates parameters for an ax5243 radio
+ * Calcuates tweakable parameters for an ax radio
  * Copyright (C) 2016  Richard Meadows <richardeoin>
  *
  * Permission is hereby granted, free of charge, to any person obtaining

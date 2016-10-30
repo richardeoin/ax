@@ -9,12 +9,20 @@ uses wiring pi
 
 * ax.{c,h} - general chip control functions, same for all platforms
 * ax_hw.{c,h} - spi hardware functions, `ax_hw_{read,write}_register`
-  and so on. Specific to wiring-pi
-* ax_test.c - test for pi
+  and so on.
+* ax_params.{c,h} - calculates tweakable parameters
 * ax_reg.h - register addresses
 * ax_reg_values.h - register values
-* ax_calc.h - calculations for register values
 * ax_fifo.h - constants and structures for FIFO
+
+* ax_test.c - test for pi
+
+### Resetting
+
+The following proceedure should be preformed to wake from DEEPSLEEP.
+
+* Set SEL high for at least 1us, then low
+* Wait for MISO to go high
 
 ### API
 

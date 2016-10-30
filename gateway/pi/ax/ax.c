@@ -963,7 +963,6 @@ void ax5043_set_registers(ax_config* config, ax_modulation* mod)
   // AGC, TIMEGAIN, DRGAIN, PHASEGAIN, FREQUENCYGAIN, AMPLITUDEGAIN, FREQDEV
   if (mod->continuous) {        /* continuous transmission */
     ax_hw_write_register_8(config, AX_REG_RXPARAMSETS, 0xFF);  /* 3, 3, 3, 3 */
-    debug_printf("WRITE RFFREQ REC %d\n", mod->par.rx_param_sets[3].rffreq_recovery_gain);
     ax_set_rx_parameter_set(config, AX_REG_RX_PARAMETER3, &mod->par.rx_param_sets[3]);
   } else {                      /* occasional packets */
     ax_hw_write_register_8(config, AX_REG_RXPARAMSETS, 0xF4);  /* 0, 1, 3, 3 */
@@ -1320,24 +1319,16 @@ int ax_init(ax_config* config, ax_modulation* mod)
     return AX_INIT_BAD_REVISION;
   }
 
-
-
   /* Reset the chip */
-
-  /* Set SEL high for at least 1us, then low */
-
-  /* Wait for MISO to go high */
 
   /* Set RST bit (PWRMODE) */
   ax_hw_write_register_8(config, AX_REG_PWRMODE, AX_PWRMODE_RST);
 
-  /* AX is now in reset */
-  for (int i = 0; i < 1000; i++);
-
   /* Set the PWRMODE register to POWERDOWN, also clears RST bit */
   ax_set_pwrmode(config, AX_PWRMODE_POWERDOWN);
 
-  /* Program parameters.. (these could initially come from windows software, or be calculated) */
+  /* Set xtal parameters. The function sets values in config that we
+   * need for other parameter calculations */
   ax_set_xtal_parameters(config);
   ax_populate_params(config, mod, &mod->par);
   ax5043_set_registers(config, mod);
