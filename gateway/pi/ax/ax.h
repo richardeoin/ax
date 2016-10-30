@@ -163,6 +163,7 @@ typedef struct ax_synthesiser {
   uint32_t frequency;
   uint32_t register_value;
   enum ax_rfdiv rfdiv;     /* set if this is known, else it's set automatically */
+  uint32_t frequency_when_last_ranged;
   uint8_t vco_range_known; /* set to 0 if vco range unknown */
   uint8_t vco_range;       /* determined by autoranging */
 } ax_synthesiser;
@@ -217,6 +218,9 @@ typedef struct ax_config {
 
 /* tweakable parameters */
 void ax_default_params(ax_config* config, ax_modulation* mod);
+
+/* adjust frequency */
+int ax_adjust_frequency(ax_config* config, uint32_t frequency);
 
 /* transmit */
 void ax_tx_on(ax_config* config, ax_modulation* mod);

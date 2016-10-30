@@ -1076,6 +1076,7 @@ enum ax_vco_ranging_result ax_do_vco_ranging(ax_config* config,
   /* Update vco_range */
   synth->vco_range = r & 0xF;
   synth->vco_range_known = 1;
+  synth->frequency_when_last_ranged = synth->frequency;
 
   return AX_VCO_RANGING_SUCCESS;
 }
@@ -1136,6 +1137,56 @@ enum ax_vco_ranging_result ax_vco_ranging(ax_config* config)
 void ax_default_params(ax_config* config, ax_modulation* mod)
 {
   ax_populate_params(config, mod, &mod->par);
+}
+
+/**
+ * adjust frequency registers
+ *
+ * currently only frequency A
+ */
+int ax_adjust_frequency(ax_config* config, uint32_t frequency)
+{
+  uint8_t radiostate;
+  int32_t delta_f;
+  uint32_t abs_delta_f;
+  ax_synthesiser* synth = &config->synthesiser.A;
+
+  if (config->pwrmode == AX_PWRMODE_DEEPSLEEP) {
+    /* can't do anything in deepsleep */
+    while (1);
+    return AX_INIT_PORT_FAILED;
+  }
+
+  /* wait for current operations to finish */
+  do {
+    radiostate = ax_hw_read_register_8(config, AX_REG_RADIOSTATE) & 0xF;
+  } while (radiostate == AX_RADIOSTATE_TX);
+
+  /* set new frequency */
+  synth->frequency = frequency;
+
+  /* frequency difference since last ranging */
+  delta_f = synth->frequency_when_last_ranged - frequency;
+  abs_delta_f = (delta_f < 0) ? -delta_f : delta_f; /* abs */
+
+  /* if ∆f > f/256 (2.05MHz @ 525MHz) */
+  if (abs_delta_f > (synth->frequency_when_last_ranged / 256)) {
+    /* Need to re-range VCO */
+
+    /* clear assumptions about frequency */
+    synth->rfdiv = AX_RFDIV_UKNOWN;
+    synth->vco_range_known = 0;
+
+    /* re-range both VCOs */
+    if (ax_vco_ranging(config) != AX_VCO_RANGING_SUCCESS) {
+      return AX_INIT_VCO_RANGING_FAILED;
+    }
+  } else {
+    /* no need to re-range */
+    ax_set_synthesiser_frequencies(config);
+  }
+
+  return AX_INIT_OK;
 }
 
 /**
