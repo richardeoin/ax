@@ -492,7 +492,7 @@ void ax_set_rx_parameters(ax_config* config, ax_modulation* mod)
                            mod->par.max_rf_offset));
 
   /* Maximum deviation of FSK Demodulator */
-  switch (mod->modulation) {
+  switch (mod->modulation & 0xf) {
     case AX_MODULATION_FSK:
     case AX_MODULATION_MSK:
     case AX_MODULATION_AFSK:
@@ -502,7 +502,7 @@ void ax_set_rx_parameters(ax_config* config, ax_modulation* mod)
   }
 
   /* AFSK */
-  if (mod->modulation == AX_MODULATION_AFSK) {
+  if ((mod->modulation & 0xf) == AX_MODULATION_AFSK) {
     ax_set_afsk_rx_parameters(config, mod);
   }
 
@@ -639,7 +639,7 @@ void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
   ax_hw_write_register_8(config, AX_REG_MODCFGF, mod->shaping & 0x3);
 
   /* amplitude shaping mode of transmitter */
-  switch (mod->modulation) {
+  switch (mod->modulation & 0xf) {
     default:
       modcfga = AX_MODCFGA_TXDIFF | AX_MODCFGA_AMPLSHAPE_RAISED_COSINE;
       break;
@@ -647,7 +647,7 @@ void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
   ax_hw_write_register_8(config, AX_REG_MODCFGA, modcfga);
 
   /* TX deviation */
-  switch (mod->modulation) {
+  switch (mod->modulation & 0xf) {
     case AX_MODULATION_PSK:     /* PSK */
       fskdev = 0;
       break;

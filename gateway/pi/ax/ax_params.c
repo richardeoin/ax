@@ -143,7 +143,7 @@ void ax_param_receiver_parameters(ax_config* config, ax_modulation* mod,
 
 
   /* Maximum deviation of FSK Demodulator */
-  switch (mod->modulation) {
+  switch (mod->modulation & 0xf) {
     case AX_MODULATION_FSK:
     case AX_MODULATION_MSK:
     case AX_MODULATION_AFSK:
@@ -305,7 +305,7 @@ void ax_param_rx_parameter_set(ax_config* config, ax_modulation* mod,
 
 
   /* Gain of RF frequency recovery loop */
-  switch (mod->modulation) {
+  switch (mod->modulation & 0xf) {
     case AX_MODULATION_FSK:
     case AX_MODULATION_MSK:
     case AX_MODULATION_AFSK: /* not sure where this comes from, not documented */
@@ -336,7 +336,7 @@ void ax_param_rx_parameter_set(ax_config* config, ax_modulation* mod,
 
 
   /* Amplitude Recovery Loop */
-  switch (mod->modulation) {
+  switch (mod->modulation & 0xf) {
     case AX_MODULATION_ASK:
     case AX_MODULATION_PSK:     /* try to jump, averaging */
       pars->amplflags = AX_AMPLGAIN_TRY_TO_CORRECT_AMPLITUDE_ON_AGC_JUMP |
@@ -365,7 +365,7 @@ void ax_param_rx_parameter_set(ax_config* config, ax_modulation* mod,
   /**
    * Disable (0x00) for first pre-amble, then equal to deviation of signal???
    */
-  switch (mod->modulation) {
+  switch (mod->modulation & 0xf) {
     case AX_MODULATION_FSK:
     case AX_MODULATION_MSK:
     case AX_MODULATION_AFSK:    /* also afsk?? */
