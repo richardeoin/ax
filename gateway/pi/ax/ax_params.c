@@ -58,7 +58,7 @@ void ax_param_receiver_parameters(ax_config* config, ax_modulation* mod,
                                   ax_params* par)
 {
   /* RX Bandwidth */
-  switch (mod->modulation) {
+  switch (mod->modulation & 0xf) {
     case AX_MODULATION_ASK:
     case AX_MODULATION_ASK_COHERENT:
     case AX_MODULATION_PSK:
@@ -84,7 +84,7 @@ void ax_param_receiver_parameters(ax_config* config, ax_modulation* mod,
   debug_printf("f baseband = %d Hz\n", par->f_baseband);
 
   /* IF Frequency */
-  switch (mod->modulation) {
+  switch (mod->modulation & 0xf) {
     case AX_MODULATION_ASK:
     case AX_MODULATION_ASK_COHERENT:
     case AX_MODULATION_PSK:
@@ -290,7 +290,7 @@ void ax_param_rx_parameter_set(ax_config* config, ax_modulation* mod,
   /**
    * Usually 0xC3. TODO ASK
    */
-  switch (mod->modulation) {
+  switch (mod->modulation & 0xf) {
     case AX_MODULATION_ASK:
     case AX_MODULATION_PSK:     /* Maybe also PSK?? */
       /* TODO reduce decim fractional bandwidth when decimation reg overflows... */
@@ -493,13 +493,14 @@ void ax_param_performace_tuning(ax_config* config, ax_modulation* mod,
 void ax_populate_params(ax_config* config, ax_modulation* mod, ax_params* par)
 {
   /* Modulation index for FSK modes */
-  switch (mod->modulation) {
+  switch (mod->modulation & 0xf) {
     case AX_MODULATION_FSK:
       par->m = mod->parameters.fsk.modulation_index; break;
     case AX_MODULATION_MSK:
       par->m = 0.5; break;
     case AX_MODULATION_AFSK:
-      par->m = (float)mod->parameters.afsk.deviation / mod->bitrate;
+      par->m = 2 * (float)mod->parameters.afsk.deviation / mod->bitrate;
+      break;
     default:
       par->m = 0;
   }
