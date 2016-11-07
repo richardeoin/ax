@@ -116,6 +116,8 @@ typedef struct ax_modulation {
 
   uint8_t continuous;           /* 0 = occasional packets, 1 = continuous tx */
 
+  uint8_t fixed_packet_length;  /* 0 = variable length, 1-255 = length */
+
   union {
     struct {                    /* FSK */
       float modulation_index;

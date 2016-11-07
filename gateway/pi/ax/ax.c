@@ -57,73 +57,120 @@ void ax_set_synthesiser_parameters(ax_config* config,
  */
 
 /**
+ * Clears the FIFO
+ */
+void ax_fifo_clear(ax_config* config)
+{
+  ax_hw_write_register_8(config, AX_REG_FIFOSTAT,
+                         AX_FIFOCMD_CLEAR_FIFO_DATA_AND_FLAGS);
+}
+/**
+ * Commits data written to the fifo
+ */
+void ax_fifo_commit(ax_config* config)
+{
+  ax_hw_write_register_8(config, AX_REG_FIFOSTAT,
+                         AX_FIFOCMD_COMMIT);
+}
+
+/**
  * write tx data
  */
 void ax_fifo_tx_data(ax_config* config, ax_modulation* mod,
-                     uint8_t* data, uint8_t length)
+                     uint8_t* data, uint16_t length)
 {
   uint8_t header[8];
+  uint8_t fifocount;
+  uint8_t chunk_length;
+  uint16_t rem_length = length;
+  uint8_t pkt_end = 0;
 
-  if (length < (256-3)) {       /* All in one go */
+  if (length > 200) { /* send the first 200 bytes */
+    chunk_length = 200; rem_length -= 200;
+  } else {                      /* all in one go */
+    chunk_length = length; rem_length = 0;
+    pkt_end = AX_FIFO_TXDATA_PKTEND;
+  }
 
-    /* wait for space */
-    uint8_t fifocount = ax_hw_read_register_16(config, AX_REG_FIFOCOUNT);
-    while (fifocount > (256 - (length+20))) {
-      fifocount = ax_hw_read_register_16(config, AX_REG_FIFOCOUNT);
-    }
+  /* wait for enough space to contain both the preamble and chunk */
+  do {
+    fifocount = ax_hw_read_register_16(config, AX_REG_FIFOCOUNT);
+  } while (fifocount > (256 - (chunk_length+20)));
 
-    switch (mod->framing & 0xE) {
-      case AX_FRAMING_MODE_HDLC:
-        /* preamble */
-        header[0] = AX_FIFO_CHUNK_REPEATDATA;
-        header[1] = AX_FIFO_TXDATA_UNENC | AX_FIFO_TXDATA_RAW | AX_FIFO_TXDATA_NOCRC;
-        header[2] = 9;
-        header[3] = 0x7E;
-        ax_hw_write_fifo(config, header, 4);
-        break;
-      default:
-        /* preamble */
-        header[0] = AX_FIFO_CHUNK_REPEATDATA;
-        header[1] = AX_FIFO_TXDATA_UNENC | AX_FIFO_TXDATA_RAW | AX_FIFO_TXDATA_NOCRC;
-        header[2] = 4;
-        header[3] = 0xAA;
-        ax_hw_write_fifo(config, header, 4);
+  /* write preamble */
+  switch (mod->framing & 0xE) {
+    case AX_FRAMING_MODE_HDLC:
+      /* preamble */
+      header[0] = AX_FIFO_CHUNK_REPEATDATA;
+      header[1] = AX_FIFO_TXDATA_UNENC | AX_FIFO_TXDATA_RAW | AX_FIFO_TXDATA_NOCRC;
+      header[2] = 9;
+      header[3] = 0x7E;
+      ax_hw_write_fifo(config, header, 4);
+      break;
+    default:
+      /* preamble */
+      header[0] = AX_FIFO_CHUNK_REPEATDATA;
+      header[1] = AX_FIFO_TXDATA_UNENC | AX_FIFO_TXDATA_RAW | AX_FIFO_TXDATA_NOCRC;
+      header[2] = 4;
+      header[3] = 0xAA;
+      ax_hw_write_fifo(config, header, 4);
 
-        /* sync word */
-        header[0] = AX_FIFO_CHUNK_DATA;
-        header[1] = 4+1;         /* incl flags */
-        header[2] = AX_FIFO_TXDATA_RAW | AX_FIFO_TXDATA_NOCRC;
-        header[3] = 0x33;
-        header[4] = 0x55;
-        header[5] = 0x33;
-        header[6] = 0x55;
-        ax_hw_write_fifo(config, header, header[1]+2);
-        break;
-    }
+      /* sync word */
+      header[0] = AX_FIFO_CHUNK_DATA;
+      header[1] = 4+1;         /* incl flags */
+      header[2] = AX_FIFO_TXDATA_RAW | AX_FIFO_TXDATA_NOCRC;
+      header[3] = 0x33;
+      header[4] = 0x55;
+      header[5] = 0x33;
+      header[6] = 0x55;
+      ax_hw_write_fifo(config, header, header[1]+2);
+      break;
+  }
 
-    /* header */
-    switch (mod->framing & 0xE) {
-      case AX_FRAMING_MODE_HDLC:
-        /* no length byte */
-        header[0] = AX_FIFO_CHUNK_DATA;
-        header[1] = length+1;         /* incl flags */
-        header[2] = AX_FIFO_TXDATA_PKTSTART | AX_FIFO_TXDATA_PKTEND;
-        ax_hw_write_fifo(config, header, 3);
-        break;
-      default:
-        /* include length byte */
-        header[0] = AX_FIFO_CHUNK_DATA;
-        header[1] = 1+length+1;         /* incl flags */
-        header[2] = AX_FIFO_TXDATA_PKTSTART | AX_FIFO_TXDATA_PKTEND;
-        header[3] = length+1;   /* incl length byte */
-        ax_hw_write_fifo(config, header, 4);
-        break;
-    }
-
-    ax_hw_write_fifo(config, data, (uint8_t)length);
-
+  /* write first data */
+  if (((mod->framing & 0xE) == AX_FRAMING_MODE_HDLC) || /* hdlc */
+      (mod->fixed_packet_length) || /* or fixed length */
+      (length >= 255)       /* or can't include length byte anyhow */
+    ) {
+    /* no length byte */
+    header[0] = AX_FIFO_CHUNK_DATA;
+    header[1] = chunk_length+1;         /* incl flags */
+    header[2] = AX_FIFO_TXDATA_PKTSTART | pkt_end;
+    ax_hw_write_fifo(config, header, 3);
   } else {
-    while(1);                   /* TODO longer packets */
+    /* include length byte */
+    header[0] = AX_FIFO_CHUNK_DATA;
+    header[1] = 1+chunk_length+1;         /* incl flags */
+    header[2] = AX_FIFO_TXDATA_PKTSTART | pkt_end;
+    header[3] = length+1;       /* incl length byte */
+    ax_hw_write_fifo(config, header, 4);
+  }
+  ax_hw_write_fifo(config, data, (uint8_t)chunk_length);
+  data += chunk_length;
+  ax_fifo_commit(config);       /* commit */
+
+  /* write subsequent data */
+  while (rem_length) {
+    if (rem_length > 200) {     /* send 200 bytes */
+      chunk_length = 200; rem_length -= 200;
+    } else {                    /* finish off */
+      chunk_length = rem_length; rem_length = 0;
+      pkt_end = AX_FIFO_TXDATA_PKTEND;
+    }
+
+    /* wait for enough space for chunk */
+    do {
+      fifocount = ax_hw_read_register_16(config, AX_REG_FIFOCOUNT);
+    } while (fifocount > (256 - (chunk_length+10)));
+
+    /* write chunk */
+    header[0] = AX_FIFO_CHUNK_DATA;
+    header[1] = chunk_length+1;         /* incl flags */
+    header[2] = pkt_end;
+    ax_hw_write_fifo(config, header, 3);
+    ax_hw_write_fifo(config, data, (uint8_t)chunk_length);
+    data += chunk_length;
+    ax_fifo_commit(config);       /* commit */
   }
 }
 /**
@@ -200,24 +247,6 @@ uint16_t ax_fifo_rx_data(ax_config* config, ax_rx_chunk* chunk)
       return 1;
   }
 }
-
-/**
- * Clears the FIFO
- */
-void ax_fifo_clear(ax_config* config)
-{
-  ax_hw_write_register_8(config, AX_REG_FIFOSTAT,
-                         AX_FIFOCMD_CLEAR_FIFO_DATA_AND_FLAGS);
-}
-/**
- * Commits data written to the fifo
- */
-void ax_fifo_commit(ax_config* config)
-{
-  ax_hw_write_register_8(config, AX_REG_FIFOSTAT,
-                         AX_FIFOCMD_COMMIT);
-}
-
 
 /**
  * UTILITY FUNCTIONS ----------------------------------------
@@ -792,15 +821,22 @@ void ax_set_packet_parameters(ax_config* config, ax_modulation* mod)
                          ((mod->par.fec_sync_dis & 1) << 5) |
                          0x01); /* address at position 1 */
 
-  ax_hw_write_register_8(config, AX_REG_PKTLENCFG, 0x80);
-  /* 8 significant bits on length byte */
+  if (mod->fixed_packet_length) { /* fixed packet length */
+    /* use pktlencfg as fixed length value */
+    ax_hw_write_register_8(config, AX_REG_PKTLENCFG, 0x00);
+    /* fixed length */
+    ax_hw_write_register_8(config, AX_REG_PKTLENOFFSET,
+                           mod->fixed_packet_length);
 
-  ax_hw_write_register_8(config, AX_REG_PKTLENOFFSET, 0x00);
-  /* zero offset on length byte */
+  } else {                     /* variable packet length */
+    /* 8 significant bits on length byte */
+    ax_hw_write_register_8(config, AX_REG_PKTLENCFG, 0x80);
+    /* zero offset on length byte */
+    ax_hw_write_register_8(config, AX_REG_PKTLENOFFSET, 0x00);
+  }
 
-  /* Maximum packet length */
-  ax_hw_write_register_8(config, AX_REG_PKTMAXLEN, 0xC8);
-  /* 0xC8 = 200 bytes */
+  /* Maximum packet length - 255 bytes */
+  ax_hw_write_register_8(config, AX_REG_PKTMAXLEN, 0xFF);
 }
 /**
  * 5.21 pattern match
@@ -888,7 +924,7 @@ void ax_set_packet_controller_parameters(ax_config* config, ax_modulation* mod)
   /* 0 - don't detect busy channel */
   ax_hw_write_register_8(config, AX_REG_BGNDRSSITHR, 0x00);
 
-  /* max chunk size = 240 bytes */
+  /* max chunk size = 240 bytes - largest possible */
   ax_hw_write_register_8(config, AX_REG_PKTCHUNKSIZE,
                          AX_PKT_MAXIMUM_CHUNK_SIZE_240_BYTES);
 
@@ -1238,10 +1274,7 @@ void ax_tx_packet(ax_config* config, ax_modulation* mod,
   /* Write preamble and packet to the FIFO */
   ax_fifo_tx_data(config, mod, packet, length);
 
-  /* Commit FIFO contents */
-  ax_fifo_commit(config);
-
-  debug_printf("packet committed to FIFO!\n");
+  debug_printf("packet written to FIFO!\n");
 }
 
 /**
@@ -1279,6 +1312,7 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
 int ax_rx_packet(ax_config* config, ax_packet* rx_pkt)
 {
   ax_rx_chunk rx_chunk;
+  uint16_t pkt_wr_index = 0;
   uint16_t length;
   float offset;
 
@@ -1292,27 +1326,36 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt)
           length = rx_chunk.chunk.data.length;
 
           debug_printf("flags 0x%02x\n", rx_chunk.chunk.data.flags);
-          debug_printf("length %d\n", rx_chunk.chunk.data.length);
+          debug_printf("length %d\n", length);
 
-          /* print byte-by-byte */
-          for (int i = 0; i < rx_chunk.chunk.data.length; i++) {
-            debug_printf("data %d: 0x%02x %c\n", i,
-                         rx_chunk.chunk.data.data[i+1],
-                         rx_chunk.chunk.data.data[i+1]);
+          if ((pkt_wr_index == 0) &&
+              !(rx_chunk.chunk.data.flags & AX_FIFO_RXDATA_PKTSTART)) {
+            /* we're trying to start a packet, but that wasn't a packet start */
+            break;              /* discard */
           }
 
-          if (0) {
-            debug_printf("FEC FEC FEC 0x%02x\n",
-                         ax_hw_read_register_8(config, AX_REG_FECSTATUS));
+          /* copy in this chunk */
+          memcpy(rx_pkt->data + pkt_wr_index,
+                 rx_chunk.chunk.data.data + 1, length);
+          pkt_wr_index += length;
+
+          /* are we done for this packet */
+          if (rx_chunk.chunk.data.flags & AX_FIFO_RXDATA_PKTEND) {
+            rx_pkt->length = pkt_wr_index;
+
+            /* print byte-by-byte */
+            for (int i = 0; i < rx_pkt->length; i++) {
+              debug_printf("data %d: 0x%02x %c\n", i,
+                           rx_pkt->data[i],
+                           rx_pkt->data[i]);
+            }
+            if (0) {
+              debug_printf("FEC FEC FEC 0x%02x\n",
+                           ax_hw_read_register_8(config, AX_REG_FECSTATUS));
+            }
+
+            return 1;
           }
-          /* rx_chunk.chunk.data.data[rx_chunk.chunk.data.length - 2] = 0; */
-          /* printf("Data: %s\n", rx_chunk.chunk.data.data + 1); */
-
-          /* populate rx_pkt */
-          memcpy(rx_pkt->data, rx_chunk.chunk.data.data + 1, length - 2);
-          rx_pkt->length = length - 2;
-
-          return 1;
 
           break;
 
@@ -1333,7 +1376,7 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt)
           debug_printf("some other chunk type 0x%02x\n", rx_chunk.chunk_t);
           break;
       }
-    } else {
+    } else if (pkt_wr_index == 0) {
       /* nothing to read from fifo */
       return 0;
     }
