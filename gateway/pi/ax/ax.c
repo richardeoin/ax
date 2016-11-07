@@ -82,13 +82,14 @@ void ax_fifo_tx_data(ax_config* config, ax_modulation* mod,
   uint8_t header[8];
   uint8_t fifocount;
   uint8_t chunk_length;
-  uint16_t rem_length = length;
+  uint16_t rem_length;
   uint8_t pkt_end = 0;
 
-  if (length > 200) { /* send the first 200 bytes */
-    chunk_length = 200; rem_length -= 200;
-  } else {                      /* all in one go */
-    chunk_length = length; rem_length = 0;
+  /* send remainder first */
+  chunk_length = length % 200;
+  rem_length = length - chunk_length;
+
+  if (length <= 200) {           /* all in one go */
     pkt_end = AX_FIFO_TXDATA_PKTEND;
   }
 
