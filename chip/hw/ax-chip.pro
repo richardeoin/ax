@@ -1,4 +1,4 @@
-update=Sunday, 23 October 2016 'pmt' 18:51:35
+update=Wednesday, 16 November 2016 'pmt' 17:21:32
 version=1
 last_client=kicad
 [pcbnew]
@@ -25,6 +25,16 @@ version=1
 NetIExt=net
 [general]
 version=1
+[schematic_editor]
+version=1
+PageLayoutDescrFile=
+PlotDirectoryName=
+SubpartIdSeparator=0
+SubpartFirstId=65
+NetFmtName=Pcbnew
+SpiceForceRefPrefix=0
+SpiceUseNetNumbers=0
+LabSize=60
 [eeschema]
 version=1
 LibDir=/Users/richard/Documents/_kicad/rem-kicad/lib;/Users/richard/Documents/_kicad/agg-kicad/lib
@@ -203,14 +213,5 @@ LibName171=/Users/richard/Documents/_kicad/kicad-schlib/library/Xilinx
 LibName172=/Users/richard/Documents/_ax50/gateway/hw/ax-gateway-cache
 LibName173=radio/ax5243
 LibName174=/Users/richard/Documents/_kicad/agg-kicad/agg-kicad
-[schematic_editor]
-version=1
-PageLayoutDescrFile=
-PlotDirectoryName=
-SubpartIdSeparator=0
-SubpartFirstId=65
-NetFmtName=Pcbnew
-SpiceForceRefPrefix=0
-SpiceUseNetNumbers=0
-LabSize=60
+LibName175=radio/mga-68563
 
