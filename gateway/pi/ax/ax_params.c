@@ -216,6 +216,7 @@ void ax_param_rx_parameter_set(ax_config* config, ax_modulation* mod,
 {
   uint32_t tmg_corr_frac;
   uint32_t rffreq_gain_f;
+  uint32_t rffreq_rg;
 
 
   /* AGC Gain Attack/Decay */
@@ -304,6 +305,9 @@ void ax_param_rx_parameter_set(ax_config* config, ax_modulation* mod,
       break;
   }
 
+  /* Gain of Baseband frequency recovery loop */
+  pars->baseband_rg_phase_det = 0xF; /* disable loop */
+  pars->baseband_rg_freq_det = 0x1F; /* disable loop */
 
   /* Gain of RF frequency recovery loop */
   switch (mod->modulation & 0xf) {
@@ -316,24 +320,26 @@ void ax_param_rx_parameter_set(ax_config* config, ax_modulation* mod,
       rffreq_gain_f = mod->bitrate * 4;
       break;
   }
-  pars->rffreq_recovery_gain = ax_rx_freqgain_rf_recovery_gain(config, rffreq_gain_f);
+  rffreq_rg = ax_rx_freqgain_rf_recovery_gain(config, rffreq_gain_f);
 
   switch (type) {
     case AX_PARAMETER_SET_DURING:
     case AX_PARAMETER_SET_CONTINUOUS:
-      pars->rffreq_recovery_gain += 4; /* 16x reduction in 'rffreq_gain_f' */
+      rffreq_rg += 4; /* 16x reduction in 'rffreq_gain_f' */
       break;
     default: break;
   }
 
   if (mod->fec) {
-    pars->rffreq_recovery_gain += 2;
+    rffreq_rg += 2;
   }
 
   /* limit to 13 */
-  if (pars->rffreq_recovery_gain > 0xD) { pars->rffreq_recovery_gain = 0xD; }
+  if (rffreq_rg > 0xD) { rffreq_rg = 0xD; }
 
-  debug_printf("rffreq_recovery_gain 0x%02x\n", pars->rffreq_recovery_gain);
+  debug_printf("rffreq_recovery_gain 0x%02x\n", rffreq_rg);
+  pars->rffreq_rg_phase_det = rffreq_rg;
+  pars->rffreq_rg_freq_det = rffreq_rg;
 
 
   /* Amplitude Recovery Loop */

@@ -47,7 +47,10 @@ typedef struct ax_rx_param_set {
   uint8_t agc_attack, agc_decay;
   uint32_t time_gain, dr_gain;
   uint8_t phase_gain, filter_idx;
-  uint8_t rffreq_recovery_gain;
+  uint8_t baseband_rg_phase_det;
+  uint8_t baseband_rg_freq_det;
+  uint8_t rffreq_rg_phase_det;
+  uint8_t rffreq_rg_freq_det;
   uint8_t amplgain, amplflags;
   uint16_t freq_dev;
 } ax_rx_param_set;

@@ -603,22 +603,18 @@ void ax_set_rx_parameter_set(ax_config* config,
                          (pars->phase_gain & 0xF));
 
 
-  /**
-   * Always 0x0F (baseband frequency loop disabled)
-   */
-  ax_hw_write_register_8(config, ps + AX_RX_FREQUENCYGAINA, 0x0F);
-  /**
-   * Always 0x1F (baseband frequency loop disabled)
-   */
-  ax_hw_write_register_8(config, ps + AX_RX_FREQUENCYGAINB, 0x1F);
+  /* Gain of baseband frequency recovery loop */
+  ax_hw_write_register_8(config, ps + AX_RX_FREQUENCYGAINA,
+                         pars->baseband_rg_phase_det);
+  ax_hw_write_register_8(config, ps + AX_RX_FREQUENCYGAINB,
+                         pars->baseband_rg_freq_det);
 
 
   /* Gain of RF frequency recovery loop */
-  /* Same for phase and frequency detectors  */
   ax_hw_write_register_8(config, ps + AX_RX_FREQUENCYGAINC,
-                         pars->rffreq_recovery_gain);
+                         pars->rffreq_rg_phase_det);
   ax_hw_write_register_8(config, ps + AX_RX_FREQUENCYGAIND,
-                         pars->rffreq_recovery_gain);
+                         pars->rffreq_rg_freq_det);
 
   /* Amplitude Recovery Loop */
   ax_hw_write_register_8(config, ps + AX_RX_AMPLITUDEGAIN,
