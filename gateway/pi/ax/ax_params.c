@@ -238,7 +238,7 @@ void ax_param_rx_parameter_set(ax_config* config, ax_modulation* mod,
       if (pars->agc_decay  > 0xE) { pars->agc_decay  = 0xE; }
       break;
   }
-  debug_printf("agc attack 0x%02x; agc decay 0x%02x\n",
+  debug_printf("agc gain: attack 0x%02x; decay 0x%02x\n",
                pars->agc_attack, pars->agc_decay);
 
 
@@ -262,6 +262,7 @@ void ax_param_rx_parameter_set(ax_config* config, ax_modulation* mod,
   if (pars->time_gain >= par->rx_data_rate - (1<<12)) { /* see 5.15.3 */
     /* effectively increase tmg_corr_frac to meet restriction */
     pars->time_gain = par->rx_data_rate - (1<<12);
+    debug_printf("Had to limit time gain...\n");
   }
   debug_printf("time gain %d\n", pars->time_gain);
 

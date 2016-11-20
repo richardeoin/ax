@@ -620,8 +620,6 @@ void ax_set_rx_parameter_set(ax_config* config,
   ax_hw_write_register_8(config, ps + AX_RX_FREQUENCYGAIND,
                          pars->rffreq_recovery_gain);
 
-  debug_printf("WRITE RFFREQ RECOVERY GAIN %d\n", pars->rffreq_recovery_gain);
-
   /* Amplitude Recovery Loop */
   ax_hw_write_register_8(config, ps + AX_RX_AMPLITUDEGAIN,
                          pars->amplflags | pars->amplgain);
@@ -892,8 +890,6 @@ void ax_set_packet_controller_parameters(ax_config* config, ax_modulation* mod)
   /* tx pll boost time */
   ax_hw_write_register_8(config, AX_REG_TMGTXBOOST,
                          ax_value_to_exp_mantissa_3_5(mod->par.tx_pll_boost_time));
-
-  debug_printf("WRITE TX PLL BOOST %d\n", mod->par.tx_pll_boost_time);
 
   /* tx pll settle time */
   ax_hw_write_register_8(config, AX_REG_TMGTXSETTLE,
