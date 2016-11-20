@@ -466,7 +466,17 @@ void ax_set_synthesiser_parameters(ax_config* config,
  */
 void ax_set_wakeup_timer(ax_config* config)
 {
-  ax_hw_write_register_8(config, AX_REG_WAKEUPXOEARLY, 0x01);
+  uint32_t period, xoearly;
+
+  /* Assume the LPOSC is running at 640Hz (default) */
+
+  period  = (uint32_t)(config->wakeup_period_ms * 0.64);
+  xoearly = (uint32_t)(config->wakeup_xo_early_ms * 0.64);
+  if (period  == 0) { period  = 1; }
+  if (xoearly == 0) { xoearly = 1; }
+
+  ax_hw_write_register_8(config, AX_REG_WAKEUPFREQ, period);
+  ax_hw_write_register_8(config, AX_REG_WAKEUPXOEARLY, xoearly);
 }
 
 /**
@@ -942,6 +952,31 @@ void ax_set_packet_controller_parameters(ax_config* config, ax_modulation* mod)
                          0x29);  //SOME!!! //AX_PKT_ACCEPT_MULTIPLE_CHUNKS);
 }
 /**
+ * 5.24 low power oscillator
+ */
+void ax_set_low_power_osc(ax_config* config)
+{
+  uint32_t refdiv;
+
+  if (1) {                      /* if lposc is to be enabled */
+    /* set reference for calibration */
+    refdiv = (uint32_t)((float)config->f_xtal / 640.0);
+    if (refdiv > 0xffff) {
+      /* could happen for f_xtals > 41 MHz */
+      /* this is an error, but we set a reasonable value */
+      refdiv = 0xffff;
+    }
+    ax_hw_write_register_8(config, AX_REG_LPOSCREF, refdiv & 0xffff);
+
+    /* config */
+    ax_hw_write_register_8(config, AX_REG_LPOSCCONFIG,
+                           AX_LPOSC_ENABLE |
+                           AX_LPOSC_640_HZ |
+                           AX_LPOSC_CALIBF); /* calib on falling edge */
+  }
+}
+
+/**
  * 5.25 digital to analog converter
  */
 void ax_set_digital_to_analog_converter(ax_config* config)
@@ -1026,6 +1061,9 @@ void ax_set_registers(ax_config* config, ax_modulation* mod)
 
   // TMGRX, RSSIABSTHR, PKTCHUNKSIZE, PKTACCEPTFLAGS
   ax_set_packet_controller_parameters(config, mod);
+
+  // LPOSC
+  ax_set_low_power_osc(config);
 
   // DACCONFIG
   ax_set_digital_to_analog_converter(config);

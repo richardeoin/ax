@@ -413,3 +413,16 @@
 #define AX_PKT_ACCEPT_ADDRESS_FAILURES	(1 << 3)
 #define AX_PKT_ACCEPT_SIZE_FAILURES		(1 << 4)
 #define AX_PKT_ACCEPT_MULTIPLE_CHUNKS	(1 << 5)
+
+/**
+ * 5.24 Low Power Oscillator --------------------------------------
+ */
+#define AX_LPOSC_ENABLE		(1 << 0)
+#define AX_LPOSC_640_HZ		(0 << 1)
+#define AX_LPOSC_10240_HZ	(1 << 1)
+#define AX_LPOSC_IRQR		(1 << 2)
+#define AX_LPOSC_IRQF		(1 << 3)
+#define AX_LPOSC_CALIBF		(1 << 4)
+#define AX_LPOSC_CALIBR		(1 << 5)
+#define AX_LPOSC_OSC_DOUBLE	(1 << 6)
+#define AX_LPOSC_OSC_INVERT	(1 << 7)

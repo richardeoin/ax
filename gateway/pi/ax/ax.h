@@ -208,6 +208,10 @@ typedef struct ax_config {
   /* receive */
   uint8_t pkt_store_flags;      /* PKTSTOREFLAGS */
 
+  /* wakeup */
+  uint32_t wakeup_period_ms;
+  uint32_t wakeup_xo_early_ms;
+
   /* pll vco */
   uint32_t f_pllrng;
 
