@@ -330,7 +330,8 @@ void ax_set_modulation_parameters(ax_config* config, ax_modulation* mod)
   ax_hw_write_register_8(config, AX_REG_MODULATION, mod->modulation);
 
   /* encoding (inv, diff, scram, manch..) */
-  if (mod->fec) {                 /* FEC doesn't play with inversion */
+  if ((mod->encoding & AX_ENC_INV) && mod->fec) {
+                                /* FEC doesn't play with inversion */
     debug_printf("WARNING: Inversion is not supported in FEC! NOT INVERTING\n");
     mod->encoding &= ~AX_ENC_INV; /* clear inv bit */
   }
