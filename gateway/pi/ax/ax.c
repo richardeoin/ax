@@ -1349,6 +1349,10 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt)
   float offset;
 
   while (1) {
+    //for (int i = 0; i < 1000*1000*5; i++);
+    //debug_printf("TRK P %d\n", ax_hw_read_register_16(config, AX_REG_TRKPHASE));
+    //debug_printf("TRK F %d\n", ax_hw_read_register_24(config, AX_REG_TRKRFFREQ));
+
     /* Check if FIFO is not empty */
     if (ax_fifo_rx_data(config, &rx_chunk)) {
 
