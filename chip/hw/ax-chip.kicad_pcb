@@ -1329,7 +1329,7 @@
       (net 2 GND))
   )
 
-  (module agg:CHIPv1_0 locked (layer B.Cu) (tedit 56F7E874) (tstamp 580EC638)
+  (module agg:CHIPv1_0 locked (layer B.Cu) (tedit 582CC832) (tstamp 580EC638)
     (at 242 149 180)
     (path /580C1D35)
     (fp_text reference IC1 (at 38.1 62.23 180) (layer B.Fab)
