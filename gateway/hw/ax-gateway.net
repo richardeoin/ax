@@ -1,13 +1,13 @@
 (export (version D)
   (design
     (source /Users/richard/Documents/_ax50/gateway/hw/ax-gateway.sch)
-    (date "Friday, 07 October 2016 'pmt' 13:58:53")
-    (tool "Eeschema 4.0.2-stable")
+    (date "Tuesday, 15 November 2016 'pmt' 18:15:29")
+    (tool "Eeschema 4.0.4-stable")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
         (title ax-gateway)
         (company "Bristol SEDS")
-        (rev v0.1)
+        (rev v0.4)
         (date 2016-06-04)
         (source ax-gateway.sch)
         (comment (number 1) (value "Richard Meadows"))
@@ -108,7 +108,7 @@
       (footprint rem:QFN-20-EP-AX)
       (fields
         (field (name Farnell) 2521322))
-      (libsource (lib ax-gateway-cache) (part AX5243))
+      (libsource (lib ax5243) (part AX5243))
       (sheetpath (names /) (tstamps /))
       (tstamp 57740007))
     (comp (ref C13)
@@ -313,7 +313,7 @@
       (footprint rem:QFN-20-EP-AX)
       (fields
         (field (name Farnell) 2521322))
-      (libsource (lib ax-gateway-cache) (part AX5243))
+      (libsource (lib ax5243) (part AX5243))
       (sheetpath (names /) (tstamps /))
       (tstamp 5789AE6E))
     (comp (ref C16)
@@ -718,23 +718,23 @@
       (sheetpath (names /) (tstamps /))
       (tstamp 579C2E4A))
     (comp (ref L17)
-      (value 0Ω)
-      (footprint agg:0402)
+      (value 22nH)
+      (footprint agg:0603)
       (fields
-        (field (name STD.PAS) 0Ω))
+        (field (name STD.PAS) 22nH))
       (libsource (lib ax-gateway-cache) (part L_Small))
       (sheetpath (names /) (tstamps /))
       (tstamp 57F7A4A8))
     (comp (ref L18)
-      (value 0Ω)
-      (footprint agg:0402)
+      (value 22nH)
+      (footprint agg:0603)
       (fields
-        (field (name STD.PAS) 0Ω))
+        (field (name STD.PAS) 22nH))
       (libsource (lib ax-gateway-cache) (part L_Small))
       (sheetpath (names /) (tstamps /))
       (tstamp 57F7BF79)))
   (libparts
-    (libpart (lib ax-gateway-cache) (part AX5243)
+    (libpart (lib ax5243) (part AX5243)
       (fields
         (field (name Reference) IC)
         (field (name Value) AX5243)
@@ -918,6 +918,8 @@
         (pin (num 1) (name ~) (type passive))
         (pin (num 2) (name ~) (type passive)))))
   (libraries
+    (library (logical ax5243)
+      (uri /Users/richard/Documents/_kicad/rem-kicad/lib/radio/ax5243.lib))
     (library (logical ax-gateway-cache)
       (uri /Users/richard/Documents/_ax50/gateway/hw/ax-gateway-cache.lib)))
   (nets

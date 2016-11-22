@@ -1,5 +1,8 @@
 EESchema Schematic File Version 2
-LIBS:power
+LIBS:ax5243
+LIBS:as213-92
+LIBS:bgm1034n7
+LIBS:bgu7003w
 LIBS:ax-gateway-cache
 EELAYER 25 0
 EELAYER END
@@ -8,7 +11,7 @@ encoding utf-8
 Sheet 1 1
 Title "ax-gateway"
 Date "2016-06-04"
-Rev "v0.1"
+Rev "v0.4"
 Comp "Bristol SEDS"
 Comment1 "Richard Meadows"
 Comment2 ""
@@ -2641,10 +2644,10 @@ L L_Small L17
 U 1 1 57F7A4A8
 P 5700 2800
 F 0 "L17" H 5550 2850 50  0000 L CNN
-F 1 "0Ω" H 5550 2750 50  0000 L CNN
-F 2 "agg:0402" H 5700 2800 50  0001 C CNN
+F 1 "22nH" H 5500 2750 50  0000 L CNN
+F 2 "agg:0603" H 5700 2800 50  0001 C CNN
 F 3 "" H 5700 2800 50  0000 C CNN
-F 4 "0Ω" H 5700 2800 60  0001 C CNN "STD.PAS"
+F 4 "22nH" H 5700 2800 60  0001 C CNN "STD.PAS"
 	1    5700 2800
 	-1   0    0    -1  
 $EndComp
@@ -2667,10 +2670,10 @@ L L_Small L18
 U 1 1 57F7BF79
 P 5700 4900
 F 0 "L18" H 5550 4950 50  0000 L CNN
-F 1 "0Ω" H 5550 4850 50  0000 L CNN
-F 2 "agg:0402" H 5700 4900 50  0001 C CNN
+F 1 "22nH" H 5500 4850 50  0000 L CNN
+F 2 "agg:0603" H 5700 4900 50  0001 C CNN
 F 3 "" H 5700 4900 50  0000 C CNN
-F 4 "0Ω" H 5700 4900 60  0001 C CNN "STD.PAS"
+F 4 "22nH" H 5700 4900 60  0001 C CNN "STD.PAS"
 	1    5700 4900
 	-1   0    0    -1  
 $EndComp
