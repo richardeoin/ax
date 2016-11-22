@@ -16,6 +16,9 @@ mwo
 sw/cffi_test
 raw_images
 
+# PDFTK output
+doc_data.txt
+
 # Backup files
 *~
 #*#

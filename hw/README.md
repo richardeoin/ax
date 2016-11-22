@@ -1,6 +1,6 @@
 # Hardware for AX
 
-## Raspberry Pi
+## [Raspberry Pi](pi/)
 
 This board supports one or two AX5243 radios, with a bi-directional
 antenna port for each radio. It has been tested with a
@@ -9,11 +9,11 @@ antenna port for each radio. It has been tested with a
 ![Assembled ax pi header board](pi/ax-gateway-on-pi.jpg
  "Assembled ax pi header board")
 
-## C.H.I.P.
+## [C.H.I.P.](chip/)
 
 The board uses a single AX5043 radio, with separate antenna ports. The
 recieve port has an integrated Low Noise Amplifier (LNA). *Not yet tested*
 
-## Breakout Board
+## [Breakout Board](breakout/)
 
 This board breaks out a single AX5243 radio to 2mm pitch pins. *Not yet tested*
