@@ -5,9 +5,33 @@
 _autosave*
 bom
 gerbers
+_saved*.sch
 
 APRSDongle
 AXGen2_RadioLAB_V1.1e
 ax_radiolab_output
 datasheets
 gnuradio
+mwo
+sw/cffi_test
+
+# Backup files
+*~
+#*#
+
+# gdbscript
+gdbscript
+gdbscript-custom
+
+# The output directory
+out/
+
+# Intermediate compilation files
+*.o
+*.d
+
+# ETAGS file
+TAGS
+
+# Compile commands
+compile_commands.json
