@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="D">
+  <design>
+    <source>/Users/richard/Documents/_ax50/breakout/ax-breakout.sch</source>
+    <date>Wednesday, 10 August 2016 'pmt' 21:08:18</date>
+    <tool>Eeschema 4.0.2-stable</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title>ax-gateway</title>
+        <company>Bristol SEDS</company>
+        <rev>v0.1</rev>
+        <date>2016-06-04</date>
+        <source>ax-breakout.sch</source>
+        <comment number="1" value="Richard Meadows"/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="C1">
+      <value>1µF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">1µF</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5742F889</tstamp>
+    </comp>
+    <comp ref="IC1">
+      <value>TG-5006CJ</value>
+      <footprint>rem:TG-5006CJ</footprint>
+      <datasheet>http://www.farnell.com/datasheets/1804154.pdf</datasheet>
+      <fields>
+        <field name="Farnell">2405790</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="TG-5006CJ"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57423EE1</tstamp>
+    </comp>
+    <comp ref="C2">
+      <value>1nF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">1nF</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789ADF4</tstamp>
+    </comp>
+    <comp ref="C5">
+      <value>100nF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">100nF</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789ADFB</tstamp>
+    </comp>
+    <comp ref="C4">
+      <value>4.7µF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">4.7µF</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AE08</tstamp>
+    </comp>
+    <comp ref="L1">
+      <value>68nH</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">68nH</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AE1A</tstamp>
+    </comp>
+    <comp ref="D1">
+      <value>TVS_DIODE</value>
+      <footprint>agg-unchecked:TSLP-2-17</footprint>
+      <datasheet>http://www.farnell.com/datasheets/1992039.pdf</datasheet>
+      <fields>
+        <field name="Farnell">2480929</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="TVS_DIODE"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AE29</tstamp>
+    </comp>
+    <comp ref="IC2">
+      <value>AX5243</value>
+      <footprint>rem:QFN-20-EP-AX</footprint>
+      <fields>
+        <field name="Farnell">2521322</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="AX5243"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AE6E</tstamp>
+    </comp>
+    <comp ref="C6">
+      <value>100nF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">100nF</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AE7C</tstamp>
+    </comp>
+    <comp ref="C7">
+      <value>100nF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">100nF</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AE83</tstamp>
+    </comp>
+    <comp ref="C8">
+      <value>39pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">39pF</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AE9F</tstamp>
+    </comp>
+    <comp ref="L2">
+      <value>68nH</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">68nH</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AEBF</tstamp>
+    </comp>
+    <comp ref="C12">
+      <value>2.7pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">2.7pF</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AEC7</tstamp>
+    </comp>
+    <comp ref="C11">
+      <value>4.3pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">4.3pF</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AECE</tstamp>
+    </comp>
+    <comp ref="L3">
+      <value>47nH</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">47nH</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AEDD</tstamp>
+    </comp>
+    <comp ref="L4">
+      <value>47nH</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">47nH</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AEE4</tstamp>
+    </comp>
+    <comp ref="C14">
+      <value>8.2pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">8.2pF</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AEEF</tstamp>
+    </comp>
+    <comp ref="C13">
+      <value>8.2pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">8.2pF</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AEF6</tstamp>
+    </comp>
+    <comp ref="C15">
+      <value>5.1pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">5.1pF</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AF1D</tstamp>
+    </comp>
+    <comp ref="L5">
+      <value>27nH</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">27nH</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AF24</tstamp>
+    </comp>
+    <comp ref="L6">
+      <value>27nH</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">27nH</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AF2D</tstamp>
+    </comp>
+    <comp ref="C16">
+      <value>5.1pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">5.1pF</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AF34</tstamp>
+    </comp>
+    <comp ref="R1">
+      <value>1kΩ</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">1kΩ</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="R_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AF4F</tstamp>
+    </comp>
+    <comp ref="C3">
+      <value>1nF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">1nF</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789AF57</tstamp>
+    </comp>
+    <comp ref="C10">
+      <value>4.3pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">4.3pF</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57899A8F</tstamp>
+    </comp>
+    <comp ref="C9">
+      <value>4.3pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">4.3pF</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57899B5A</tstamp>
+    </comp>
+    <comp ref="IC3">
+      <value>RFM22</value>
+      <footprint>rfm22_compat:RFM22_COMPATIBLE</footprint>
+      <datasheet>https://www.sparkfun.com/datasheets/Wireless/General/RFM22.PDF</datasheet>
+      <libsource lib="ax-breakout-cache" part="RFM22"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57A789E1</tstamp>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="ax-breakout-cache" part="AX5243">
+      <fields>
+        <field name="Reference">IC</field>
+        <field name="Value">AX5243</field>
+        <field name="Footprint">rem:QFN-20-EP-AX</field>
+        <field name="Farnell">2521322</field>
+      </fields>
+      <pins>
+        <pin num="1" name="VDD_ANA" type="output"/>
+        <pin num="2" name="GND" type="power_in"/>
+        <pin num="3" name="ANTp" type="input"/>
+        <pin num="4" name="ANTn" type="input"/>
+        <pin num="5" name="VDD_ANA" type="output"/>
+        <pin num="6" name="FILT" type="passive"/>
+        <pin num="7" name="L2" type="BiDi"/>
+        <pin num="8" name="L1" type="BiDi"/>
+        <pin num="9" name="SYSCLK" type="input"/>
+        <pin num="10" name="SEL" type="input"/>
+        <pin num="11" name="SCLK" type="input"/>
+        <pin num="12" name="MISO" type="output"/>
+        <pin num="13" name="MOSI" type="input"/>
+        <pin num="14" name="IRQ" type="output"/>
+        <pin num="15" name="TCXO_EN" type="power_in"/>
+        <pin num="16" name="VDD_IO" type="power_in"/>
+        <pin num="17" name="GPADC1" type="BiDi"/>
+        <pin num="18" name="GPADC2" type="BiDi"/>
+        <pin num="19" name="CLK16n" type="input"/>
+        <pin num="20" name="CLK16p" type="input"/>
+        <pin num="EP" name="GND" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="ax-breakout-cache" part="C_Small">
+      <footprints>
+        <fp>C?</fp>
+        <fp>C_????_*</fp>
+        <fp>C_????</fp>
+        <fp>SMD*_c</fp>
+        <fp>Capacitor*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">C_Small</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="ax-breakout-cache" part="L_Small">
+      <footprints>
+        <fp>CP*</fp>
+        <fp>SM*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">L</field>
+        <field name="Value">L_Small</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="ax-breakout-cache" part="RFM22">
+      <fields>
+        <field name="Reference">IC</field>
+        <field name="Value">RFM22</field>
+        <field name="Datasheet">https://www.sparkfun.com/datasheets/Wireless/General/RFM22.PDF</field>
+      </fields>
+      <pins>
+        <pin num="1" name="ANT" type="passive"/>
+        <pin num="2" name="GND" type="power_in"/>
+        <pin num="3" name="RX_ANT" type="BiDi"/>
+        <pin num="4" name="TX_ANT" type="BiDi"/>
+        <pin num="5" name="VCC" type="BiDi"/>
+        <pin num="6" name="GPIO_0" type="BiDi"/>
+        <pin num="7" name="GPIO_1" type="BiDi"/>
+        <pin num="8" name="GPIO_2" type="power_in"/>
+        <pin num="9" name="GND" type="power_in"/>
+        <pin num="10" name="SDO" type="BiDi"/>
+        <pin num="11" name="SDI" type="BiDi"/>
+        <pin num="12" name="SCK" type="input"/>
+        <pin num="13" name="~SEL~" type="BiDi"/>
+        <pin num="14" name="~IRQ~" type="BiDi"/>
+        <pin num="15" name="SDN" type="BiDi"/>
+        <pin num="16" name="GND" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="ax-breakout-cache" part="R_Small">
+      <footprints>
+        <fp>Resistor_*</fp>
+        <fp>R_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">R_Small</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="ax-breakout-cache" part="TG-5006CJ">
+      <fields>
+        <field name="Reference">IC</field>
+        <field name="Value">TG-5006CJ</field>
+        <field name="Datasheet">http://www.farnell.com/datasheets/1804154.pdf</field>
+        <field name="Farnell">2405790</field>
+      </fields>
+      <pins>
+        <pin num="1" name="NC" type="NotConnected"/>
+        <pin num="2" name="GND" type="power_in"/>
+        <pin num="3" name="OUT" type="output"/>
+        <pin num="4" name="VCC" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="ax-breakout-cache" part="TVS_DIODE">
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">TVS_DIODE</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="ax-breakout-cache">
+      <uri>/Users/richard/Documents/_ax50/breakout/ax-breakout-cache.lib</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="Net-(C13-Pad2)">
+      <node ref="L5" pin="2"/>
+      <node ref="C15" pin="1"/>
+      <node ref="L3" pin="2"/>
+      <node ref="C13" pin="2"/>
+    </net>
+    <net code="2" name="Net-(C12-Pad2)">
+      <node ref="L4" pin="1"/>
+      <node ref="C12" pin="2"/>
+    </net>
+    <net code="3" name="Net-(C11-Pad2)">
+      <node ref="L3" pin="1"/>
+      <node ref="C11" pin="2"/>
+    </net>
+    <net code="4" name="/SYNTH_LOOP_1">
+      <node ref="IC2" pin="7"/>
+      <node ref="IC2" pin="8"/>
+    </net>
+    <net code="5" name="Net-(C14-Pad1)">
+      <node ref="C14" pin="1"/>
+      <node ref="L4" pin="2"/>
+      <node ref="C16" pin="2"/>
+      <node ref="L6" pin="1"/>
+    </net>
+    <net code="6" name="16_TCXO">
+      <node ref="IC1" pin="3"/>
+      <node ref="C2" pin="1"/>
+    </net>
+    <net code="7" name="/VDD_ANA1_1">
+      <node ref="IC2" pin="1"/>
+      <node ref="C6" pin="1"/>
+    </net>
+    <net code="8" name="/VDD_ANA2_1">
+      <node ref="C7" pin="1"/>
+      <node ref="IC2" pin="5"/>
+    </net>
+    <net code="9" name="AX_50Ω">
+      <node ref="D1" pin="1"/>
+      <node ref="IC3" pin="1"/>
+      <node ref="C16" pin="1"/>
+      <node ref="L5" pin="1"/>
+    </net>
+    <net code="10" name="3v3">
+      <node ref="C1" pin="1"/>
+      <node ref="IC1" pin="4"/>
+      <node ref="C4" pin="1"/>
+      <node ref="C5" pin="1"/>
+      <node ref="IC3" pin="5"/>
+      <node ref="IC2" pin="16"/>
+    </net>
+    <net code="11" name="GND">
+      <node ref="IC1" pin="2"/>
+      <node ref="C1" pin="2"/>
+      <node ref="C8" pin="2"/>
+      <node ref="C7" pin="2"/>
+      <node ref="C6" pin="2"/>
+      <node ref="C13" pin="1"/>
+      <node ref="C15" pin="2"/>
+      <node ref="L6" pin="2"/>
+      <node ref="IC2" pin="EP"/>
+      <node ref="C5" pin="2"/>
+      <node ref="C9" pin="1"/>
+      <node ref="C10" pin="2"/>
+      <node ref="C14" pin="2"/>
+      <node ref="IC2" pin="2"/>
+      <node ref="D1" pin="2"/>
+      <node ref="L1" pin="1"/>
+      <node ref="C4" pin="2"/>
+      <node ref="L2" pin="2"/>
+      <node ref="C3" pin="1"/>
+      <node ref="IC3" pin="2"/>
+      <node ref="IC3" pin="9"/>
+      <node ref="IC3" pin="16"/>
+      <node ref="IC2" pin="17"/>
+      <node ref="IC2" pin="18"/>
+    </net>
+    <net code="12" name="Net-(IC3-Pad15)">
+      <node ref="IC3" pin="15"/>
+    </net>
+    <net code="13" name="AX_SYSCLK_1">
+      <node ref="IC2" pin="9"/>
+      <node ref="IC3" pin="8"/>
+    </net>
+    <net code="14" name="AX_MISO">
+      <node ref="IC2" pin="12"/>
+      <node ref="IC3" pin="10"/>
+    </net>
+    <net code="15" name="AX_MOSI">
+      <node ref="IC2" pin="13"/>
+      <node ref="IC3" pin="11"/>
+    </net>
+    <net code="16" name="AX_SCLK">
+      <node ref="IC3" pin="12"/>
+      <node ref="IC2" pin="11"/>
+    </net>
+    <net code="17" name="AX_~SEL~_1">
+      <node ref="IC3" pin="13"/>
+      <node ref="IC2" pin="10"/>
+    </net>
+    <net code="18" name="AX_IRQ_1">
+      <node ref="IC3" pin="14"/>
+      <node ref="IC2" pin="14"/>
+    </net>
+    <net code="19" name="Net-(IC3-Pad7)">
+      <node ref="IC3" pin="7"/>
+    </net>
+    <net code="20" name="Net-(IC3-Pad6)">
+      <node ref="IC3" pin="6"/>
+    </net>
+    <net code="21" name="Net-(IC3-Pad4)">
+      <node ref="IC3" pin="4"/>
+    </net>
+    <net code="22" name="Net-(IC3-Pad3)">
+      <node ref="IC3" pin="3"/>
+    </net>
+    <net code="23" name="/ANTp_1">
+      <node ref="C11" pin="1"/>
+      <node ref="C9" pin="2"/>
+      <node ref="IC2" pin="3"/>
+      <node ref="L1" pin="2"/>
+    </net>
+    <net code="24" name="Net-(IC2-Pad15)">
+      <node ref="IC2" pin="15"/>
+    </net>
+    <net code="25" name="Net-(IC1-Pad1)">
+      <node ref="IC1" pin="1"/>
+    </net>
+    <net code="26" name="/SYNTH_FILTER_1">
+      <node ref="C8" pin="1"/>
+      <node ref="IC2" pin="6"/>
+    </net>
+    <net code="27" name="/CLKp_1">
+      <node ref="IC2" pin="20"/>
+      <node ref="R1" pin="1"/>
+      <node ref="C2" pin="2"/>
+    </net>
+    <net code="28" name="/CLKn_1">
+      <node ref="IC2" pin="19"/>
+      <node ref="R1" pin="2"/>
+      <node ref="C3" pin="2"/>
+    </net>
+    <net code="29" name="/ANTn_1">
+      <node ref="C10" pin="1"/>
+      <node ref="IC2" pin="4"/>
+      <node ref="C12" pin="1"/>
+      <node ref="L2" pin="1"/>
+    </net>
+  </nets>
+</export>

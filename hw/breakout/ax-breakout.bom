@@ -1,0 +1,63 @@
+Bill Of Materials
+=================
+
+Source file: ax-breakout.xml
+Date: 2016-08-10T21:08:52.297256
+
+Parts Missing Footprints
+------------------------
+
+
+Parts Missing Order Codes
+-------------------------
+IC3    RFM22           rfm22_compat:RFM22_COMPATIBLE
+
+Inconsistent Order Codes
+------------------------
+
+
+Vendor Specific BOMs
+--------------------
+  Farnell
+  ~~~~~~~
+2405790,1,1x TG-5006CJ TG-5006CJ
+2480929,1,1x TVS_DIODE TSLP-2-17
+2521322,1,1x AX5243 QFN-20-EP-AX
+
+
+  STD.PAS
+  ~~~~~~~
+1µF,1,1x C1 0402
+2.7pF,1,1x C12 0402
+8.2pF,2,2x C14 C13 0402
+4.7µF,1,1x C4 0402
+39pF,1,1x C8 0402
+1nF,2,2x C2 C3 0402
+47nH,2,2x L3 L4 0402
+4.3pF,3,3x C11 C10 C9 0402
+100nF,3,3x C5 C6 C7 0402
+1kΩ,1,1x R1 0402
+27nH,2,2x L5 L6 0402
+68nH,2,2x L1 L2 0402
+5.1pF,2,2x C15 C16 0402
+
+
+Assembly BOM
+------------
+2405790              1   TG-5006CJ       TG-5006CJ       IC1
+2480929              1   TVS_DIODE       TSLP-2-17       D1
+2521322              1   AX5243          QFN-20-EP-AX    IC2
+1µF                  1   1µF             0402            C1
+2.7pF                1   2.7pF           0402            C12
+8.2pF                2   8.2pF           0402            C13 C14
+4.7µF                1   4.7µF           0402            C4
+39pF                 1   39pF            0402            C8
+1nF                  2   1nF             0402            C2 C3
+47nH                 2   47nH            0402            L3 L4
+4.3pF                3   4.3pF           0402            C10 C11 C9
+100nF                3   100nF           0402            C5 C6 C7
+1kΩ                  1   1kΩ             0402            R1
+27nH                 2   27nH            0402            L5 L6
+68nH                 2   68nH            0402            L1 L2
+5.1pF                2   5.1pF           0402            C15 C16
+
