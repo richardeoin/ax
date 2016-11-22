@@ -4,7 +4,7 @@
 *.bck
 _autosave*
 bom
-gerbers
+gerbers*
 _saved*.sch
 
 APRSDongle
