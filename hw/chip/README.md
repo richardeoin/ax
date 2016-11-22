@@ -3,8 +3,9 @@
 This folder contains the schematic files for the ax-chip header
 board.
 
-The board uses a single AX5043 radio, with separate antenna ports. The
-recieve port has an integrated Low Noise Amplifier (LNA). *Not yet tested*
+The board uses a single AX5043 radio, with separate antenna ports for
+transmit and receive. The recieve port has an integrated Low Noise
+Amplifier (LNA). *Not yet tested*
 
 The LNA used is an
 [Avago MGA-62563](http://www.avagotech.com/docs/AV02-1237EN), but a

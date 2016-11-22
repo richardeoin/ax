@@ -11,8 +11,9 @@ antenna port for each radio. It has been tested with a
 
 ## [C.H.I.P.](chip/)
 
-The board uses a single AX5043 radio, with separate antenna ports. The
-recieve port has an integrated Low Noise Amplifier (LNA). *Not yet tested*
+The board uses a single AX5043 radio, with separate antenna ports for
+transmit and receive. The recieve port has an integrated Low Noise
+Amplifier (LNA). *Not yet tested*
 
 ## [Breakout Board](breakout/)
 
