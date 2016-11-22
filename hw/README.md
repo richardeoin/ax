@@ -17,3 +17,6 @@ recieve port has an integrated Low Noise Amplifier (LNA). *Not yet tested*
 ## [Breakout Board](breakout/)
 
 This board breaks out a single AX5243 radio to 2mm pitch pins. *Not yet tested*
+
+![Rendering of ax-breakout board](breakout/ax-breakout.kicad_pcb.png
+ "Rendering of ax-breakout board")
