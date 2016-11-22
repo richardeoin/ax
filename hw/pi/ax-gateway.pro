@@ -1,4 +1,4 @@
-update=Tuesday, 18 October 2016 'pmt' 12:56:26
+update=Tuesday, 22 November 2016 'amt' 01:37:36
 version=1
 last_client=kicad
 [pcbnew]
@@ -25,6 +25,14 @@ version=1
 NetIExt=net
 [general]
 version=1
+[eeschema]
+version=1
+LibDir=/Users/richard/Documents/_kicad/rem-kicad/lib
+[eeschema/libraries]
+LibName1=radio/ax5243
+LibName2=radio/as213-92
+LibName3=radio/bgm1034n7
+LibName4=radio/bgu7003w
 [schematic_editor]
 version=1
 PageLayoutDescrFile=
@@ -35,11 +43,3 @@ NetFmtName=Pcbnew
 SpiceForceRefPrefix=0
 SpiceUseNetNumbers=0
 LabSize=60
-[eeschema]
-version=1
-LibDir=/Users/richard/Documents/_kicad/rem-kicad/lib
-[eeschema/libraries]
-LibName1=radio/ax5243
-LibName2=radio/as213-92
-LibName3=radio/bgm1034n7
-LibName4=radio/bgu7003w

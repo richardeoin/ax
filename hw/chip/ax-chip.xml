@@ -1,0 +1,1681 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="D">
+  <design>
+    <source>/Users/richard/Documents/_ax50/hw/chip/ax-chip.sch</source>
+    <date>Tuesday, 22 November 2016 'amt' 01:41:22</date>
+    <tool>Eeschema 4.0.4-stable</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title>ax-chip</title>
+        <company>Dr Gain Radio Industries</company>
+        <rev>v0.1</rev>
+        <date>2016-10-22</date>
+        <source>ax-chip.sch</source>
+        <comment number="1" value="Richard Meadows"/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="C2">
+      <value>1nF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">1nF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57426CC0</tstamp>
+    </comp>
+    <comp ref="C6">
+      <value>100nF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">100nF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57427EDE</tstamp>
+    </comp>
+    <comp ref="C5">
+      <value>4.7µF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">4.7µF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57427F98</tstamp>
+    </comp>
+    <comp ref="L2">
+      <value>22nH</value>
+      <footprint>agg:0603</footprint>
+      <fields>
+        <field name="STD.PAS">22nH</field>
+      </fields>
+      <libsource lib="device" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57429F5C</tstamp>
+    </comp>
+    <comp ref="C9">
+      <value>1µF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">1µF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5742F889</tstamp>
+    </comp>
+    <comp ref="IC4">
+      <value>TG-5006CJ</value>
+      <footprint>rem:TG-5006CJ</footprint>
+      <datasheet>http://www.farnell.com/datasheets/1804154.pdf</datasheet>
+      <fields>
+        <field name="Farnell">2405790</field>
+      </fields>
+      <libsource lib="ax-chip-cache" part="TG-5006CJ"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57423EE1</tstamp>
+    </comp>
+    <comp ref="D8">
+      <value>TVS_DIODE</value>
+      <footprint>agg-unchecked:TSLP-2-17</footprint>
+      <datasheet>http://www.farnell.com/datasheets/1992039.pdf</datasheet>
+      <fields>
+        <field name="Farnell">2480929</field>
+      </fields>
+      <libsource lib="ax-chip-cache" part="TVS_DIODE"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57497B81</tstamp>
+    </comp>
+    <comp ref="C4">
+      <value>1µF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">1µF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>574C2FA3</tstamp>
+    </comp>
+    <comp ref="C10">
+      <value>100nF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">100nF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57741142</tstamp>
+    </comp>
+    <comp ref="C11">
+      <value>100nF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">100nF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>577413A8</tstamp>
+    </comp>
+    <comp ref="C12">
+      <value>39pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">39pF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>577420AD</tstamp>
+    </comp>
+    <comp ref="L3">
+      <value>22nH</value>
+      <footprint>agg:0603</footprint>
+      <fields>
+        <field name="STD.PAS">22nH</field>
+      </fields>
+      <libsource lib="device" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57744B5E</tstamp>
+    </comp>
+    <comp ref="C14">
+      <value>56pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">56pF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57744DED</tstamp>
+    </comp>
+    <comp ref="C13">
+      <value>56pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">56pF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5774545E</tstamp>
+    </comp>
+    <comp ref="C16">
+      <value>2.7pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">2.7pF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>577477A8</tstamp>
+    </comp>
+    <comp ref="C15">
+      <value>NOSTUFF</value>
+      <footprint>agg:0402</footprint>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57747A5B</tstamp>
+    </comp>
+    <comp ref="C18">
+      <value>5.1pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">5.1pF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>577498A8</tstamp>
+    </comp>
+    <comp ref="L5">
+      <value>15nH</value>
+      <footprint>agg:0402</footprint>
+      <datasheet>LQW15AN15NG00D</datasheet>
+      <fields>
+        <field name="STD.PAS">15nH</field>
+        <field name="Farnell">1762621</field>
+        <field name="Digikey">490-1148-1-ND</field>
+      </fields>
+      <libsource lib="device" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57749B04</tstamp>
+    </comp>
+    <comp ref="L7">
+      <value>15nH</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">15nH</field>
+      </fields>
+      <libsource lib="device" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5774A0E1</tstamp>
+    </comp>
+    <comp ref="C19">
+      <value>2.7pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">2.7pF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5774A20D</tstamp>
+    </comp>
+    <comp ref="R7">
+      <value>1kΩ</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">1kΩ</field>
+      </fields>
+      <libsource lib="device" part="R_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5774D1E6</tstamp>
+    </comp>
+    <comp ref="C3">
+      <value>1nF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">1nF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5774E6D1</tstamp>
+    </comp>
+    <comp ref="IC2">
+      <value>TPS73433</value>
+      <footprint>agg:SOT-23-5</footprint>
+      <datasheet>http://www.ti.com/lit/ds/symlink/tps734.pdf</datasheet>
+      <fields>
+        <field name="Farnell">2382987</field>
+      </fields>
+      <libsource lib="ax-chip-cache" part="TPS743XX"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57896719</tstamp>
+    </comp>
+    <comp ref="C7">
+      <value>10nF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">10nF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57896C15</tstamp>
+    </comp>
+    <comp ref="C8">
+      <value>4.7µF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">4.7µF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5789747C</tstamp>
+    </comp>
+    <comp ref="P2">
+      <value>COAX</value>
+      <footprint>rem:SMA-EDGE</footprint>
+      <fields>
+        <field name="Farnell">1608592</field>
+      </fields>
+      <libsource lib="agg-kicad" part="COAX"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>578A1673</tstamp>
+    </comp>
+    <comp ref="D1">
+      <value>INTERNET-GREEN</value>
+      <footprint>rem:1206_LED_REVERSE</footprint>
+      <fields>
+        <field name="Farnell">2217901</field>
+      </fields>
+      <libsource lib="device" part="LED"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>578A2D48</tstamp>
+    </comp>
+    <comp ref="D2">
+      <value>LAN-YELLOW</value>
+      <footprint>rem:1206_LED_REVERSE</footprint>
+      <fields>
+        <field name="Farnell">2217902</field>
+      </fields>
+      <libsource lib="device" part="LED"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>578A2E62</tstamp>
+    </comp>
+    <comp ref="D3">
+      <value>DATA-ORANGE</value>
+      <footprint>rem:1206_LED_REVERSE</footprint>
+      <fields>
+        <field name="Farnell">2099254</field>
+      </fields>
+      <libsource lib="device" part="LED"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>578A305C</tstamp>
+    </comp>
+    <comp ref="R1">
+      <value>330Ω</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">330Ω</field>
+      </fields>
+      <libsource lib="device" part="R_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>578A4182</tstamp>
+    </comp>
+    <comp ref="R2">
+      <value>330Ω</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">330Ω</field>
+      </fields>
+      <libsource lib="device" part="R_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>578A44D6</tstamp>
+    </comp>
+    <comp ref="R3">
+      <value>330Ω</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">330Ω</field>
+      </fields>
+      <libsource lib="device" part="R_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>578A45B5</tstamp>
+    </comp>
+    <comp ref="P1">
+      <value>PAD</value>
+      <footprint>rem:BMI-S-x05</footprint>
+      <fields>
+        <field name="Farnell">2497723</field>
+      </fields>
+      <libsource lib="ax-chip-cache" part="PAD"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>578FEA50</tstamp>
+    </comp>
+    <comp ref="C21">
+      <value>10nF</value>
+      <footprint>agg:0402</footprint>
+      <datasheet>GRM155R71E103KA01D</datasheet>
+      <fields>
+        <field name="Farnell">8819734</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>579B8B33</tstamp>
+    </comp>
+    <comp ref="L1">
+      <value>22nH</value>
+      <footprint>agg:0603</footprint>
+      <fields>
+        <field name="STD.PAS">22nH</field>
+      </fields>
+      <libsource lib="device" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57F7A4A8</tstamp>
+    </comp>
+    <comp ref="IC3">
+      <value>AX5043</value>
+      <footprint>rem:QFN-28-EP-AX</footprint>
+      <fields>
+        <field name="Farnell">2521320</field>
+      </fields>
+      <libsource lib="ax5243" part="AX5043"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580B9FD3</tstamp>
+    </comp>
+    <comp ref="L10">
+      <value>12nH</value>
+      <footprint>agg:0603</footprint>
+      <datasheet>LQW18AN12NG10D</datasheet>
+      <fields>
+        <field name="Digikey">490-6862-1-ND</field>
+      </fields>
+      <libsource lib="device" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>574A224D</tstamp>
+    </comp>
+    <comp ref="C25">
+      <value>22pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">22pF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>574A231B</tstamp>
+    </comp>
+    <comp ref="C23">
+      <value>22pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">22pF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>574A2423</tstamp>
+    </comp>
+    <comp ref="IC1">
+      <value>CHIPv1_0</value>
+      <footprint>agg:CHIPv1_0</footprint>
+      <datasheet>http://docs.getchip.com/#chip-hardware</datasheet>
+      <libsource lib="agg-kicad" part="CHIPv1_0"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580C1D35</tstamp>
+    </comp>
+    <comp ref="U1">
+      <value>DS2401P</value>
+      <footprint>TO_SOT_Packages_SMD:TSOT-6-MK06A</footprint>
+      <datasheet>https://datasheets.maximintegrated.com/en/ds/DS2431.pdf</datasheet>
+      <fields>
+        <field name="Farnell">2519009</field>
+      </fields>
+      <libsource lib="maxim" part="DS2401P"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580C7C62</tstamp>
+    </comp>
+    <comp ref="R6">
+      <value>4.7kΩ</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">4.7kΩ</field>
+      </fields>
+      <libsource lib="device" part="R_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580C8860</tstamp>
+    </comp>
+    <comp ref="L4">
+      <value>120nH</value>
+      <footprint>agg:0603</footprint>
+      <fields>
+        <field name="STD.PAS">120nH</field>
+      </fields>
+      <libsource lib="device" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580CD265</tstamp>
+    </comp>
+    <comp ref="C17">
+      <value>22pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">22pF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580CD7FA</tstamp>
+    </comp>
+    <comp ref="L6">
+      <value>120nH</value>
+      <footprint>agg:0603</footprint>
+      <fields>
+        <field name="STD.PAS">120nH</field>
+      </fields>
+      <libsource lib="device" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580CD8C1</tstamp>
+    </comp>
+    <comp ref="C20">
+      <value>39pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">39pF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580CD98F</tstamp>
+    </comp>
+    <comp ref="L8">
+      <value>39nH</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">39nH</field>
+      </fields>
+      <libsource lib="device" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580CDA52</tstamp>
+    </comp>
+    <comp ref="L11">
+      <value>22nH</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">22nH</field>
+      </fields>
+      <libsource lib="device" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580CDCF4</tstamp>
+    </comp>
+    <comp ref="C24">
+      <value>56pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">56pF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580CDE28</tstamp>
+    </comp>
+    <comp ref="C26">
+      <value>39pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">39pF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580CE677</tstamp>
+    </comp>
+    <comp ref="D9">
+      <value>TVS_DIODE</value>
+      <footprint>agg-unchecked:TSLP-2-17</footprint>
+      <datasheet>http://www.farnell.com/datasheets/1992039.pdf</datasheet>
+      <fields>
+        <field name="Farnell">2480929</field>
+      </fields>
+      <libsource lib="ax-chip-cache" part="TVS_DIODE"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580CE8E8</tstamp>
+    </comp>
+    <comp ref="P3">
+      <value>COAX</value>
+      <footprint>rem:SMA-EDGE</footprint>
+      <fields>
+        <field name="Farnell">1608592</field>
+      </fields>
+      <libsource lib="agg-kicad" part="COAX"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580CEAC6</tstamp>
+    </comp>
+    <comp ref="C1">
+      <value>100nF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">100nF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580D71BE</tstamp>
+    </comp>
+    <comp ref="X2">
+      <value>CONN</value>
+      <libsource lib="agg-kicad" part="PART"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580D959A</tstamp>
+    </comp>
+    <comp ref="X1">
+      <value>CONN</value>
+      <libsource lib="agg-kicad" part="PART"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580DA4F2</tstamp>
+    </comp>
+    <comp ref="J1">
+      <value>CONN_01x02</value>
+      <footprint>Terminal_Blocks:TerminalBlock_Pheonix_PT-3.5mm_2pol</footprint>
+      <libsource lib="agg-kicad" part="CONN_01x02"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580DAB3E</tstamp>
+    </comp>
+    <comp ref="J2">
+      <value>CONN_01x02</value>
+      <footprint>Terminal_Blocks:TerminalBlock_Pheonix_PT-3.5mm_2pol</footprint>
+      <libsource lib="agg-kicad" part="CONN_01x02"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580DD2FD</tstamp>
+    </comp>
+    <comp ref="R10">
+      <value>10kΩ</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">10kΩ</field>
+      </fields>
+      <libsource lib="device" part="R_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580DDBFC</tstamp>
+    </comp>
+    <comp ref="R5">
+      <value>1kΩ</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">1kΩ</field>
+      </fields>
+      <libsource lib="device" part="R_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580DFEF8</tstamp>
+    </comp>
+    <comp ref="Q1">
+      <value>NX7002AK</value>
+      <footprint>agg:SOT-23</footprint>
+      <datasheet>http://cache.nxp.com/documents/data_sheet/NX7002AK.pdf</datasheet>
+      <fields>
+        <field name="Farnell">2191746</field>
+      </fields>
+      <libsource lib="device" part="Q_NMOS_GSD"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580E458D</tstamp>
+    </comp>
+    <comp ref="R9">
+      <value>1kΩ</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">1kΩ</field>
+      </fields>
+      <libsource lib="device" part="R_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580E4A44</tstamp>
+    </comp>
+    <comp ref="D5">
+      <value>TX-RED</value>
+      <footprint>rem:1206_LED_REVERSE</footprint>
+      <fields>
+        <field name="Farnell">2217903</field>
+      </fields>
+      <libsource lib="device" part="LED"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580E5350</tstamp>
+    </comp>
+    <comp ref="R8">
+      <value>330Ω</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">330Ω</field>
+      </fields>
+      <libsource lib="device" part="R_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580E5547</tstamp>
+    </comp>
+    <comp ref="D6">
+      <value>STTH1L06</value>
+      <footprint>agg:DO-214AC-SMA</footprint>
+      <datasheet>http://www.st.com/content/ccc/resource/technical/document/datasheet/e9/c2/09/e3/32/47/44/bd/CD00002694.pdf/files/CD00002694.pdf/jcr:content/translations/en.CD00002694.pdf</datasheet>
+      <fields>
+        <field name="Farnell">8165505</field>
+      </fields>
+      <libsource lib="device" part="D_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580E7931</tstamp>
+    </comp>
+    <comp ref="D4">
+      <value>RSSI-RED</value>
+      <footprint>rem:1206_LED_REVERSE</footprint>
+      <fields>
+        <field name="Farnell">2217903</field>
+      </fields>
+      <libsource lib="device" part="LED"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580ED788</tstamp>
+    </comp>
+    <comp ref="R4">
+      <value>330Ω</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">330Ω</field>
+      </fields>
+      <libsource lib="device" part="R_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580EDA0F</tstamp>
+    </comp>
+    <comp ref="D7">
+      <value>DFLS130L-7</value>
+      <footprint>Diodes_SMD:SOD-123</footprint>
+      <fields>
+        <field name="Farnell">1843673</field>
+      </fields>
+      <libsource lib="_semi" part="SCHOTTKY"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>580E3931</tstamp>
+    </comp>
+    <comp ref="R11">
+      <value>1kΩ</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">1kΩ</field>
+      </fields>
+      <libsource lib="device" part="R_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5816164A</tstamp>
+    </comp>
+    <comp ref="C30">
+      <value>10nF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">10nF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>58161741</tstamp>
+    </comp>
+    <comp ref="C29">
+      <value>100nF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">100nF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>5816214D</tstamp>
+    </comp>
+    <comp ref="C28">
+      <value>10nF</value>
+      <footprint>agg:0402</footprint>
+      <datasheet>GRM155R71E103KA01D</datasheet>
+      <fields>
+        <field name="Farnell">8819734</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>582CCC41</tstamp>
+    </comp>
+    <comp ref="L9">
+      <value>6.8nH</value>
+      <footprint>agg:0402</footprint>
+      <datasheet>LQW15AN6N8G00D</datasheet>
+      <fields>
+        <field name="Farnell">1762612</field>
+        <field name="Digikey">490-6840-1-ND</field>
+      </fields>
+      <libsource lib="device" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>582CD7E7</tstamp>
+    </comp>
+    <comp ref="U2">
+      <value>MGA-62563</value>
+      <footprint>TO_SOT_Packages_SMD:SC-70-6</footprint>
+      <datasheet>http://www.avagotech.com/docs/AV02-1237EN</datasheet>
+      <fields>
+        <field name="Farnell">7820453</field>
+        <field name="Digikey">516-1828-1-ND</field>
+      </fields>
+      <libsource lib="mga-68563" part="MGA-68563"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>582CDC39</tstamp>
+    </comp>
+    <comp ref="R12">
+      <value>1kΩ</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">1kΩ</field>
+      </fields>
+      <libsource lib="device" part="R_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>582CECA1</tstamp>
+    </comp>
+    <comp ref="L12">
+      <value>47nH</value>
+      <footprint>agg:0402</footprint>
+      <datasheet>LQG15HN47NJ02D</datasheet>
+      <fields>
+        <field name="Farnell">1343090</field>
+        <field name="Digikey">490-1093-1-ND</field>
+      </fields>
+      <libsource lib="device" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>582CFA7E</tstamp>
+    </comp>
+    <comp ref="C27">
+      <value>68pF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">68pF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>582CFFE0</tstamp>
+    </comp>
+    <comp ref="C22">
+      <value>10nF</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">10nF</field>
+      </fields>
+      <libsource lib="device" part="C_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>582D01D8</tstamp>
+    </comp>
+    <comp ref="FB1">
+      <value>600Ω-1A-0.2DCR</value>
+      <footprint>agg:0603</footprint>
+      <fields>
+        <field name="Farnell">1635706</field>
+      </fields>
+      <libsource lib="_passive" part="BEAD"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>582D10E5</tstamp>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="ax5243" part="AX5043">
+      <fields>
+        <field name="Reference">IC</field>
+        <field name="Value">AX5043</field>
+        <field name="Footprint">rem:QFN-28-EP-AX</field>
+        <field name="Farnell">2521320</field>
+      </fields>
+      <pins>
+        <pin num="1" name="VDD_ANA" type="output"/>
+        <pin num="2" name="GND" type="power_in"/>
+        <pin num="3" name="ANTp" type="input"/>
+        <pin num="4" name="ANTn" type="input"/>
+        <pin num="5" name="ANTP1" type="output"/>
+        <pin num="6" name="GND" type="power_in"/>
+        <pin num="7" name="VDD_ANA" type="output"/>
+        <pin num="8" name="FILT" type="passive"/>
+        <pin num="9" name="L2" type="BiDi"/>
+        <pin num="10" name="L1" type="BiDi"/>
+        <pin num="11" name="DATA" type="input"/>
+        <pin num="12" name="DCLK" type="input"/>
+        <pin num="13" name="SYSCLK" type="input"/>
+        <pin num="14" name="SEL" type="input"/>
+        <pin num="15" name="SCLK" type="input"/>
+        <pin num="16" name="MISO" type="output"/>
+        <pin num="17" name="MOSI" type="input"/>
+        <pin num="18" name="NC" type="NotConnected"/>
+        <pin num="19" name="IRQ" type="output"/>
+        <pin num="20" name="PWRAMP" type="power_in"/>
+        <pin num="21" name="ANTSEL" type="input"/>
+        <pin num="22" name="NC" type="NotConnected"/>
+        <pin num="23" name="VDD_IO" type="power_in"/>
+        <pin num="24" name="NC" type="NotConnected"/>
+        <pin num="25" name="GPADC1" type="BiDi"/>
+        <pin num="26" name="GPADC2" type="BiDi"/>
+        <pin num="27" name="CLK16n" type="input"/>
+        <pin num="28" name="CLK16p" type="input"/>
+        <pin num="EP" name="GND" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="_passive" part="BEAD">
+      <description>Ferrite bead</description>
+      <fields>
+        <field name="Reference">E</field>
+        <field name="Value">BEAD</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="agg-kicad" part="CHIPv1_0">
+      <fields>
+        <field name="Reference">IC</field>
+        <field name="Value">CHIPv1_0</field>
+        <field name="Footprint">agg:CHIPv1_0</field>
+        <field name="Datasheet">http://docs.getchip.com/#chip-hardware</field>
+      </fields>
+      <pins>
+        <pin num="L1" name="GND" type="power_in"/>
+        <pin num="L2" name="CHG-IN" type="power_in"/>
+        <pin num="L3" name="VCC-5V" type="power_out"/>
+        <pin num="L4" name="GND" type="power_in"/>
+        <pin num="L5" name="VCC-3V3" type="power_out"/>
+        <pin num="L6" name="TS" type="input"/>
+        <pin num="L7" name="VCC-1V8" type="power_out"/>
+        <pin num="L8" name="BAT" type="power_in"/>
+        <pin num="L9" name="TWI1-SDA" type="openCol"/>
+        <pin num="L10" name="PWRON" type="input"/>
+        <pin num="L11" name="TWI1-SCK" type="openCol"/>
+        <pin num="L12" name="GND" type="power_in"/>
+        <pin num="L13" name="X1" type="input"/>
+        <pin num="L14" name="X2" type="input"/>
+        <pin num="L15" name="Y1" type="input"/>
+        <pin num="L16" name="Y2" type="input"/>
+        <pin num="L17" name="LCD-D2" type="BiDi"/>
+        <pin num="L18" name="PWM0" type="output"/>
+        <pin num="L19" name="LCD-D4" type="BiDi"/>
+        <pin num="L20" name="LCD-D3" type="BiDi"/>
+        <pin num="L21" name="LCD-D6" type="BiDi"/>
+        <pin num="L22" name="LCD-D5" type="BiDi"/>
+        <pin num="L23" name="LCD-D10" type="BiDi"/>
+        <pin num="L24" name="LCD-D7" type="BiDi"/>
+        <pin num="L25" name="LCD-D12" type="BiDi"/>
+        <pin num="L26" name="LCD-D11" type="BiDi"/>
+        <pin num="L27" name="LCD-D14" type="BiDi"/>
+        <pin num="L28" name="LCD-D13" type="BiDi"/>
+        <pin num="L29" name="LCD-D18" type="BiDi"/>
+        <pin num="L30" name="LCD-D15" type="BiDi"/>
+        <pin num="L31" name="LCD-D20" type="BiDi"/>
+        <pin num="L32" name="LCD-D19" type="BiDi"/>
+        <pin num="L33" name="LCD-D22" type="BiDi"/>
+        <pin num="L34" name="LCD-D21" type="BiDi"/>
+        <pin num="L35" name="LCD-CLK" type="BiDi"/>
+        <pin num="L36" name="LCD-D23" type="BiDi"/>
+        <pin num="L37" name="LCD-VSYNC" type="BiDi"/>
+        <pin num="L38" name="LCD-HSYNC" type="BiDi"/>
+        <pin num="L39" name="GND" type="power_in"/>
+        <pin num="L40" name="LCD-DE" type="BiDi"/>
+        <pin num="R1" name="GND" type="power_in"/>
+        <pin num="R2" name="VCC-5V" type="power_out"/>
+        <pin num="R3" name="UART1-TX" type="output"/>
+        <pin num="R4" name="HPL" type="output"/>
+        <pin num="R5" name="UART1-RX" type="input"/>
+        <pin num="R6" name="HPCOM" type="output"/>
+        <pin num="R7" name="FEL" type="input"/>
+        <pin num="R8" name="HPR" type="output"/>
+        <pin num="R9" name="VCC-3V3" type="power_out"/>
+        <pin num="R10" name="MICM" type="input"/>
+        <pin num="R11" name="LRADC" type="input"/>
+        <pin num="R12" name="MICIN1" type="input"/>
+        <pin num="R13" name="XIO-P0" type="BiDi"/>
+        <pin num="R14" name="XIO-P1" type="BiDi"/>
+        <pin num="R15" name="XIO-P2" type="BiDi"/>
+        <pin num="R16" name="XIO-P3" type="BiDi"/>
+        <pin num="R17" name="XIO-P4" type="BiDi"/>
+        <pin num="R18" name="XIO-P5" type="BiDi"/>
+        <pin num="R19" name="XIO-P6" type="BiDi"/>
+        <pin num="R20" name="XIO-P7" type="BiDi"/>
+        <pin num="R21" name="GND" type="power_in"/>
+        <pin num="R22" name="GND" type="power_in"/>
+        <pin num="R23" name="AP-EINT1" type="input"/>
+        <pin num="R24" name="AP-EINT2" type="input"/>
+        <pin num="R25" name="TWI2-SDA" type="openCol"/>
+        <pin num="R26" name="TWI2-SCK" type="openCol"/>
+        <pin num="R27" name="CSIPCK" type="BiDi"/>
+        <pin num="R28" name="CSICK" type="BiDi"/>
+        <pin num="R29" name="CSIHSYNC" type="BiDi"/>
+        <pin num="R30" name="CSIVSYNC" type="BiDi"/>
+        <pin num="R31" name="CSID0" type="BiDi"/>
+        <pin num="R32" name="CSID1" type="BiDi"/>
+        <pin num="R33" name="CSID2" type="BiDi"/>
+        <pin num="R34" name="CSID3" type="BiDi"/>
+        <pin num="R35" name="CSID4" type="BiDi"/>
+        <pin num="R36" name="CSID5" type="BiDi"/>
+        <pin num="R37" name="CSID6" type="BiDi"/>
+        <pin num="R38" name="CSID7" type="BiDi"/>
+        <pin num="R39" name="GND" type="power_in"/>
+        <pin num="R40" name="GND" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="agg-kicad" part="COAX">
+      <fields>
+        <field name="Reference">P</field>
+        <field name="Value">COAX</field>
+        <field name="Footprint">agg-unchecked:SMA-142-0701-801</field>
+        <field name="Farnell">1608592</field>
+      </fields>
+      <pins>
+        <pin num="1" name="RF" type="BiDi"/>
+        <pin num="2" name="GND" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="agg-kicad" part="CONN_01x02">
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">CONN_01x02</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="C_Small">
+      <description>Unpolarized capacitor</description>
+      <footprints>
+        <fp>C?</fp>
+        <fp>C_????_*</fp>
+        <fp>C_????</fp>
+        <fp>SMD*_c</fp>
+        <fp>Capacitor*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">C_Small</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="maxim" part="DS2401P">
+      <description>Silicon Serial Number TSSOP-6</description>
+      <docs>http://pdfserv.maximintegrated.com/en/ds/DS2401.pdf</docs>
+      <footprints>
+        <fp>TSSOP-6</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">DS2401P</field>
+      </fields>
+      <pins>
+        <pin num="1" name="GND" type="power_in"/>
+        <pin num="2" name="DQ" type="BiDi"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="D_Small">
+      <description>Diode</description>
+      <footprints>
+        <fp>Diode_*</fp>
+        <fp>D-Pak_TO252AA</fp>
+        <fp>*SingleDiode</fp>
+        <fp>*SingleDiode*</fp>
+        <fp>*_Diode_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">D_Small</field>
+      </fields>
+      <pins>
+        <pin num="1" name="K" type="passive"/>
+        <pin num="2" name="A" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="LED">
+      <footprints>
+        <fp>LED-*</fp>
+        <fp>LED_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">LED</field>
+      </fields>
+      <pins>
+        <pin num="1" name="K" type="passive"/>
+        <pin num="2" name="A" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="L_Small">
+      <description>Inductor</description>
+      <footprints>
+        <fp>Choke_*</fp>
+        <fp>*Coil*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">L</field>
+        <field name="Value">L_Small</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="mga-68563" part="MGA-68563">
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">MGA-68563</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="input"/>
+        <pin num="2" name="~" type="input"/>
+        <pin num="3" name="~" type="input"/>
+        <pin num="4" name="~" type="input"/>
+        <pin num="5" name="~" type="input"/>
+        <pin num="6" name="~" type="output"/>
+      </pins>
+    </libpart>
+    <libpart lib="ax-chip-cache" part="PAD">
+      <fields>
+        <field name="Reference">P</field>
+        <field name="Value">PAD</field>
+      </fields>
+      <pins>
+        <pin num="1" name="TP" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="agg-kicad" part="PART">
+      <fields>
+        <field name="Reference">X</field>
+        <field name="Value">PART</field>
+      </fields>
+    </libpart>
+    <libpart lib="device" part="Q_NMOS_GSD">
+      <description>Transistor N-MOSFET (general)</description>
+      <fields>
+        <field name="Reference">Q</field>
+        <field name="Value">Q_NMOS_GSD</field>
+      </fields>
+      <pins>
+        <pin num="1" name="G" type="input"/>
+        <pin num="2" name="S" type="passive"/>
+        <pin num="3" name="D" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="device" part="R_Small">
+      <description>Resistor</description>
+      <footprints>
+        <fp>Resistor_*</fp>
+        <fp>R_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">R_Small</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="_semi" part="SCHOTTKY">
+      <description>Schottky voltage current [footprint]</description>
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">SCHOTTKY</field>
+      </fields>
+      <pins>
+        <pin num="1" name="K" type="passive"/>
+        <pin num="2" name="A" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="ax-chip-cache" part="TG-5006CJ">
+      <fields>
+        <field name="Reference">IC</field>
+        <field name="Value">TG-5006CJ</field>
+        <field name="Datasheet">http://www.farnell.com/datasheets/1804154.pdf</field>
+        <field name="Farnell">2405790</field>
+      </fields>
+      <pins>
+        <pin num="1" name="NC" type="NotConnected"/>
+        <pin num="2" name="GND" type="power_in"/>
+        <pin num="3" name="OUT" type="output"/>
+        <pin num="4" name="VCC" type="power_in"/>
+      </pins>
+    </libpart>
+    <libpart lib="ax-chip-cache" part="TPS743XX">
+      <footprints>
+        <fp>SOT-23*</fp>
+        <fp>SOT-23*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">TPS743XX</field>
+        <field name="Footprint">SOT-23-5</field>
+        <field name="Datasheet">http://www.ti.com/lit/ds/symlink/tps734.pdf</field>
+      </fields>
+      <pins>
+        <pin num="1" name="IN" type="power_in"/>
+        <pin num="2" name="GND" type="power_in"/>
+        <pin num="3" name="EN" type="input"/>
+        <pin num="4" name="NR/FB" type="passive"/>
+        <pin num="5" name="OUT" type="power_out"/>
+      </pins>
+    </libpart>
+    <libpart lib="ax-chip-cache" part="TVS_DIODE">
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">TVS_DIODE</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~" type="passive"/>
+        <pin num="2" name="~" type="passive"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="_passive">
+      <uri>/Users/richard/Documents/_kicad/kicad-schlib/library/_passive.lib</uri>
+    </library>
+    <library logical="_semi">
+      <uri>/Users/richard/Documents/_kicad/kicad-schlib/library/_semi.lib</uri>
+    </library>
+    <library logical="device">
+      <uri>/Library/Application Support/kicad/library/device.lib</uri>
+    </library>
+    <library logical="maxim">
+      <uri>/Library/Application Support/kicad/library/maxim.lib</uri>
+    </library>
+    <library logical="ax5243">
+      <uri>/Users/richard/Documents/_kicad/rem-kicad/lib/radio/ax5243.lib</uri>
+    </library>
+    <library logical="agg-kicad">
+      <uri>/Users/richard/Documents/_kicad/agg-kicad/agg-kicad.lib</uri>
+    </library>
+    <library logical="mga-68563">
+      <uri>/Users/richard/Documents/_kicad/rem-kicad/lib/radio/mga-68563.lib</uri>
+    </library>
+    <library logical="ax-chip-cache">
+      <uri>/Users/richard/Documents/_ax50/hw/chip/ax-chip-cache.lib</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="Net-(R12-Pad2)">
+      <node ref="R12" pin="2"/>
+      <node ref="U2" pin="4"/>
+    </net>
+    <net code="2" name="AX_~SEL~">
+      <node ref="IC1" pin="R27"/>
+      <node ref="IC3" pin="14"/>
+    </net>
+    <net code="3" name="LAN_LED">
+      <node ref="IC1" pin="R14"/>
+      <node ref="R2" pin="1"/>
+    </net>
+    <net code="4" name="INTERNET_LED">
+      <node ref="R1" pin="1"/>
+      <node ref="IC1" pin="R13"/>
+    </net>
+    <net code="5" name="Net-(D7-Pad2)">
+      <node ref="IC1" pin="R2"/>
+      <node ref="D7" pin="2"/>
+    </net>
+    <net code="6" name="/AUDIO">
+      <node ref="C29" pin="2"/>
+      <node ref="C30" pin="1"/>
+      <node ref="R11" pin="1"/>
+    </net>
+    <net code="7" name="Net-(C21-Pad2)">
+      <node ref="C21" pin="2"/>
+      <node ref="L9" pin="1"/>
+    </net>
+    <net code="8" name="GND">
+      <node ref="P2" pin="2"/>
+      <node ref="D2" pin="1"/>
+      <node ref="D3" pin="1"/>
+      <node ref="D1" pin="1"/>
+      <node ref="IC3" pin="EP"/>
+      <node ref="IC3" pin="26"/>
+      <node ref="IC3" pin="25"/>
+      <node ref="C8" pin="2"/>
+      <node ref="C7" pin="2"/>
+      <node ref="IC2" pin="2"/>
+      <node ref="C3" pin="1"/>
+      <node ref="IC1" pin="R22"/>
+      <node ref="C25" pin="2"/>
+      <node ref="C23" pin="2"/>
+      <node ref="IC1" pin="L1"/>
+      <node ref="IC1" pin="R1"/>
+      <node ref="IC1" pin="L4"/>
+      <node ref="C16" pin="2"/>
+      <node ref="L3" pin="2"/>
+      <node ref="C12" pin="2"/>
+      <node ref="C20" pin="2"/>
+      <node ref="L4" pin="2"/>
+      <node ref="U1" pin="1"/>
+      <node ref="IC1" pin="R40"/>
+      <node ref="IC1" pin="R21"/>
+      <node ref="IC1" pin="L12"/>
+      <node ref="C6" pin="2"/>
+      <node ref="C10" pin="2"/>
+      <node ref="C4" pin="2"/>
+      <node ref="D8" pin="2"/>
+      <node ref="IC1" pin="L39"/>
+      <node ref="IC4" pin="2"/>
+      <node ref="IC3" pin="6"/>
+      <node ref="IC1" pin="R39"/>
+      <node ref="IC3" pin="2"/>
+      <node ref="P1" pin="1"/>
+      <node ref="C11" pin="2"/>
+      <node ref="L7" pin="2"/>
+      <node ref="C18" pin="2"/>
+      <node ref="C15" pin="1"/>
+      <node ref="C9" pin="2"/>
+      <node ref="L2" pin="1"/>
+      <node ref="C5" pin="2"/>
+      <node ref="C1" pin="2"/>
+      <node ref="J1" pin="2"/>
+      <node ref="C24" pin="2"/>
+      <node ref="C26" pin="2"/>
+      <node ref="D9" pin="2"/>
+      <node ref="P3" pin="2"/>
+      <node ref="D4" pin="1"/>
+      <node ref="Q1" pin="2"/>
+      <node ref="U2" pin="5"/>
+      <node ref="C27" pin="2"/>
+      <node ref="C22" pin="2"/>
+      <node ref="C30" pin="2"/>
+      <node ref="U2" pin="1"/>
+      <node ref="U2" pin="2"/>
+    </net>
+    <net code="9" name="Net-(L9-Pad2)">
+      <node ref="U2" pin="3"/>
+      <node ref="L9" pin="2"/>
+    </net>
+    <net code="10" name="Net-(C12-Pad1)">
+      <node ref="IC3" pin="8"/>
+      <node ref="C12" pin="1"/>
+    </net>
+    <net code="11" name="/ANTp">
+      <node ref="IC3" pin="3"/>
+      <node ref="C13" pin="1"/>
+      <node ref="L2" pin="2"/>
+    </net>
+    <net code="12" name="Net-(C13-Pad2)">
+      <node ref="C13" pin="2"/>
+      <node ref="C15" pin="2"/>
+      <node ref="C18" pin="1"/>
+      <node ref="L5" pin="2"/>
+    </net>
+    <net code="13" name="Net-(C14-Pad2)">
+      <node ref="C14" pin="2"/>
+      <node ref="C19" pin="2"/>
+      <node ref="C16" pin="1"/>
+      <node ref="L7" pin="1"/>
+    </net>
+    <net code="14" name="AX_SCLK">
+      <node ref="IC3" pin="15"/>
+      <node ref="IC1" pin="R28"/>
+    </net>
+    <net code="15" name="AX_MISO">
+      <node ref="IC1" pin="R30"/>
+      <node ref="IC3" pin="16"/>
+    </net>
+    <net code="16" name="AX_MOSI">
+      <node ref="IC3" pin="17"/>
+      <node ref="IC1" pin="R29"/>
+    </net>
+    <net code="17" name="AX_IRQ">
+      <node ref="IC1" pin="R23"/>
+      <node ref="IC3" pin="19"/>
+    </net>
+    <net code="18" name="Net-(C11-Pad1)">
+      <node ref="C11" pin="1"/>
+      <node ref="IC3" pin="7"/>
+    </net>
+    <net code="19" name="5v">
+      <node ref="D6" pin="1"/>
+      <node ref="R8" pin="1"/>
+      <node ref="R10" pin="1"/>
+      <node ref="D7" pin="1"/>
+      <node ref="J2" pin="1"/>
+    </net>
+    <net code="20" name="AX_50Ω_DIFF">
+      <node ref="C25" pin="1"/>
+      <node ref="C28" pin="2"/>
+      <node ref="L10" pin="2"/>
+    </net>
+    <net code="21" name="3v3">
+      <node ref="C1" pin="1"/>
+      <node ref="IC1" pin="L5"/>
+      <node ref="R6" pin="1"/>
+    </net>
+    <net code="22" name="/CHG">
+      <node ref="J1" pin="1"/>
+      <node ref="IC1" pin="L2"/>
+    </net>
+    <net code="23" name="AX_DATA">
+      <node ref="IC3" pin="11"/>
+      <node ref="IC1" pin="R17"/>
+    </net>
+    <net code="24" name="Net-(C24-Pad1)">
+      <node ref="C24" pin="1"/>
+      <node ref="L11" pin="1"/>
+      <node ref="L8" pin="2"/>
+    </net>
+    <net code="25" name="/AX_ANT_SE">
+      <node ref="P3" pin="1"/>
+      <node ref="L11" pin="2"/>
+      <node ref="C26" pin="1"/>
+      <node ref="D9" pin="1"/>
+    </net>
+    <net code="26" name="Net-(D5-Pad2)">
+      <node ref="D5" pin="2"/>
+      <node ref="R8" pin="2"/>
+    </net>
+    <net code="27" name="Net-(D5-Pad1)">
+      <node ref="Q1" pin="3"/>
+      <node ref="R10" pin="2"/>
+      <node ref="J2" pin="2"/>
+      <node ref="D6" pin="2"/>
+      <node ref="D5" pin="1"/>
+    </net>
+    <net code="28" name="Net-(IC1-PadL3)">
+      <node ref="IC1" pin="L3"/>
+    </net>
+    <net code="29" name="Net-(D4-Pad2)">
+      <node ref="R4" pin="2"/>
+      <node ref="D4" pin="2"/>
+    </net>
+    <net code="30" name="/DAC">
+      <node ref="R11" pin="2"/>
+      <node ref="R4" pin="1"/>
+      <node ref="IC3" pin="21"/>
+    </net>
+    <net code="31" name="Net-(IC1-PadR20)">
+      <node ref="IC1" pin="R20"/>
+    </net>
+    <net code="32" name="Net-(IC1-PadR16)">
+      <node ref="IC1" pin="R16"/>
+    </net>
+    <net code="33" name="DATA_LED">
+      <node ref="R3" pin="1"/>
+      <node ref="IC1" pin="R15"/>
+    </net>
+    <net code="34" name="AX_DCLK">
+      <node ref="IC3" pin="12"/>
+      <node ref="IC1" pin="R18"/>
+    </net>
+    <net code="35" name="PWRAMP">
+      <node ref="R9" pin="1"/>
+      <node ref="IC3" pin="20"/>
+      <node ref="R5" pin="2"/>
+    </net>
+    <net code="36" name="Net-(IC1-PadR19)">
+      <node ref="R5" pin="1"/>
+      <node ref="IC1" pin="R19"/>
+    </net>
+    <net code="37" name="Net-(IC3-Pad13)">
+      <node ref="IC3" pin="13"/>
+    </net>
+    <net code="38" name="Net-(Q1-Pad1)">
+      <node ref="Q1" pin="1"/>
+      <node ref="R9" pin="2"/>
+    </net>
+    <net code="39" name="Net-(C17-Pad2)">
+      <node ref="C17" pin="2"/>
+      <node ref="L6" pin="1"/>
+    </net>
+    <net code="40" name="Net-(C20-Pad1)">
+      <node ref="L6" pin="2"/>
+      <node ref="C20" pin="1"/>
+      <node ref="L8" pin="1"/>
+    </net>
+    <net code="41" name="VDD">
+      <node ref="C5" pin="1"/>
+      <node ref="C9" pin="1"/>
+      <node ref="FB1" pin="1"/>
+      <node ref="C8" pin="1"/>
+      <node ref="IC2" pin="5"/>
+      <node ref="IC4" pin="4"/>
+      <node ref="IC3" pin="23"/>
+      <node ref="C6" pin="1"/>
+    </net>
+    <net code="42" name="/LNA_OUT">
+      <node ref="U2" pin="6"/>
+      <node ref="L12" pin="2"/>
+      <node ref="C28" pin="1"/>
+    </net>
+    <net code="43" name="/V_LNA">
+      <node ref="R12" pin="1"/>
+      <node ref="L12" pin="1"/>
+      <node ref="C27" pin="1"/>
+      <node ref="C22" pin="1"/>
+      <node ref="FB1" pin="2"/>
+    </net>
+    <net code="44" name="/MICIN">
+      <node ref="IC1" pin="R12"/>
+      <node ref="C29" pin="1"/>
+    </net>
+    <net code="45" name="Net-(D3-Pad2)">
+      <node ref="D3" pin="2"/>
+      <node ref="R3" pin="2"/>
+    </net>
+    <net code="46" name="Net-(D2-Pad2)">
+      <node ref="R2" pin="2"/>
+      <node ref="D2" pin="2"/>
+    </net>
+    <net code="47" name="Net-(D1-Pad2)">
+      <node ref="R1" pin="2"/>
+      <node ref="D1" pin="2"/>
+    </net>
+    <net code="48" name="Net-(IC3-Pad9)">
+      <node ref="IC3" pin="9"/>
+      <node ref="L1" pin="1"/>
+    </net>
+    <net code="49" name="Net-(IC3-Pad10)">
+      <node ref="L1" pin="2"/>
+      <node ref="IC3" pin="10"/>
+    </net>
+    <net code="50" name="/CLKn">
+      <node ref="C3" pin="2"/>
+      <node ref="R7" pin="2"/>
+      <node ref="IC3" pin="27"/>
+    </net>
+    <net code="51" name="16_TCXO">
+      <node ref="C2" pin="1"/>
+      <node ref="IC4" pin="3"/>
+    </net>
+    <net code="52" name="Net-(C7-Pad1)">
+      <node ref="C7" pin="1"/>
+      <node ref="IC2" pin="4"/>
+    </net>
+    <net code="53" name="VBATT">
+      <node ref="IC1" pin="L8"/>
+      <node ref="IC2" pin="1"/>
+      <node ref="IC2" pin="3"/>
+      <node ref="C4" pin="1"/>
+    </net>
+    <net code="54" name="1WIRE">
+      <node ref="R6" pin="2"/>
+      <node ref="U1" pin="2"/>
+      <node ref="IC1" pin="L17"/>
+    </net>
+    <net code="55" name="Net-(C10-Pad1)">
+      <node ref="IC3" pin="1"/>
+      <node ref="C10" pin="1"/>
+    </net>
+    <net code="56" name="ANTP1">
+      <node ref="IC3" pin="5"/>
+      <node ref="C17" pin="1"/>
+      <node ref="L4" pin="1"/>
+    </net>
+    <net code="57" name="Net-(C19-Pad1)">
+      <node ref="C23" pin="1"/>
+      <node ref="L10" pin="1"/>
+      <node ref="C19" pin="1"/>
+      <node ref="L5" pin="1"/>
+    </net>
+    <net code="58" name="/CLKp">
+      <node ref="IC3" pin="28"/>
+      <node ref="C2" pin="2"/>
+      <node ref="R7" pin="1"/>
+    </net>
+    <net code="59" name="Net-(IC3-Pad22)">
+      <node ref="IC3" pin="22"/>
+    </net>
+    <net code="60" name="Net-(IC3-Pad24)">
+      <node ref="IC3" pin="24"/>
+    </net>
+    <net code="61" name="Net-(IC3-Pad18)">
+      <node ref="IC3" pin="18"/>
+    </net>
+    <net code="62" name="Net-(IC4-Pad1)">
+      <node ref="IC4" pin="1"/>
+    </net>
+    <net code="63" name="/AX_ANT_DIFF">
+      <node ref="D8" pin="1"/>
+      <node ref="C21" pin="1"/>
+      <node ref="P2" pin="1"/>
+    </net>
+    <net code="64" name="/ANTn">
+      <node ref="L3" pin="1"/>
+      <node ref="IC3" pin="4"/>
+      <node ref="C14" pin="1"/>
+    </net>
+    <net code="65" name="Net-(IC1-PadR31)">
+      <node ref="IC1" pin="R31"/>
+    </net>
+    <net code="66" name="Net-(IC1-PadL40)">
+      <node ref="IC1" pin="L40"/>
+    </net>
+    <net code="67" name="Net-(IC1-PadL38)">
+      <node ref="IC1" pin="L38"/>
+    </net>
+    <net code="68" name="Net-(IC1-PadL37)">
+      <node ref="IC1" pin="L37"/>
+    </net>
+    <net code="69" name="Net-(IC1-PadL35)">
+      <node ref="IC1" pin="L35"/>
+    </net>
+    <net code="70" name="Net-(IC1-PadL36)">
+      <node ref="IC1" pin="L36"/>
+    </net>
+    <net code="71" name="Net-(IC1-PadL33)">
+      <node ref="IC1" pin="L33"/>
+    </net>
+    <net code="72" name="Net-(IC1-PadL34)">
+      <node ref="IC1" pin="L34"/>
+    </net>
+    <net code="73" name="Net-(IC1-PadL31)">
+      <node ref="IC1" pin="L31"/>
+    </net>
+    <net code="74" name="Net-(IC1-PadL32)">
+      <node ref="IC1" pin="L32"/>
+    </net>
+    <net code="75" name="Net-(IC1-PadL29)">
+      <node ref="IC1" pin="L29"/>
+    </net>
+    <net code="76" name="Net-(IC1-PadL30)">
+      <node ref="IC1" pin="L30"/>
+    </net>
+    <net code="77" name="Net-(IC1-PadL27)">
+      <node ref="IC1" pin="L27"/>
+    </net>
+    <net code="78" name="Net-(IC1-PadL28)">
+      <node ref="IC1" pin="L28"/>
+    </net>
+    <net code="79" name="Net-(IC1-PadL25)">
+      <node ref="IC1" pin="L25"/>
+    </net>
+    <net code="80" name="Net-(IC1-PadL26)">
+      <node ref="IC1" pin="L26"/>
+    </net>
+    <net code="81" name="Net-(IC1-PadL23)">
+      <node ref="IC1" pin="L23"/>
+    </net>
+    <net code="82" name="Net-(IC1-PadL24)">
+      <node ref="IC1" pin="L24"/>
+    </net>
+    <net code="83" name="Net-(IC1-PadL21)">
+      <node ref="IC1" pin="L21"/>
+    </net>
+    <net code="84" name="Net-(IC1-PadL22)">
+      <node ref="IC1" pin="L22"/>
+    </net>
+    <net code="85" name="Net-(IC1-PadL19)">
+      <node ref="IC1" pin="L19"/>
+    </net>
+    <net code="86" name="Net-(IC1-PadL20)">
+      <node ref="IC1" pin="L20"/>
+    </net>
+    <net code="87" name="Net-(IC1-PadR38)">
+      <node ref="IC1" pin="R38"/>
+    </net>
+    <net code="88" name="Net-(IC1-PadR37)">
+      <node ref="IC1" pin="R37"/>
+    </net>
+    <net code="89" name="Net-(IC1-PadR36)">
+      <node ref="IC1" pin="R36"/>
+    </net>
+    <net code="90" name="Net-(IC1-PadR35)">
+      <node ref="IC1" pin="R35"/>
+    </net>
+    <net code="91" name="Net-(IC1-PadR34)">
+      <node ref="IC1" pin="R34"/>
+    </net>
+    <net code="92" name="Net-(IC1-PadR33)">
+      <node ref="IC1" pin="R33"/>
+    </net>
+    <net code="93" name="Net-(IC1-PadR32)">
+      <node ref="IC1" pin="R32"/>
+    </net>
+    <net code="94" name="Net-(IC1-PadL9)">
+      <node ref="IC1" pin="L9"/>
+    </net>
+    <net code="95" name="Net-(IC1-PadL11)">
+      <node ref="IC1" pin="L11"/>
+    </net>
+    <net code="96" name="Net-(IC1-PadR25)">
+      <node ref="IC1" pin="R25"/>
+    </net>
+    <net code="97" name="Net-(IC1-PadR26)">
+      <node ref="IC1" pin="R26"/>
+    </net>
+    <net code="98" name="Net-(IC1-PadL7)">
+      <node ref="IC1" pin="L7"/>
+    </net>
+    <net code="99" name="Net-(IC1-PadL6)">
+      <node ref="IC1" pin="L6"/>
+    </net>
+    <net code="100" name="Net-(IC1-PadR11)">
+      <node ref="IC1" pin="R11"/>
+    </net>
+    <net code="101" name="Net-(IC1-PadL18)">
+      <node ref="IC1" pin="L18"/>
+    </net>
+    <net code="102" name="Net-(IC1-PadR7)">
+      <node ref="IC1" pin="R7"/>
+    </net>
+    <net code="103" name="Net-(IC1-PadL10)">
+      <node ref="IC1" pin="L10"/>
+    </net>
+    <net code="104" name="Net-(IC1-PadR9)">
+      <node ref="IC1" pin="R9"/>
+    </net>
+    <net code="105" name="Net-(IC1-PadL16)">
+      <node ref="IC1" pin="L16"/>
+    </net>
+    <net code="106" name="Net-(IC1-PadL15)">
+      <node ref="IC1" pin="L15"/>
+    </net>
+    <net code="107" name="Net-(IC1-PadL14)">
+      <node ref="IC1" pin="L14"/>
+    </net>
+    <net code="108" name="Net-(IC1-PadL13)">
+      <node ref="IC1" pin="L13"/>
+    </net>
+    <net code="109" name="Net-(IC1-PadR24)">
+      <node ref="IC1" pin="R24"/>
+    </net>
+    <net code="110" name="Net-(IC1-PadR4)">
+      <node ref="IC1" pin="R4"/>
+    </net>
+    <net code="111" name="Net-(IC1-PadR8)">
+      <node ref="IC1" pin="R8"/>
+    </net>
+    <net code="112" name="Net-(IC1-PadR6)">
+      <node ref="IC1" pin="R6"/>
+    </net>
+    <net code="113" name="Net-(IC1-PadR10)">
+      <node ref="IC1" pin="R10"/>
+    </net>
+    <net code="114" name="Net-(IC1-PadR3)">
+      <node ref="IC1" pin="R3"/>
+    </net>
+    <net code="115" name="Net-(IC1-PadR5)">
+      <node ref="IC1" pin="R5"/>
+    </net>
+  </nets>
+</export>

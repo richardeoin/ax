@@ -162,7 +162,6 @@ LIBS:symbol
 LIBS:TexasInstruments
 LIBS:Vishay
 LIBS:Xilinx
-LIBS:ax-gateway-cache
 LIBS:ax5243
 LIBS:agg-kicad
 LIBS:mga-68563
@@ -322,8 +321,6 @@ F 1 "TVS_DIODE" H 7200 1900 60  0000 C CNN
 F 2 "agg-unchecked:TSLP-2-17" H 7100 2000 60  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/1992039.pdf" H 7200 2100 60  0001 C CNN
 F 4 "2480929" H 7100 2000 60  0001 C CNN "Farnell"
-F 5 "0.1pF" H 7300 1800 60  0000 C CNN "Capacitance"
-F 6 "Vtrig = 21V typ (4W@50Ω)" V 7700 1900 60  0000 C CNN "Vtrig"
 	1    7100 2000
 	0    -1   1    0   
 $EndComp
@@ -1408,8 +1405,6 @@ F 1 "TVS_DIODE" H 10600 4700 60  0000 C CNN
 F 2 "agg-unchecked:TSLP-2-17" H 10500 4800 60  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/1992039.pdf" H 10600 4900 60  0001 C CNN
 F 4 "2480929" H 10500 4800 60  0001 C CNN "Farnell"
-F 5 "0.1pF" H 10700 4600 60  0000 C CNN "Capacitance"
-F 6 "Vtrig = 21V typ (4W@50Ω)" V 11100 4700 60  0000 C CNN "Vtrig"
 	1    10500 4800
 	0    -1   1    0   
 $EndComp
@@ -2516,4 +2511,12 @@ Wire Wire Line
 	6800 2000 6800 2300
 Wire Wire Line
 	10500 1900 10300 1900
+Text Notes 10000 5500 0    60   ~ 0
+Vtrig = 21V typ (4W@50Ω)
+Text Notes 10100 5600 0    60   ~ 0
+0.1pF
+Text Notes 6900 2700 0    60   ~ 0
+Vtrig = 21V typ (4W@50Ω)
+Text Notes 7000 2800 0    60   ~ 0
+0.1pF
 $EndSCHEMATC

@@ -4,7 +4,7 @@
 # https://github.com/adamgreig/agg-kicad/tree/master/scripts
 #
 
-PROJECT_NAME=ax-chip
+PROJECT_NAME=ax-breakout
 
 all: bom.pdf $(PROJECT_NAME).bom
 

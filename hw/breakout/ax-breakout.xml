@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <export version="D">
   <design>
-    <source>/Users/richard/Documents/_ax50/breakout/ax-breakout.sch</source>
-    <date>Wednesday, 10 August 2016 'pmt' 21:08:18</date>
-    <tool>Eeschema 4.0.2-stable</tool>
+    <source>/Users/richard/Documents/_ax50/hw/breakout/ax-breakout.sch</source>
+    <date>Tuesday, 22 November 2016 'amt' 01:24:18</date>
+    <tool>Eeschema 4.0.4-stable</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
         <title>ax-gateway</title>
@@ -152,10 +152,10 @@
       <tstamp>5789AEC7</tstamp>
     </comp>
     <comp ref="C11">
-      <value>4.3pF</value>
+      <value>2.7pF</value>
       <footprint>agg:0402</footprint>
       <fields>
-        <field name="STD.PAS">4.3pF</field>
+        <field name="STD.PAS">2.7pF</field>
       </fields>
       <libsource lib="ax-breakout-cache" part="C_Small"/>
       <sheetpath names="/" tstamps="/"/>
@@ -289,6 +289,16 @@
       <sheetpath names="/" tstamps="/"/>
       <tstamp>57A789E1</tstamp>
     </comp>
+    <comp ref="L7">
+      <value>22nH</value>
+      <footprint>agg:0402</footprint>
+      <fields>
+        <field name="STD.PAS">22nH</field>
+      </fields>
+      <libsource lib="ax-breakout-cache" part="L_Small"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>582F3D74</tstamp>
+    </comp>
   </components>
   <libparts>
     <libpart lib="ax-breakout-cache" part="AX5243">
@@ -419,130 +429,131 @@
   </libparts>
   <libraries>
     <library logical="ax-breakout-cache">
-      <uri>/Users/richard/Documents/_ax50/breakout/ax-breakout-cache.lib</uri>
+      <uri>/Users/richard/Documents/_ax50/hw/breakout/ax-breakout-cache.lib</uri>
     </library>
   </libraries>
   <nets>
-    <net code="1" name="Net-(C13-Pad2)">
-      <node ref="L5" pin="2"/>
-      <node ref="C15" pin="1"/>
-      <node ref="L3" pin="2"/>
-      <node ref="C13" pin="2"/>
-    </net>
-    <net code="2" name="Net-(C12-Pad2)">
-      <node ref="L4" pin="1"/>
-      <node ref="C12" pin="2"/>
-    </net>
-    <net code="3" name="Net-(C11-Pad2)">
-      <node ref="L3" pin="1"/>
-      <node ref="C11" pin="2"/>
-    </net>
-    <net code="4" name="/SYNTH_LOOP_1">
-      <node ref="IC2" pin="7"/>
-      <node ref="IC2" pin="8"/>
-    </net>
-    <net code="5" name="Net-(C14-Pad1)">
-      <node ref="C14" pin="1"/>
-      <node ref="L4" pin="2"/>
-      <node ref="C16" pin="2"/>
-      <node ref="L6" pin="1"/>
-    </net>
-    <net code="6" name="16_TCXO">
+    <net code="1" name="16_TCXO">
       <node ref="IC1" pin="3"/>
       <node ref="C2" pin="1"/>
     </net>
-    <net code="7" name="/VDD_ANA1_1">
+    <net code="2" name="/VDD_ANA1_1">
       <node ref="IC2" pin="1"/>
       <node ref="C6" pin="1"/>
     </net>
-    <net code="8" name="/VDD_ANA2_1">
+    <net code="3" name="/VDD_ANA2_1">
       <node ref="C7" pin="1"/>
       <node ref="IC2" pin="5"/>
     </net>
-    <net code="9" name="AX_50Ω">
-      <node ref="D1" pin="1"/>
-      <node ref="IC3" pin="1"/>
-      <node ref="C16" pin="1"/>
-      <node ref="L5" pin="1"/>
-    </net>
-    <net code="10" name="3v3">
-      <node ref="C1" pin="1"/>
-      <node ref="IC1" pin="4"/>
-      <node ref="C4" pin="1"/>
-      <node ref="C5" pin="1"/>
-      <node ref="IC3" pin="5"/>
-      <node ref="IC2" pin="16"/>
-    </net>
-    <net code="11" name="GND">
-      <node ref="IC1" pin="2"/>
-      <node ref="C1" pin="2"/>
-      <node ref="C8" pin="2"/>
-      <node ref="C7" pin="2"/>
-      <node ref="C6" pin="2"/>
-      <node ref="C13" pin="1"/>
-      <node ref="C15" pin="2"/>
-      <node ref="L6" pin="2"/>
+    <net code="4" name="GND">
       <node ref="IC2" pin="EP"/>
+      <node ref="C6" pin="2"/>
       <node ref="C5" pin="2"/>
+      <node ref="C7" pin="2"/>
+      <node ref="IC1" pin="2"/>
+      <node ref="IC2" pin="18"/>
+      <node ref="IC2" pin="17"/>
+      <node ref="C8" pin="2"/>
       <node ref="C9" pin="1"/>
       <node ref="C10" pin="2"/>
+      <node ref="C13" pin="1"/>
       <node ref="C14" pin="2"/>
+      <node ref="L2" pin="2"/>
+      <node ref="L6" pin="2"/>
+      <node ref="C15" pin="2"/>
+      <node ref="C1" pin="2"/>
       <node ref="IC2" pin="2"/>
       <node ref="D1" pin="2"/>
       <node ref="L1" pin="1"/>
       <node ref="C4" pin="2"/>
-      <node ref="L2" pin="2"/>
       <node ref="C3" pin="1"/>
       <node ref="IC3" pin="2"/>
       <node ref="IC3" pin="9"/>
       <node ref="IC3" pin="16"/>
-      <node ref="IC2" pin="17"/>
-      <node ref="IC2" pin="18"/>
     </net>
-    <net code="12" name="Net-(IC3-Pad15)">
+    <net code="5" name="Net-(IC3-Pad15)">
       <node ref="IC3" pin="15"/>
     </net>
-    <net code="13" name="AX_SYSCLK_1">
-      <node ref="IC2" pin="9"/>
+    <net code="6" name="Net-(IC3-Pad7)">
+      <node ref="IC3" pin="7"/>
+    </net>
+    <net code="7" name="Net-(IC3-Pad6)">
+      <node ref="IC3" pin="6"/>
+    </net>
+    <net code="8" name="Net-(IC3-Pad4)">
+      <node ref="IC3" pin="4"/>
+    </net>
+    <net code="9" name="/L2">
+      <node ref="L7" pin="2"/>
+      <node ref="IC2" pin="8"/>
+    </net>
+    <net code="10" name="AX_SYSCLK_1">
       <node ref="IC3" pin="8"/>
+      <node ref="IC2" pin="9"/>
     </net>
-    <net code="14" name="AX_MISO">
-      <node ref="IC2" pin="12"/>
+    <net code="11" name="AX_MISO">
       <node ref="IC3" pin="10"/>
+      <node ref="IC2" pin="12"/>
     </net>
-    <net code="15" name="AX_MOSI">
-      <node ref="IC2" pin="13"/>
+    <net code="12" name="AX_MOSI">
       <node ref="IC3" pin="11"/>
+      <node ref="IC2" pin="13"/>
     </net>
-    <net code="16" name="AX_SCLK">
+    <net code="13" name="AX_SCLK">
       <node ref="IC3" pin="12"/>
       <node ref="IC2" pin="11"/>
     </net>
-    <net code="17" name="AX_~SEL~_1">
+    <net code="14" name="AX_~SEL~_1">
       <node ref="IC3" pin="13"/>
       <node ref="IC2" pin="10"/>
     </net>
-    <net code="18" name="AX_IRQ_1">
+    <net code="15" name="AX_IRQ_1">
       <node ref="IC3" pin="14"/>
       <node ref="IC2" pin="14"/>
     </net>
-    <net code="19" name="Net-(IC3-Pad7)">
-      <node ref="IC3" pin="7"/>
+    <net code="16" name="3v3">
+      <node ref="IC2" pin="16"/>
+      <node ref="IC1" pin="4"/>
+      <node ref="C5" pin="1"/>
+      <node ref="C1" pin="1"/>
+      <node ref="IC3" pin="5"/>
+      <node ref="C4" pin="1"/>
     </net>
-    <net code="20" name="Net-(IC3-Pad6)">
-      <node ref="IC3" pin="6"/>
+    <net code="17" name="AX_50Ω">
+      <node ref="D1" pin="1"/>
+      <node ref="IC3" pin="1"/>
+      <node ref="L5" pin="1"/>
+      <node ref="C16" pin="1"/>
     </net>
-    <net code="21" name="Net-(IC3-Pad4)">
-      <node ref="IC3" pin="4"/>
+    <net code="18" name="/L1">
+      <node ref="IC2" pin="7"/>
+      <node ref="L7" pin="1"/>
     </net>
-    <net code="22" name="Net-(IC3-Pad3)">
-      <node ref="IC3" pin="3"/>
+    <net code="19" name="Net-(C13-Pad2)">
+      <node ref="L3" pin="2"/>
+      <node ref="L5" pin="2"/>
+      <node ref="C13" pin="2"/>
+      <node ref="C15" pin="1"/>
+    </net>
+    <net code="20" name="Net-(C14-Pad1)">
+      <node ref="L4" pin="2"/>
+      <node ref="C14" pin="1"/>
+      <node ref="L6" pin="1"/>
+      <node ref="C16" pin="2"/>
+    </net>
+    <net code="21" name="Net-(C12-Pad2)">
+      <node ref="L4" pin="1"/>
+      <node ref="C12" pin="2"/>
+    </net>
+    <net code="22" name="Net-(C11-Pad2)">
+      <node ref="C11" pin="2"/>
+      <node ref="L3" pin="1"/>
     </net>
     <net code="23" name="/ANTp_1">
       <node ref="C11" pin="1"/>
-      <node ref="C9" pin="2"/>
       <node ref="IC2" pin="3"/>
       <node ref="L1" pin="2"/>
+      <node ref="C9" pin="2"/>
     </net>
     <net code="24" name="Net-(IC2-Pad15)">
       <node ref="IC2" pin="15"/>
@@ -555,20 +566,23 @@
       <node ref="IC2" pin="6"/>
     </net>
     <net code="27" name="/CLKp_1">
+      <node ref="C2" pin="2"/>
       <node ref="IC2" pin="20"/>
       <node ref="R1" pin="1"/>
-      <node ref="C2" pin="2"/>
     </net>
     <net code="28" name="/CLKn_1">
       <node ref="IC2" pin="19"/>
-      <node ref="R1" pin="2"/>
       <node ref="C3" pin="2"/>
+      <node ref="R1" pin="2"/>
     </net>
-    <net code="29" name="/ANTn_1">
+    <net code="29" name="Net-(IC3-Pad3)">
+      <node ref="IC3" pin="3"/>
+    </net>
+    <net code="30" name="/ANTn_1">
+      <node ref="L2" pin="1"/>
+      <node ref="C12" pin="1"/>
       <node ref="C10" pin="1"/>
       <node ref="IC2" pin="4"/>
-      <node ref="C12" pin="1"/>
-      <node ref="L2" pin="1"/>
     </net>
   </nets>
 </export>

@@ -4,7 +4,9 @@
 # https://github.com/adamgreig/agg-kicad/tree/master/scripts
 #
 
-PROJECT_NAME= ax-gateway
+PROJECT_NAME=ax-gateway
+
+all: bom.pdf $(PROJECT_NAME).bom
 
 #
 # human-readable BOM file
@@ -21,6 +23,3 @@ bom.pdf: $(PROJECT_NAME).xml
 	mkdir -p bom
 	pdftk bom.pdf burst
 	mv pg* bom/
-
-
-all: bom.pdf $(PROJECT_NAME).bom

@@ -2,7 +2,7 @@ Bill Of Materials
 =================
 
 Source file: ax-gateway.xml
-Date: 2016-08-11T15:35:17.121933
+Date: 2016-11-22T01:44:54.500905
 
 Parts Missing Footprints
 ------------------------
@@ -30,84 +30,75 @@ Inconsistent Order Codes
 
 Vendor Specific BOMs
 --------------------
-  Vtrig
-  ~~~~~
-Vtrig = 21V typ (4W@50Ω),2,2x D1 D2 TSLP-2-17
-
-
   Farnell
   ~~~~~~~
-2521322,2,2x AX5243 QFN-20-EP-AX
-2345130,2,2x 2.2µH 0805
-1608592,2,2x COAX SMA-EDGE
-2480929,2,2x TVS_DIODE TSLP-2-17
-2405790,1,1x TG-5006CJ TG-5006CJ
-2497723,1,1x PAD BMI-S-x05
 2382987,1,1x TPS73433 SOT-23-5
+2345130,2,2x 2.2µH 0805
 1525484,2,2x SCHOTTKY SOD-123
-
-
-  Capacitance
-  ~~~~~~~~~~~
-0.1pF,2,2x D1 D2 TSLP-2-17
+2497723,1,1x PAD BMI-S-x05
+2480929,2,2x TVS_DIODE TSLP-2-17
+1608592,2,2x COAX SMA-EDGE
+2405790,1,1x TG-5006CJ TG-5006CJ
+2521322,2,2x AX5243 QFN-20-EP-AX
 
 
   STD.PAS
   ~~~~~~~
-1µF,2,2x C2 C1 0402
-68nH,2,2x L1 L2 0402
-DNP,2,2x C22 C21 0402
 47nH,2,2x L5 L6 0402
+0Ω,2,2x L13 L14 0402
+DNP,2,2x C22 C21 0402
+3.6pF,2,2x C30 C29 0402
+22nH,2,2x L17 L18 0603
+39pF,2,2x C15 C18 0402
+2.7pF,4,4x C26 C25 C32 C34 0402
+12nH,2,2x L10 L12 0402
+8.2pF,2,2x C28 C27 0402
+330Ω,6,6x R3 R4 R5 R6 R7 R8 0402
+100pF,2,2x C40 C44 0402
 4.3pF,4,4x C24 C23 C19 C20 0402
 1nF,8,8x C5 C6 C7 C8 C39 C42 C43 C46 0402
-4.7µF,3,3x C9 C10 C4 0402
-27nH,2,2x L9 L11 0402
-330Ω,6,6x R3 R4 R5 R6 R7 R8 0402
-3.6pF,2,2x C30 C29 0402
-100nF,8,8x C11 C13 C14 C12 C16 C17 C41 C45 0402
-39pF,2,2x C15 C18 0402
-10nF,1,1x C3 0402
-100pF,2,2x C40 C44 0402
-18nH,4,4x L3 L4 L7 L8 0402
-0Ω,2,2x L13 L14 0402
-8.2pF,2,2x C28 C27 0402
-12nH,2,2x L10 L12 0402
-5.1pF,2,2x C31 C33 0402
-2.7pF,4,4x C26 C25 C32 C34 0402
 1kΩ,2,2x R1 R2 0402
+68nH,2,2x L1 L2 0402
+18nH,4,4x L3 L4 L7 L8 0402
+27nH,2,2x L9 L11 0402
+1µF,2,2x C2 C1 0402
+5.1pF,2,2x C31 C33 0402
+100nF,8,8x C11 C13 C14 C12 C16 C17 C41 C45 0402
+4.7µF,3,3x C9 C10 C4 0402
+10nF,1,1x C3 0402
 
 
 Assembly BOM
 ------------
-Vtrig = 21V typ (4W@50Ω) 2   TVS_DIODE       TSLP-2-17       D1 D2
-2521322              2   AX5243          QFN-20-EP-AX    IC3 IC4
-2345130              2   2.2µH           0805            L15 L16
-1608592              2   COAX            SMA-EDGE        P2 P3
-2480929              2   TVS_DIODE       TSLP-2-17       D1 D2
-2405790              1   TG-5006CJ       TG-5006CJ       IC1
-2497723              1   PAD             BMI-S-x05       P4
 2382987              1   TPS73433        SOT-23-5        IC2
+2345130              2   2.2µH           0805            L15 L16
 1525484              2   SCHOTTKY        SOD-123         D10 D8
-0.1pF                2   TVS_DIODE       TSLP-2-17       D1 D2
-1µF                  2   1µF             0402            C1 C2
-68nH                 2   68nH            0402            L1 L2
-DNP                  2   DNP             0402            C21 C22
+2497723              1   PAD             BMI-S-x05       P4
+2480929              2   TVS_DIODE       TSLP-2-17       D1 D2
+1608592              2   COAX            SMA-EDGE        P2 P3
+2405790              1   TG-5006CJ       TG-5006CJ       IC1
+2521322              2   AX5243          QFN-20-EP-AX    IC3 IC4
 47nH                 2   47nH            0402            L5 L6
+0Ω                   2   0Ω              0402            L13 L14
+DNP                  2   DNP             0402            C21 C22
+3.6pF                2   3.6pF           0402            C29 C30
+22nH                 2   22nH            0603            L17 L18
+39pF                 2   39pF            0402            C15 C18
+2.7pF                4   2.7pF           0402            C25 C26 C32 C34
+12nH                 2   12nH            0402            L10 L12
+8.2pF                2   8.2pF           0402            C27 C28
+330Ω                 6   330Ω            0402            R3 R4 R5 R6 R7 R8
+100pF                2   100pF           0402            C40 C44
 4.3pF                4   4.3pF           0402            C19 C20 C23 C24
 1nF                  8   1nF             0402            C39 C42 C43 C46 C5 C6 C7 C8
-4.7µF                3   4.7µF           0402            C10 C4 C9
-27nH                 2   27nH            0402            L11 L9
-330Ω                 6   330Ω            0402            R3 R4 R5 R6 R7 R8
-3.6pF                2   3.6pF           0402            C29 C30
-100nF                8   100nF           0402            C11 C12 C13 C14 C16 C17 C41 C45
-39pF                 2   39pF            0402            C15 C18
-10nF                 1   10nF            0402            C3
-100pF                2   100pF           0402            C40 C44
-18nH                 4   18nH            0402            L3 L4 L7 L8
-0Ω                   2   0Ω              0402            L13 L14
-8.2pF                2   8.2pF           0402            C27 C28
-12nH                 2   12nH            0402            L10 L12
-5.1pF                2   5.1pF           0402            C31 C33
-2.7pF                4   2.7pF           0402            C25 C26 C32 C34
 1kΩ                  2   1kΩ             0402            R1 R2
+68nH                 2   68nH            0402            L1 L2
+18nH                 4   18nH            0402            L3 L4 L7 L8
+27nH                 2   27nH            0402            L11 L9
+1µF                  2   1µF             0402            C1 C2
+5.1pF                2   5.1pF           0402            C31 C33
+100nF                8   100nF           0402            C11 C12 C13 C14 C16 C17 C41 C45
+4.7µF                3   4.7µF           0402            C10 C4 C9
+10nF                 1   10nF            0402            C3
+
 

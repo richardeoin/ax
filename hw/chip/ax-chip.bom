@@ -1,0 +1,139 @@
+Bill Of Materials
+=================
+
+Source file: ax-chip.xml
+Date: 2016-11-22T01:44:24.513138
+
+Parts Missing Footprints
+------------------------
+X2     CONN           
+X1     CONN           
+
+Parts Missing Order Codes
+-------------------------
+C15    NOSTUFF         agg:0402
+IC1    CHIPv1_0        agg:CHIPv1_0
+X2     CONN            None
+X1     CONN            None
+J1     CONN_01x02      Terminal_Blocks:TerminalBlock_Pheonix_PT-3.5mm_2pol
+J2     CONN_01x02      Terminal_Blocks:TerminalBlock_Pheonix_PT-3.5mm_2pol
+
+Inconsistent Order Codes
+------------------------
+  STD.PAS
+  ~~~~~~~
+    22nH: 
+      L2     22nH            agg:0603
+      L11    22nH            agg:0402
+  Farnell
+  ~~~~~~~
+    2217903: 
+      D5     TX-RED          rem:1206_LED_REVERSE
+      D4     RSSI-RED        rem:1206_LED_REVERSE
+
+Vendor Specific BOMs
+--------------------
+  STD.PAS
+  ~~~~~~~
+22pF,3,3x C25 C23 C17 0402
+22nH,4,4x L2 L3 L1 L11 0603,0402
+330Ω,5,5x R1 R2 R3 R8 R4 0402
+39pF,3,3x C12 C20 C26 0402
+2.7pF,2,2x C16 C19 0402
+4.7µF,2,2x C5 C8 0402
+1nF,2,2x C2 C3 0402
+100nF,5,5x C6 C10 C11 C1 C29 0402
+1µF,2,2x C9 C4 0402
+10kΩ,1,1x R10 0402
+1kΩ,5,5x R7 R5 R9 R11 R12 0402
+120nH,2,2x L4 L6 0603
+56pF,3,3x C14 C13 C24 0402
+4.7kΩ,1,1x R6 0402
+39nH,1,1x L8 0402
+15nH,2,2x L5 L7 0402
+68pF,1,1x C27 0402
+5.1pF,1,1x C18 0402
+10nF,3,3x C7 C30 C22 0402
+
+
+  Farnell
+  ~~~~~~~
+2405790,1,1x TG-5006CJ TG-5006CJ
+7820453,1,1x MGA-62563 SC-70-6
+2217901,1,1x INTERNET-GREEN 1206_LED_REV
+1762612,1,1x 6.8nH 0402
+8819734,2,2x 10nF 0402
+2480929,2,2x TVS_DIODE TSLP-2-17
+1762621,1,1x 15nH 0402
+2191746,1,1x NX7002AK SOT-23
+2099254,1,1x DATA-ORANGE 1206_LED_REVERS
+1843673,1,1x DFLS130L-7 SOD-123
+2521320,1,1x AX5043 QFN-28-EP-AX
+1635706,1,1x 600Ω-1A-0.2DCR 0603
+2519009,1,1x DS2401P TSOT-6-MK06A
+8165505,1,1x STTH1L06 DO-214AC-SMA
+1343090,1,1x 47nH 0402
+1608592,2,2x COAX SMA-EDGE
+2217902,1,1x LAN-YELLOW 1206_LED_REVERSE
+2382987,1,1x TPS73433 SOT-23-5
+2497723,1,1x PAD BMI-S-x05
+2217903,2,2x TX-RED RSSI-RED 1206_LED_RE
+
+
+  Digikey
+  ~~~~~~~
+1,490-1093-1-ND,1x 47nH 0402 L12
+1,490-6862-1-ND,1x 12nH 0603 L10
+1,516-1828-1-ND,1x MGA-62563 SC-70-6 U2
+1,490-1148-1-ND,1x 15nH 0402 L5
+1,490-6840-1-ND,1x 6.8nH 0402 L9
+
+
+Assembly BOM
+------------
+22pF                 3   22pF            0402            C17 C23 C25
+22nH                 4   22nH            0603,0402       L1 L11 L2 L3
+330Ω                 5   330Ω            0402            R1 R2 R3 R4 R8
+39pF                 3   39pF            0402            C12 C20 C26
+2.7pF                2   2.7pF           0402            C16 C19
+4.7µF                2   4.7µF           0402            C5 C8
+1nF                  2   1nF             0402            C2 C3
+100nF                5   100nF           0402            C1 C10 C11 C29 C6
+1µF                  2   1µF             0402            C4 C9
+10kΩ                 1   10kΩ            0402            R10
+1kΩ                  5   1kΩ             0402            R11 R12 R5 R7 R9
+120nH                2   120nH           0603            L4 L6
+56pF                 3   56pF            0402            C13 C14 C24
+4.7kΩ                1   4.7kΩ           0402            R6
+39nH                 1   39nH            0402            L8
+15nH                 2   15nH            0402            L5 L7
+68pF                 1   68pF            0402            C27
+5.1pF                1   5.1pF           0402            C18
+10nF                 3   10nF            0402            C22 C30 C7
+2405790              1   TG-5006CJ       TG-5006CJ       IC4
+7820453              1   MGA-62563       SC-70-6         U2
+2217901              1   INTERNET-GREEN  1206_LED_REVERSE D1
+1762612              1   6.8nH           0402            L9
+8819734              2   10nF            0402            C21 C28
+2480929              2   TVS_DIODE       TSLP-2-17       D8 D9
+1762621              1   15nH            0402            L5
+2191746              1   NX7002AK        SOT-23          Q1
+2099254              1   DATA-ORANGE     1206_LED_REVERSE D3
+1843673              1   DFLS130L-7      SOD-123         D7
+2521320              1   AX5043          QFN-28-EP-AX    IC3
+1635706              1   600Ω-1A-0.2DCR  0603            FB1
+2519009              1   DS2401P         TSOT-6-MK06A    U1
+8165505              1   STTH1L06        DO-214AC-SMA    D6
+1343090              1   47nH            0402            L12
+1608592              2   COAX            SMA-EDGE        P2 P3
+2217902              1   LAN-YELLOW      1206_LED_REVERSE D2
+2382987              1   TPS73433        SOT-23-5        IC2
+2497723              1   PAD             BMI-S-x05       P1
+2217903              2   TX-RED,RSSI-RED 1206_LED_REVERSE D4 D5
+490-1093-1-ND        1   47nH            0402            L12
+490-6862-1-ND        1   12nH            0603            L10
+516-1828-1-ND        1   MGA-62563       SC-70-6         U2
+490-1148-1-ND        1   15nH            0402            L5
+490-6840-1-ND        1   6.8nH           0402            L9
+
+

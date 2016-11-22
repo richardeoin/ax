@@ -159,8 +159,6 @@ F 1 "TVS_DIODE" H 10300 1500 60  0000 C CNN
 F 2 "agg-unchecked:TSLP-2-17" H 10200 1600 60  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/1992039.pdf" H 10300 1700 60  0001 C CNN
 F 4 "2480929" H 10200 1600 60  0001 C CNN "Farnell"
-F 5 "0.1pF" H 10400 1400 60  0000 C CNN "Capacitance"
-F 6 "Vtrig = 21V typ (4W@50Ω)" V 10800 1500 60  0000 C CNN "Vtrig"
 	1    10200 1600
 	0    -1   1    0   
 $EndComp
@@ -888,8 +886,6 @@ F 1 "TVS_DIODE" H 10300 3600 60  0000 C CNN
 F 2 "agg-unchecked:TSLP-2-17" H 10200 3700 60  0001 C CNN
 F 3 "http://www.farnell.com/datasheets/1992039.pdf" H 10300 3800 60  0001 C CNN
 F 4 "2480929" H 10200 3700 60  0001 C CNN "Farnell"
-F 5 "0.1pF" H 10400 3500 60  0000 C CNN "Capacitance"
-F 6 "Vtrig = 21V typ (4W@50Ω)" V 10800 3600 60  0000 C CNN "Vtrig"
 	1    10200 3700
 	0    -1   1    0   
 $EndComp
@@ -2691,4 +2687,12 @@ Text Label 5300 4700 0    60   ~ 0
 L1_1
 Text Label 5300 4800 0    60   ~ 0
 L2_1
+Text Notes 9900 2200 0    60   ~ 0
+Vtrig = 21V typ (4W@50Ω)
+Text Notes 10200 2300 2    60   ~ 0
+0.1pF
+Text Notes 9900 4300 0    60   ~ 0
+Vtrig = 21V typ (4W@50Ω)
+Text Notes 10200 4400 2    60   ~ 0
+0.1pF
 $EndSCHEMATC

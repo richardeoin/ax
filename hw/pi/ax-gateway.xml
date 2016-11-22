@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <export version="D">
   <design>
-    <source>/Users/richard/Documents/_ax50/gateway/hw/ax-gateway.sch</source>
-    <date>Friday, 07 October 2016 'pmt' 13:59:01</date>
-    <tool>Eeschema 4.0.2-stable</tool>
+    <source>/Users/richard/Documents/_ax50/hw/pi/ax-gateway.sch</source>
+    <date>Tuesday, 22 November 2016 'amt' 01:37:39</date>
+    <tool>Eeschema 4.0.4-stable</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
         <title>ax-gateway</title>
         <company>Bristol SEDS</company>
-        <rev>v0.1</rev>
+        <rev>v0.4</rev>
         <date>2016-06-04</date>
         <source>ax-gateway.sch</source>
         <comment number="1" value="Richard Meadows"/>
@@ -86,8 +86,6 @@
       <datasheet>http://www.farnell.com/datasheets/1992039.pdf</datasheet>
       <fields>
         <field name="Farnell">2480929</field>
-        <field name="Capacitance">0.1pF</field>
-        <field name="Vtrig">Vtrig = 21V typ (4W@50Ω)</field>
       </fields>
       <libsource lib="ax-gateway-cache" part="TVS_DIODE"/>
       <sheetpath names="/" tstamps="/"/>
@@ -133,7 +131,7 @@
       <fields>
         <field name="Farnell">2521322</field>
       </fields>
-      <libsource lib="ax-gateway-cache" part="AX5243"/>
+      <libsource lib="ax5243" part="AX5243"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>57740007</tstamp>
     </comp>
@@ -350,8 +348,6 @@
       <datasheet>http://www.farnell.com/datasheets/1992039.pdf</datasheet>
       <fields>
         <field name="Farnell">2480929</field>
-        <field name="Capacitance">0.1pF</field>
-        <field name="Vtrig">Vtrig = 21V typ (4W@50Ω)</field>
       </fields>
       <libsource lib="ax-gateway-cache" part="TVS_DIODE"/>
       <sheetpath names="/" tstamps="/"/>
@@ -387,7 +383,7 @@
       <fields>
         <field name="Farnell">2521322</field>
       </fields>
-      <libsource lib="ax-gateway-cache" part="AX5243"/>
+      <libsource lib="ax5243" part="AX5243"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5789AE6E</tstamp>
     </comp>
@@ -889,20 +885,20 @@
       <tstamp>579C2E4A</tstamp>
     </comp>
     <comp ref="L17">
-      <value>0Ω</value>
-      <footprint>agg:0402</footprint>
+      <value>22nH</value>
+      <footprint>agg:0603</footprint>
       <fields>
-        <field name="STD.PAS">0Ω</field>
+        <field name="STD.PAS">22nH</field>
       </fields>
       <libsource lib="ax-gateway-cache" part="L_Small"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>57F7A4A8</tstamp>
     </comp>
     <comp ref="L18">
-      <value>0Ω</value>
-      <footprint>agg:0402</footprint>
+      <value>22nH</value>
+      <footprint>agg:0603</footprint>
       <fields>
-        <field name="STD.PAS">0Ω</field>
+        <field name="STD.PAS">22nH</field>
       </fields>
       <libsource lib="ax-gateway-cache" part="L_Small"/>
       <sheetpath names="/" tstamps="/"/>
@@ -910,7 +906,7 @@
     </comp>
   </components>
   <libparts>
-    <libpart lib="ax-gateway-cache" part="AX5243">
+    <libpart lib="ax5243" part="AX5243">
       <fields>
         <field name="Reference">IC</field>
         <field name="Value">AX5243</field>
@@ -1139,8 +1135,11 @@
     </libpart>
   </libparts>
   <libraries>
+    <library logical="ax5243">
+      <uri>/Users/richard/Documents/_kicad/rem-kicad/lib/radio/ax5243.lib</uri>
+    </library>
     <library logical="ax-gateway-cache">
-      <uri>/Users/richard/Documents/_ax50/gateway/hw/ax-gateway-cache.lib</uri>
+      <uri>/Users/richard/Documents/_ax50/hw/pi/ax-gateway-cache.lib</uri>
     </library>
   </libraries>
   <nets>
