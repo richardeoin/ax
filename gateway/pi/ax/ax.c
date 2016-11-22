@@ -464,18 +464,24 @@ void ax_set_synthesiser_parameters(ax_config* config,
 /**
  * 5.14 wakeup timer
  */
-void ax_set_wakeup_timer(ax_config* config)
+void ax_set_wakeup_timer(ax_config* config, ax_wakeup_config* wakeup_config)
 {
   uint32_t period, xoearly;
 
   /* Assume the LPOSC is running at 640Hz (default) */
 
-  period  = (uint32_t)(config->wakeup_period_ms * 0.64);
-  xoearly = (uint32_t)(config->wakeup_xo_early_ms * 0.64);
-  if (period  == 0) { period  = 1; }
-  if (xoearly == 0) { xoearly = 1; }
+  if (wakeup_config) {          /* program wakeup */
+    period  = (uint32_t)(config->wakeup_period_ms * 0.64);
+    xoearly = (uint32_t)(config->wakeup_xo_early_ms * 0.64);
+    if (period  == 0) { period  = 1; }
+    if (xoearly == 0) { xoearly = 1; }
 
-  ax_hw_write_register_8(config, AX_REG_WAKEUPFREQ, period);
+    ax_hw_write_register_8(config, AX_REG_WAKEUPFREQ, period);
+
+  } else {                      /* always program this */
+    xoearly = 1;
+  }
+
   ax_hw_write_register_8(config, AX_REG_WAKEUPXOEARLY, xoearly);
 }
 
@@ -881,7 +887,8 @@ void ax_set_pattern_match_parameters(ax_config* config, ax_modulation* mod)
 /**
  * 5.22 packet controller parameters
  */
-void ax_set_packet_controller_parameters(ax_config* config, ax_modulation* mod)
+void ax_set_packet_controller_parameters(ax_config* config, ax_modulation* mod,
+                                         ax_wakeup_config* wakeup_config)
 {
   /* tx pll boost time */
   ax_hw_write_register_8(config, AX_REG_TMGTXBOOST,
@@ -914,16 +921,20 @@ void ax_set_packet_controller_parameters(ax_config* config, ax_modulation* mod)
   ax_hw_write_register_8(config, AX_REG_TMGRXRSSI,
                          ax_value_to_exp_mantissa_3_5(mod->par.rx_rssi_settling));
 
-  /* preamble 1 timeout */
-  ax_hw_write_register_8(config, AX_REG_TMGRXPREAMBLE1,
-                         ax_value_to_exp_mantissa_3_5(mod->par.preamble_1_timeout));
+  if (wakeup_config) {          /* wakeup */
+    /* preamble 1 timeout */
+    ax_hw_write_register_8(config, AX_REG_TMGRXPREAMBLE1,
+                           ax_value_to_exp_mantissa_3_5(wakeup_config->wakeup_duration_bits));
+  }
 
   /* preamble 2 timeout */
   ax_hw_write_register_8(config, AX_REG_TMGRXPREAMBLE2,
                          ax_value_to_exp_mantissa_3_5(mod->par.preamble_2_timeout));
 
   /* rssi threashold */
-  ax_hw_write_register_8(config, AX_REG_RSSIABSTHR, mod->par.rssi_abs_thr);
+  if (wakeup_config) {          /* wakeup */
+    ax_hw_write_register_8(config, AX_REG_RSSIABSTHR, wakeup_config->rssi_abs_thr);
+  }
 
   /* 0 - don't detect busy channel */
   ax_hw_write_register_8(config, AX_REG_BGNDRSSITHR, 0x00);
@@ -946,11 +957,11 @@ void ax_set_packet_controller_parameters(ax_config* config, ax_modulation* mod)
 /**
  * 5.24 low power oscillator
  */
-void ax_set_low_power_osc(ax_config* config)
+void ax_set_low_power_osc(ax_config* config, ax_wakeup_config* wakeup_config)
 {
   uint32_t refdiv;
 
-  if (1) {                      /* if lposc is to be enabled */
+  if (wakeup_config) {                      /* lposc used for wakeups */
     /* set reference for calibration */
     refdiv = (uint32_t)((float)config->f_xtal / 640.0);
     if (refdiv > 0xffff) {
@@ -1011,7 +1022,8 @@ void ax_set_performance_tuning(ax_config* config, ax_modulation* mod)
 /**
  * register settings
  */
-void ax_set_registers(ax_config* config, ax_modulation* mod)
+void ax_set_registers(ax_config* config, ax_modulation* mod,
+                      ax_wakeup_config* wakeup_config)
 {
   // MODULATION, ENCODING, FRAMING, FEC
   ax_set_modulation_parameters(config, mod);
@@ -1020,7 +1032,7 @@ void ax_set_registers(ax_config* config, ax_modulation* mod)
   ax_set_pin_configuration(config);
 
   // WAKEUP
-  ax_set_wakeup_timer(config);
+  ax_set_wakeup_timer(config, wakeup_config);
 
   // IFFREQ, DECIMATION, RXDATARATE, MAXRFOFFSET, FSKD
   ax_set_rx_parameters(config, mod);
@@ -1052,10 +1064,10 @@ void ax_set_registers(ax_config* config, ax_modulation* mod)
   ax_set_pattern_match_parameters(config, mod);
 
   // TMGRX, RSSIABSTHR, PKTCHUNKSIZE, PKTACCEPTFLAGS
-  ax_set_packet_controller_parameters(config, mod);
+  ax_set_packet_controller_parameters(config, mod, wakeup_config);
 
   // LPOSC
-  ax_set_low_power_osc(config);
+  ax_set_low_power_osc(config, wakeup_config);
 
   // DACCONFIG
   ax_set_digital_to_analog_converter(config);
@@ -1270,7 +1282,7 @@ void ax_tx_on(ax_config* config, ax_modulation* mod)
   debug_printf("going for transmit...\n");
 
   /* Registers */
-  ax_set_registers(config, mod);
+  ax_set_registers(config, mod, NULL);
   ax_set_registers_tx(config);
 
   /* Enable TCXO if used */
@@ -1321,7 +1333,7 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
 
   /* Meta-data can be automatically added to FIFO, see PKTSTOREFLAGS */
 
-  ax_set_registers(config, mod);
+  ax_set_registers(config, mod, NULL);
 
   /* Place chip in FULLRX mode */
   ax_set_pwrmode(config, AX_PWRMODE_FULLRX);
@@ -1339,6 +1351,37 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
 }
 
 /**
+ * Configure and switch to WORRX
+ */
+void ax_rx_wor(ax_config* config, ax_modulation* mod,
+               ax_wakeup_config* wakeup_config)
+{
+  if (mod->par.is_params_set != 0x51) {
+    debug_printf("mod->par must be set first! call ax_default_params...\n");
+    while(1);
+  }
+
+  /* Meta-data can be automatically added to FIFO, see PKTSTOREFLAGS */
+
+  ax_set_registers(config, mod, wakeup_config);
+
+  /* Place chip in FULLRX mode */
+  ax_set_pwrmode(config, AX_PWRMODE_WORRX);
+
+  ax_set_registers_rx(config);    /* set rx registers??? */
+
+  /* Enable TCXO if used */
+  if (config->tcxo_enable) { config->tcxo_enable(); }
+
+  /* Clear FIFO */
+  ax_fifo_clear(config);
+
+  /* Tune Baseband - Experimental */
+  //ax_hw_write_register_8(config, AX_REG_BBTUNE, 0x10);
+}
+
+
+/**
  * Reads packets from the FIFO
  */
 int ax_rx_packet(ax_config* config, ax_packet* rx_pkt)
@@ -1350,6 +1393,7 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt)
 
   while (1) {
     //for (int i = 0; i < 1000*1000*5; i++);
+
     //debug_printf("TRK P %d\n", ax_hw_read_register_16(config, AX_REG_TRKPHASE));
     //debug_printf("TRK F %d\n", ax_hw_read_register_24(config, AX_REG_TRKRFFREQ));
 

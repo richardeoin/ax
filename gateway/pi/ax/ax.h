@@ -220,6 +220,19 @@ typedef struct ax_config {
 
 } ax_config;
 
+/**
+ * configuration for wakeup
+ */
+typedef struct ax_wakeup_config {
+  uint32_t wakeup_period_ms;    /* period of wakeups, in ms */
+  uint32_t wakeup_xo_early_ms;  /* wakeup the XO before, in ms */
+
+  uint32_t wakeup_duration_bits; /* length the wakeup event if no packet is rx'd */
+  /* suggest 25 */
+
+  uint8_t rssi_abs_thr;         /* rssi threashold for wakeup event to happen  */
+  /* suggest 221, or 3log2(b/w) + x  */
+} ax_wakeup_config;
 
 /**
  * FUNCTION PROTOTYPES ---------------------------------------------------------
@@ -238,6 +251,8 @@ void ax_tx_packet(ax_config* config, ax_modulation* mod,
 
 /* receive */
 void ax_rx_on(ax_config* config, ax_modulation* mod);
+void ax_rx_wor(ax_config* config, ax_modulation* mod,
+               ax_wakeup_config* wakeup_config);
 int ax_rx_packet(ax_config* config, ax_packet* rx_pkt);
 
 /* turn off */

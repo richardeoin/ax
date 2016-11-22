@@ -465,21 +465,8 @@ void ax_param_packet_controller(ax_config* config, ax_modulation* mod,
     par->rx_rssi_settling = 3;
   }
 
-  /* preamble 1 timeout */
-  if (0) {                      /* TODO wake on radio */
-    par->preamble_1_timeout = 25;
-  } else {
-    par->preamble_1_timeout = 0;
-  }
-
   /* preamble 2 timeout */
-  par->preamble_2_timeout = 23;      /* const. */
-
-  /* rssi threashold = 221 */
-  /**
-   * 3log2(b/w) + x
-   */
-  par->rssi_abs_thr = 221;
+  par->preamble_2_timeout = 23;      /* 23 bits, for 16-bit preamble */
 }
 
 /**
