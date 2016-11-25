@@ -141,11 +141,35 @@ class AxRadio:
 
             time.sleep(0.025)         # 25ms sleep
 
+
+#
+# GMSK-{X,Y,Z} modes
+#
+class AxRadioGMSK(AxRadio):
+    def __init__(self,
+                 spi=0, vco_type=AxRadio.VcoTypes.Undefined,
+                 frequency=434600000, mode='X'):
+
+        if mode == 'X' or mode == 'x':
+            bitrate = 12000
+        elif mode == 'Y' or mode == 'y':
+            bitrate = 24000
+        elif mode == 'Z' or mode == 'z':
+            bitrate = 115000
+        else:
+            raise RuntimeError('Unknown mode \'{}\'!'.format(mode))
+
+        # configure radio
+        AxRadio.__init__(self, spi, vco_type, frequency,
+                         modu=AxRadio.Modulations.GMSK, bitrate=bitrate)
+
+
+
 if __name__ == "__main__":
 
     def rx_callback(data, length):
         print(length)
         print(data[:-2].decode('utf-8'))
 
-    radio = AxRadio(modu=AxRadio.Modulations.GMSK, bitrate=24000)
+    radio = AxRadioGMSK(mode='Y')
     radio.receive(rx_callback)
