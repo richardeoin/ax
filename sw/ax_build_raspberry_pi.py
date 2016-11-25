@@ -50,14 +50,14 @@ ffibuilder.cdef(definitions_enum)
 status_enum = """
 enum ax_set_spi_transfer_status {
   AX_SET_SPI_TRANSFER_OK,
-  AX_SET_SPI_TRANSFER_BAD_CHANNEL,
+  AX_SET_SPI_TRANSFER_BAD_SPI,
   AX_SET_SPI_TRANSFER_FAILED,
 };
 """
 ffibuilder.cdef(status_enum)
 ffibuilder.cdef("""
 enum ax_set_spi_transfer_status
-     ax_set_spi_transfer(ax_config* config, int channel);
+     ax_set_spi_transfer(ax_config* config, int spi);
 """)
 spi_callbacks_source = """
 #include <wiringPi.h>
@@ -65,27 +65,27 @@ spi_callbacks_source = """
 #include "ax/ax.h"
 #define SPI_SPEED	5000000     /* 5MHz */
 
-void wiringpi_spi_transfer_channel_0(unsigned char* data, uint8_t length) {
+void wiringpi_spi_transfer_spi_0(unsigned char* data, uint8_t length) {
   wiringPiSPIDataRW(0, data, length);
 }
-void wiringpi_spi_transfer_channel_1(unsigned char* data, uint8_t length) {
+void wiringpi_spi_transfer_spi_1(unsigned char* data, uint8_t length) {
   wiringPiSPIDataRW(1, data, length);
 }
 
 enum ax_set_spi_transfer_status
-     ax_set_spi_transfer(ax_config* config, int channel)
+     ax_set_spi_transfer(ax_config* config, int spi)
 {
-  if (wiringPiSPISetup(channel, SPI_SPEED) < 0) {
+  if (wiringPiSPISetup(spi, SPI_SPEED) < 0) {
     fprintf(stderr, "Failed to open SPI port. Try loading spi library with 'gpio load spi'");
     return AX_SET_SPI_TRANSFER_FAILED;
   }
 
-  if (channel == 0) {
-    config->spi_transfer = wiringpi_spi_transfer_channel_0;
-  } else if (channel == 1) {
-    config->spi_transfer = wiringpi_spi_transfer_channel_1;
+  if (spi == 0) {
+    config->spi_transfer = wiringpi_spi_transfer_spi_0;
+  } else if (spi == 1) {
+    config->spi_transfer = wiringpi_spi_transfer_spi_1;
   } else {
-    return AX_SET_SPI_TRANSFER_BAD_CHANNEL;
+    return AX_SET_SPI_TRANSFER_BAD_SPI;
   }
 
   return AX_SET_SPI_TRANSFER_OK;

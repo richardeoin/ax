@@ -25,23 +25,23 @@ from enum import Enum
 import time
 
 class AxRadio:
-    Modulations = Enum('Modulation', 'FSK PSK AFSK')
+    Modulations = Enum('Modulation', 'FSK MSK GFSK GMSK PSK AFSK')
     VcoTypes = Enum('VcoType', 'Undefined Internal Inductor External')
 
     def __init__(self,
-                 channel=0,
-                 frequency=434600000, vco_type=VcoTypes.Undefined):
+                 spi=0, vco_type=VcoTypes.Undefined,
+                 frequency=434600000, modu=Modulations.FSK, bitrate=20000):
 
         self.config = ffi.new('ax_config*')
         self.mod = ffi.new('ax_modulation*')
 
         # attempt to open the SPI port
-        channel_status = lib.ax_set_spi_transfer(self.config, channel)
+        spi_status = lib.ax_set_spi_transfer(self.config, spi)
 
-        if channel_status == lib.AX_SET_SPI_TRANSFER_FAILED:
+        if spi_status == lib.AX_SET_SPI_TRANSFER_FAILED:
             raise RuntimeError('Failed to open SPI port.')
-        elif channel_status == lib.AX_SET_SPI_TRANSFER_BAD_CHANNEL:
-            raise ValueError('Bad channel number. Try 0 or 1')
+        elif spi_status == lib.AX_SET_SPI_TRANSFER_BAD_SPI:
+            raise ValueError('Bad spi number. Try 0 or 1')
 
         # default configuration for our hardware
         self.config.clock_source = lib.AX_CLOCK_SOURCE_TCXO
@@ -78,23 +78,46 @@ class AxRadio:
         self.in_transmit_mode = False
 
         # set modulation parameters
-        self.modulation()
+        self.modulation(bitrate, modu)
 
         # calculate tweakable parameters
         lib.ax_default_params(self.config, self.mod)
 
 
-    def modulation(self, bitrate=20000):
-        self.mod.modulation = lib.AX_MODULATION_MSK
+    def modulation(self, bitrate, modu):
+        if modu == self.Modulations.FSK or modu == self.Modulations.GFSK:
+            self.mod.modulation = lib.AX_MODULATION_FSK
+        if modu == self.Modulations.MSK or modu == self.Modulations.GMSK:
+            self.mod.modulation = lib.AX_MODULATION_MSK
+        if modu == self.Modulations.PSK:
+            self.mod.modulation = lib.AX_MODULATION_PSK
+        if modu == self.Modulations.AFSK:
+            self.mod.modulation = lib.AX_MODULATION_AFSK
+
+        # fec
+        self.mod.fec = 1
         self.mod.encoding = lib.AX_ENC_NRZ | lib.AX_ENC_SCRAM
         self.mod.framing = lib.AX_FRAMING_MODE_HDLC | \
                            lib.AX_FRAMING_CRCMODE_CCITT
-        self.mod.shaping = lib.AX_MODCFGF_FREQSHAPE_GAUSSIAN_BT_0_5
+
+        # gaussian shaping
+        if modu == self.Modulations.GFSK or modu == self.Modulations.GMSK:
+            self.mod.shaping = lib.AX_MODCFGF_FREQSHAPE_GAUSSIAN_BT_0_5
+
         self.mod.bitrate = bitrate
-        self.mod.fec = 1
         self.mod.power = 0.1
-        self.mod.parameters.fsk.modulation_index = 2/3
         self.mod.continuous = 1
+
+        # fsk: modulation index
+        if modu == self.Modulations.FSK or modu == self.Modulations.GFSK:
+            self.mod.parameters.fsk.modulation_index = 2/3
+
+        # afsk: deviation, mark, space
+        if modu == self.Modulations.AFSK:
+            # set to reasonable APRS values
+            self.mod.parameters.afsk.deviation = 3000
+            self.mod.parameters.afsk.space = 2200 # bell 202
+            self.mod.parameters.afsk.mark  = 1200
 
 
     def transmit(self, bytes_to_transmit): # transmit
@@ -109,6 +132,7 @@ class AxRadio:
         pkt = ffi.new('ax_packet*')
 
         lib.ax_rx_on(self.config, self.mod)
+        self.in_transmit_mode = False
 
         while 1:
             while lib.ax_rx_packet(self.config, pkt): # empty the fifo
@@ -121,7 +145,7 @@ if __name__ == "__main__":
 
     def rx_callback(data, length):
         print(length)
-        print(data.decode('utf-8'))
+        print(data[:-2].decode('utf-8'))
 
-    radio = AxRadio()
+    radio = AxRadio(modu=AxRadio.Modulations.GMSK, bitrate=24000)
     radio.receive(rx_callback)
