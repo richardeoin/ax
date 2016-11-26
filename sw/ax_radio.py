@@ -30,7 +30,7 @@ class AxRadio:
 
     def __init__(self,
                  spi=0, vco_type=VcoTypes.Undefined,
-                 frequency=434600000, modu=Modulations.FSK, bitrate=20000):
+                 frequency_MHz=434.6, modu=Modulations.FSK, bitrate=20000):
 
         self.config = ffi.new('ax_config*')
         self.mod = ffi.new('ax_modulation*')
@@ -48,10 +48,10 @@ class AxRadio:
         self.config.f_xtal = 16369000
 
         # set frequencies
-        self.config.synthesiser.A.frequency = frequency
-        self.config.synthesiser.B.frequency = frequency
+        self.config.synthesiser.A.frequency = int(frequency_MHz * 1e6)
+        self.config.synthesiser.B.frequency = int(frequency_MHz * 1e6)
         if vco_type == self.VcoTypes.Undefined: # guess VCO type
-            if frequency > 400e6:
+            if frequency_MHz > 400:
                 vco_type = self.VcoTypes.Internal
             else:
                 vco_type = self.VcoTypes.Inductor
@@ -148,7 +148,7 @@ class AxRadio:
 class AxRadioGMSK(AxRadio):
     def __init__(self,
                  spi=0, vco_type=AxRadio.VcoTypes.Undefined,
-                 frequency=434600000, mode='X'):
+                 frequency_MHz=434.6, mode='X'):
 
         if mode == 'X' or mode == 'x':
             bitrate = 12000
@@ -160,7 +160,7 @@ class AxRadioGMSK(AxRadio):
             raise RuntimeError('Unknown mode \'{}\'!'.format(mode))
 
         # configure radio
-        AxRadio.__init__(self, spi, vco_type, frequency,
+        AxRadio.__init__(self, spi, vco_type, frequency_MHz,
                          modu=AxRadio.Modulations.GMSK, bitrate=bitrate)
 
 
