@@ -52,7 +52,7 @@ all: ax_test etags
 #
 #
 ax_test: $(OBJECTS)
-	$(CC) $(LDFLAGS) -o $@ $^ -lm -lwiringPi -lwiringPiDev -pthread -lpigpio -lrt
+	$(CC) $(LDFLAGS) -o $@ $^ -lm -lwiringPi -lwiringPiDev -pthread -lrt
 
 
 # Compile objects
