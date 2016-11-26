@@ -92,3 +92,12 @@ git clone https://github.com/ukhas/habitat
 sudo ln -s /usr/include/arm-linux-gnueabihf/openssl/opensslconf.h /usr/include/openssl/opensslconf.h
 sudo pip install -r requirements.txt
 ```
+
+TODO: somehow install habitat globally, or just move habitat/habitat to sw
+
+Now you can run a gateway:
+
+```
+cp gateway-example.yaml gateway.yaml
+python gmsk_gateway.py
+```

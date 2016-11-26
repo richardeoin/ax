@@ -24,15 +24,14 @@ from ax_radio import AxRadioGMSK
 from datetime import datetime
 import habitat
 import logging
+import yaml
 
-# TODO set dynamically
-callsign = "test_r1"
-lat = 1.0
-lon = 2.0
-alt = 1
-location = "Somewhere"
-radio_name = "Ax"
-antenna = "Unknown"
+# load gateway parameters from gateway.yaml
+try:
+    with open("gateway.yaml", 'r') as g:
+        gw = yaml.load(g.read())
+except:
+    raise RuntimeError("Couldn't load gateway.yaml! cp gateway-example.yaml gateway.yaml to get started!")
 
 
 # TODO set frequency/mode dynamically
@@ -57,16 +56,16 @@ def uploader_initialised():
     time_str = datetime.utcnow().strftime("%H:%M:%S")
     uploader.listener_telemetry({
         "time": time_str,
-        "latitude": lat,
-        "longitude": lon,
-        "altitude": alt
+        "latitude": gw["latitude"],
+        "longitude": gw["longitude"],
+        "altitude": gw["altitude"]
     })
 
     uploader.listener_information({
-        "name": callsign,
-        "location": location,
-        "radio": radio_name,
-        "antenna": antenna
+        "name": gw["callsign"],
+        "location": gw["location"],
+        "radio": "AX",
+        "antenna": gw["antenna"]
     })
 
 def uploader_saved_id(doc_type, doc_id):
@@ -76,7 +75,7 @@ def uploader_saved_id(doc_type, doc_id):
 # habitat
 uploader.initialised = uploader_initialised
 uploader.saved_id = uploader_saved_id
-uploader.settings(callsign)
+uploader.settings(gw["callsign"])
 uploader.start()
 
 # Telemetry Metadata
