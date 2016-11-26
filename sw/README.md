@@ -16,7 +16,7 @@ operation. Therefore the Python API is recommended where possible.
 * AFSK
 * CW
 
-## Receive
+### Receive
 
 * (G)FSK
 * (G)MSK
@@ -31,6 +31,7 @@ from ax_radio import AxRadio
 radio = AxRadio()
 
 # transmit
+# utf-8 coding?????
 radio.transmit("Hello World de Q0QQQ "*10)
 
 # receive
@@ -56,3 +57,36 @@ RF OFFSET = 0) then the receiver will struggle with bit-stuffed packets.
 
 There's minimum IF frequencies - 3.18kHz for FSK modes and 9.38kHz for
 ASK/PSK. These might reduce sensitivity at small bandwidths!
+
+
+## Installing
+
+#### Raspberry Pi
+
+Todo: currently need python 3 enums
+
+```
+# get cffi
+sudo apt-get install python-pip python-dev libffi-dev
+sudo pip install cffi
+
+# get wiring pi
+git clone git://git.drogon.net/wiringPi
+cd wiringPi
+./build
+
+# build ax for rpi
+python ax_build_raspberry_pi.py
+```
+
+#### Habitat
+
+Installing habitat on RPi `2016-09-23-raspbian-jessie-lite.img`
+
+```
+sudo apt-get install git python-pip python-dev swig libssl-dev
+git clone https://github.com/ukhas/habitat
+# needed to install m2crypto
+sudo ln -s /usr/include/arm-linux-gnueabihf/openssl/opensslconf.h /usr/include/openssl/opensslconf.h
+sudo pip install -r requirements.txt
+```
