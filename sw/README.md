@@ -31,12 +31,11 @@ from ax_radio import AxRadio
 radio = AxRadio()
 
 # transmit
-# utf-8 coding?????
 radio.transmit("Hello World de Q0QQQ "*10)
 
 # receive
 def rx_callback(data, length):
-    print(data.decode('utf-8'))
+    print(data[:-2].decode('utf-8'))
 
 radio.receive(rx_callback)
 ```

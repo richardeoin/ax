@@ -125,7 +125,8 @@ class AxRadio:
             lib.ax_tx_on(self.config, self.mod)
             self.in_transmit_mode = True
 
-        lib.ax_tx_packet(self.config, bytes_to_transmit, len(bytes_to_transmit))
+        lib.ax_tx_packet(self.config, self.mod,
+                         bytes_to_transmit, len(bytes_to_transmit))
 
 
     def receive(self, rx_func): # receive
@@ -172,4 +173,7 @@ if __name__ == "__main__":
         print(data[:-2].decode('utf-8'))
 
     radio = AxRadioGMSK(mode='Y')
+
+    #radio.transmit("Hello World de Q0QQQ "*10)
+
     radio.receive(rx_callback)
