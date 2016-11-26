@@ -63,12 +63,14 @@ ASK/PSK. These might reduce sensitivity at small bandwidths!
 
 #### Raspberry Pi
 
-Todo: currently need python 3 enums
+Use `raspi-config` to enable SPI!
+
+Then
 
 ```
 # get cffi
 sudo apt-get install python-pip python-dev libffi-dev
-sudo pip install cffi
+sudo pip install cffi enum34
 
 # get wiring pi
 git clone git://git.drogon.net/wiringPi
