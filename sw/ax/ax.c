@@ -1424,11 +1424,11 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt)
             rx_pkt->length = pkt_wr_index;
 
             /* print byte-by-byte */
-            for (int i = 0; i < rx_pkt->length; i++) {
-              debug_printf("data %d: 0x%02x %c\n", i,
-                           rx_pkt->data[i],
-                           rx_pkt->data[i]);
-            }
+            /* for (int i = 0; i < rx_pkt->length; i++) { */
+            /*   debug_printf("data %d: 0x%02x %c\n", i, */
+            /*                rx_pkt->data[i], */
+            /*                rx_pkt->data[i]); */
+            /* } */
             if (0) {
               debug_printf("FEC FEC FEC 0x%02x\n",
                            ax_hw_read_register_8(config, AX_REG_FECSTATUS));
