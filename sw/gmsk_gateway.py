@@ -21,13 +21,14 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 from ax_radio import AxRadioGMSK
-import habitat
 from datetime import datetime
+import habitat
+import logging
 
 # TODO set dynamically
 callsign = "test_r1"
 lat = 1.0
-lon = 1.0
+lon = 2.0
 alt = 1
 location = "Somewhere"
 radio_name = "Ax"
@@ -35,32 +36,63 @@ antenna = "Unknown"
 
 
 # TODO set frequency/mode dynamically
-radio = AxRadioGMSK(spi=0, frequency_MHz=434.6, mode='Y')
+frequency_MHz = 434.6
+radio = AxRadioGMSK(spi=0, frequency_MHz=frequency_MHz, mode='Y')
 
 
 # Habitat
-uploader = habitat.uploader.Uploader(callsign)
+uploader = habitat.uploader.UploaderThread()
 
-time_str = datetime.utcnow().strftime("%H:%M:%S")
-uploader.listener_telemetry({
-    "time": time_str,
-    "latitude": lat,
-    "longitude": lon,
-    "altitude": alt
-})
+# create logger
+logger = logging.getLogger('habitat.uploader')
+logger.setLevel(logging.DEBUG)
 
-uploader.listener_information({
-    "name": callsign,
-    "location": location,
-    "radio": radio_name,
-    "antenna": antenna
-})
+logfile = datetime.utcnow().strftime("gmsk_gateway_%H_%M_%S.log")
+ch = logging.FileHandler(logfile)
+ch.setLevel(logging.DEBUG)
+logger.addHandler(ch)
+
+# add listener once UploadThread initialises
+def uploader_initialised():
+    time_str = datetime.utcnow().strftime("%H:%M:%S")
+    uploader.listener_telemetry({
+        "time": time_str,
+        "latitude": lat,
+        "longitude": lon,
+        "altitude": alt
+    })
+
+    uploader.listener_information({
+        "name": callsign,
+        "location": location,
+        "radio": radio_name,
+        "antenna": antenna
+    })
+
+def uploader_saved_id(doc_type, doc_id):
+    print(doc_type)
+    print(doc_id)
+
+# habitat
+uploader.initialised = uploader_initialised
+uploader.saved_id = uploader_saved_id
+uploader.settings(callsign)
+uploader.start()
+
+# Telemetry Metadata
+metadata = {
+    "frequency": int(frequency_MHz * 1e6)
+}
 
 
 # Receive Loop
-
 def rx_callback(data, length):
     print(length)
-    print(data[:-2].decode('utf-8'))
+
+    string = data[:-2].decode('utf-8')
+    print(string)
+
+    uploader.payload_telemetry(string, metadata=metadata)
+
 
 radio.receive(rx_callback)
