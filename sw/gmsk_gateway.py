@@ -20,7 +20,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#from ax_radio import AxRadioGMSK
+from ax_radio import AxRadioGMSK
 import habitat
 from datetime import datetime
 
@@ -30,7 +30,7 @@ lat = 1.0
 lon = 1.0
 alt = 1
 location = "Somewhere"
-radio = "Ax"
+radio_name = "Ax"
 antenna = "Unknown"
 
 
@@ -52,7 +52,7 @@ uploader.listener_telemetry({
 uploader.listener_information({
     "name": callsign,
     "location": location,
-    "radio": radio,
+    "radio": radio_name,
     "antenna": antenna
 })
 
