@@ -136,7 +136,7 @@ class AxRadio:
 
         while 1:
             while lib.ax_rx_packet(self.config, pkt): # empty the fifo
-                data = bytes(pkt.data[0:pkt.length])
+                data = ffi.string(pkt.data[0:pkt.length])
                 rx_func(data, pkt.length)
 
             time.sleep(0.025)         # 25ms sleep
