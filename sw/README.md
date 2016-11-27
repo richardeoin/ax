@@ -21,7 +21,7 @@ operation. Therefore the Python API is recommended where possible.
 * (G)FSK
 * (G)MSK
 
-Issues with baud rates below 2000 baud.
+Issues with (G)MSK below 2000 baud.
 
 ## Usage
 
@@ -68,7 +68,7 @@ Then
 
 ```
 # get cffi
-sudo apt-get install python-pip python-dev libffi-dev
+sudo apt-get install git python-pip python-dev libffi-dev
 sudo pip install cffi enum34
 
 # get wiring pi

@@ -33,6 +33,8 @@ extern struct ax_modulation gfsk_hdlc_modulation;
 extern struct ax_modulation gmsk_modulation;
 /* GMSK HDLC FEC test */
 extern struct ax_modulation gmsk_hdlc_fec_modulation;
+/* FSK HDLC FEC test */
+extern struct ax_modulation fsk_hdlc_fec_modulation;
 /* APRS */
 extern struct ax_modulation aprs_modulation;
 
