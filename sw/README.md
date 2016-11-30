@@ -40,6 +40,7 @@ def rx_callback(data, length):
 radio.receive(rx_callback)
 ```
 
+More details in [Examples.md](Examples.md).
 
 ## Resetting
 
