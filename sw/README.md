@@ -99,5 +99,10 @@ Now you can run a gateway:
 
 ```
 cp gateway-example.yaml gateway.yaml
+
+# edit gateway.yaml
+nano gateway.yaml
+
+# run gateway
 python gmsk_gateway.py
 ```
