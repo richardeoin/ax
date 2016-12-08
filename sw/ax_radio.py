@@ -30,7 +30,8 @@ class AxRadio:
 
     def __init__(self,
                  spi=0, vco_type=VcoTypes.Undefined,
-                 frequency_MHz=434.6, modu=Modulations.FSK, bitrate=20000):
+                 frequency_MHz=434.6, modu=Modulations.FSK,
+                 bitrate=20000, fec=False):
 
         self.config = ffi.new('ax_config*')
         self.mod = ffi.new('ax_modulation*')
@@ -78,13 +79,13 @@ class AxRadio:
         self.in_transmit_mode = False
 
         # set modulation parameters
-        self.modulation(bitrate, modu)
+        self.modulation(bitrate, modu, fec)
 
         # calculate tweakable parameters
         lib.ax_default_params(self.config, self.mod)
 
 
-    def modulation(self, bitrate, modu):
+    def modulation(self, bitrate, modu, fec):
         if modu == self.Modulations.FSK or modu == self.Modulations.GFSK:
             self.mod.modulation = lib.AX_MODULATION_FSK
         if modu == self.Modulations.MSK or modu == self.Modulations.GMSK:
@@ -95,8 +96,14 @@ class AxRadio:
             self.mod.modulation = lib.AX_MODULATION_AFSK
 
         # fec
-        self.mod.fec = 1
-        self.mod.encoding = lib.AX_ENC_NRZ | lib.AX_ENC_SCRAM
+        if fec:                 # forward error correction
+            self.mod.fec = 1
+            self.mod.encoding = lib.AX_ENC_NRZ | lib.AX_ENC_SCRAM
+        else:                   # nrzi
+            self.mod.fec = 0
+            self.mod.encoding = lib.AX_ENC_NRZI
+
+        # framing
         self.mod.framing = lib.AX_FRAMING_MODE_HDLC | \
                            lib.AX_FRAMING_CRCMODE_CCITT
 
@@ -162,7 +169,8 @@ class AxRadioGMSK(AxRadio):
 
         # configure radio
         AxRadio.__init__(self, spi, vco_type, frequency_MHz,
-                         modu=AxRadio.Modulations.GMSK, bitrate=bitrate)
+                         modu=AxRadio.Modulations.GMSK,
+                         bitrate=bitrate, fec=True)
 
 
 
