@@ -1514,10 +1514,10 @@ int ax_init(ax_config* config)
 
   /* Revision */
   uint8_t silicon_revision = ax_silicon_revision(config);
-  debug_printf("Silcon Revision 0x%X\n", silicon_revision);
+  debug_printf("Silicon Revision 0x%X\n", silicon_revision);
 
   if (silicon_revision != AX_SILICONREVISION) {
-    debug_printf("Bad Silcon Revision value.\n");
+    debug_printf("Bad Silicon Revision value.\n");
 
     return AX_INIT_BAD_REVISION;
   }
