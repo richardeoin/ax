@@ -446,7 +446,14 @@ void ax_set_synthesiser_parameters(ax_config* config,
     (synth->rfdiv == AX_RFDIV_1) ? AX_PLLVCODIV_RF_DIVIDER_DIV_TWO : 0;
 
   /* vco type */
-  vco_parameters |= (vco_type & 0x30);
+  switch (vco_type) {
+    case AX_VCO_INTERNAL_EXTERNAL_INDUCTOR:
+      vco_parameters |= AX_PLLVCODIV_RF_INTERNAL_VCO_EXTERNAL_INDUCTOR; break;
+    case AX_VCO_EXTERNAL:
+      vco_parameters |= AX_PLLVCODIV_RF_EXTERNAL_VCO; break;
+    default:
+      vco_parameters |= AX_PLLVCODIV_RF_INTERNAL_VCO; break;
+  }
 
   /* set registers */
   ax_hw_write_register_8(config, AX_REG_PLLLOOP,   params->loop);
