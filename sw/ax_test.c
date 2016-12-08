@@ -91,7 +91,7 @@ int aprs(void) {
 
 int main()
 {
-  if (wiringPiSPISetup(0, SPI_SPEED) < 0) {
+  if (wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) < 0) {
     fprintf(stderr, "Failed to open SPI port.  Try loading spi library with 'gpio load spi'");
   }
 
