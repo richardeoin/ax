@@ -180,7 +180,7 @@ if __name__ == "__main__":
         print(length)
         print(data[:-2].decode('utf-8'))
 
-    radio = AxRadioGMSK(mode='Y')
+    radio = AxRadio()
 
     #radio.transmit("Hello World de Q0QQQ "*10)
 
