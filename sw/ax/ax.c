@@ -700,6 +700,7 @@ void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
 
   /* TX deviation */
   switch (mod->modulation & 0xf) {
+    default:
     case AX_MODULATION_PSK:     /* PSK */
       fskdev = 0;
       break;
