@@ -40,7 +40,11 @@
 #include "ax/ax_params.h"
 
 #include <stdio.h>
+#ifdef DEBUG
 #define debug_printf printf
+#else
+#define debug_printf(...)
+#endif
 
 typedef struct ax_synthesiser_parameters {
   uint8_t loop, charge_pump_current;

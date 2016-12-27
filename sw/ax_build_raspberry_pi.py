@@ -21,8 +21,12 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import re
+import sys
 from cffi import FFI
 ffibuilder = FFI()
+
+# command line args
+debug = True if 'debug' in sys.argv else False
 
 # headers we'd like to use from python
 ax_headers = ["ax/ax.h"]
@@ -92,11 +96,16 @@ enum ax_set_spi_transfer_status
 }
 """
 
+compile_args = []
+if debug:
+    compile_args.append("-DDEBUG")
+
 # source files to build
 ax_sources = ["ax/ax.c", "ax/ax_hw.c", "ax/ax_modes.c", "ax/ax_params.c"]
 ffibuilder.set_source("_ax_radio",
                       definitions_enum + status_enum + spi_callbacks_source,
-                      sources=ax_sources, libraries=['wiringPi'], include_dirs=['.'])
+                      sources=ax_sources, libraries=['wiringPi'],
+                      include_dirs=['.'], extra_compile_args=compile_args)
 
 # main
 if __name__ == "__main__":
