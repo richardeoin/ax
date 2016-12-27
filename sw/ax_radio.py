@@ -149,10 +149,13 @@ class AxRadio:
 
             time.sleep(0.025)         # 25ms sleep
 
+    def get_modulation(self):       # getter
+        return self.mod
 
-#
-# GMSK-{X,Y,Z} modes
-#
+
+"""
+GMSK-{X,Y,Z} modes
+"""
 class AxRadioGMSK(AxRadio):
     def __init__(self,
                  spi=0, vco_type=AxRadio.VcoTypes.Undefined,

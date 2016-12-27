@@ -1497,6 +1497,7 @@ void ax_off(ax_config* config)
  */
 int ax_init(ax_config* config)
 {
+#ifndef _AX_DUMMY
   /* must set spi_transfer */
   if (!config->spi_transfer) {
     return AX_INIT_SET_SPI;
@@ -1529,15 +1530,18 @@ int ax_init(ax_config* config)
 
   /* Set the PWRMODE register to POWERDOWN, also clears RST bit */
   ax_set_pwrmode(config, AX_PWRMODE_POWERDOWN);
+#endif
 
   /* Set xtal parameters. The function sets values in config that we
    * need for other parameter calculations */
   ax_set_xtal_parameters(config);
 
+#ifndef _AX_DUMMY
   /* Perform auto-ranging for both VCOs */
   if (ax_vco_ranging(config) != AX_VCO_RANGING_SUCCESS) {
     return AX_INIT_VCO_RANGING_FAILED; /* ranging fail */
-  }
+}
+#endif
 
   return AX_INIT_OK;
 }
