@@ -31,9 +31,9 @@
 #include <math.h>
 #endif
 
-#include "ax.h"
-#include "ax_reg_values.h"
-#include "ax_params.h"
+#include "ax/ax.h"
+#include "ax/ax_reg_values.h"
+#include "ax/ax_params.h"
 
 #include <stdio.h>
 #ifdef DEBUG
