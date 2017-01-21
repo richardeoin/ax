@@ -187,12 +187,18 @@ APRS
 class AxRadioAPRS(AxRadio):
     def __init__(self,
                  spi=0, vco_type=AxRadio.VcoTypes.Undefined,
-                 frequency_MHz=434.6, power=0.1):
+                 frequency_MHz=434.6, power=0.1, deviation=3000):
 
         # configure radio
         AxRadio.__init__(self, spi, vco_type, frequency_MHz,
                          modu=AxRadio.Modulations.AFSK,
                          bitrate=1200, fec=False, power=power)
+
+        # set new deviation
+        self.mod.parameters.afsk.deviation = deviation
+
+        # re-calculate tweakable parameters
+        lib.ax_default_params(self.config, self.mod)
 
 
 if __name__ == "__main__":
