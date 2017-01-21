@@ -25,7 +25,7 @@ from enum import Enum
 import time
 
 class AxRadio:
-    Modulations = Enum('Modulation', 'FSK MSK GFSK GMSK PSK AFSK')
+    Modulations = Enum('Modulation', 'FSK MSK GFSK GMSK PSK AFSK CW')
     VcoTypes = Enum('VcoType', 'Undefined Internal Inductor External')
 
     def __init__(self,
@@ -94,6 +94,8 @@ class AxRadio:
             self.mod.modulation = lib.AX_MODULATION_PSK
         if modu == self.Modulations.AFSK:
             self.mod.modulation = lib.AX_MODULATION_AFSK
+        if modu == self.Modulations.CW:
+            self.mod.modulation = lib.AX_MODULATION_CW
 
         # fec
         if fec:                 # forward error correction
@@ -175,6 +177,18 @@ class AxRadioGMSK(AxRadio):
                          modu=AxRadio.Modulations.GMSK,
                          bitrate=bitrate, fec=True)
 
+"""
+APRS
+"""
+class AxRadioAPRS(AxRadio):
+    def __init__(self,
+                 spi=0, vco_type=AxRadio.VcoTypes.Undefined,
+                 frequency_MHz=434.6):
+
+        # configure radio
+        AxRadio.__init__(self, spi, vco_type, frequency_MHz,
+                         modu=AxRadio.Modulations.AFSK,
+                         bitrate=1200, fec=False)
 
 
 if __name__ == "__main__":
