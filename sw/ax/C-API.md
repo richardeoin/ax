@@ -45,6 +45,11 @@
 * checks for FULLTX mode
 * loads packet into FIFO
 
+#### `ax_tx_1k_zeros(ax_config* config)`
+
+* checks for FULLTX mode
+* loads 1000 zeros into FIFO
+
 #### `ax_rx_on(ax_config* config, ax_modulation* modulation)`
 
 * sets parameters for given modulation

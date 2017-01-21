@@ -84,6 +84,28 @@ void ax_fifo_commit(ax_config* config)
 }
 
 /**
+ * write tx 1k zeros
+ */
+void ax_fifo_tx_1k_zeros(ax_config* config)
+{
+  uint8_t header[4];
+  uint8_t fifocount;
+
+  /* wait for enough space to contain command */
+  do {
+    fifocount = ax_hw_read_register_16(config, AX_REG_FIFOCOUNT);
+  } while (fifocount > (256 - 4));
+
+  /* preamble */
+  header[0] = AX_FIFO_CHUNK_REPEATDATA;
+  header[1] = AX_FIFO_TXDATA_NOCRC;
+  header[2] = 125;              /* 1000/8 = 125 */
+  header[3] = 0;
+  ax_hw_write_fifo(config, header, 4);
+  ax_fifo_commit(config);       /* commit */
+}
+
+/**
  * write tx data
  */
 void ax_fifo_tx_data(ax_config* config, ax_modulation* mod,
@@ -1384,6 +1406,22 @@ void ax_tx_packet(ax_config* config, ax_modulation* mod,
   ax_fifo_tx_data(config, mod, packet, length);
 
   debug_printf("packet written to FIFO!\n");
+}
+/**
+ * Loads 1000 bits-times of zeros into the FIFO for tranmission
+ */
+void ax_tx_1k_zeros(ax_config* config)
+{
+  if (config->pwrmode != AX_PWRMODE_FULLTX) {
+    debug_printf("PWRMODE must be FULLTX before writing to FIFO!\n");
+    return;
+  }
+
+  /* Ensure the SVMODEM bit (POWSTAT) is set high (See 3.1.1) */
+  while (!(ax_hw_read_register_8(config, AX_REG_POWSTAT) & AX_POWSTAT_SVMODEM));
+
+  /* Write 1k zeros to fifo */
+  ax_fifo_tx_1k_zeros(config);
 }
 
 /**

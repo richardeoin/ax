@@ -259,6 +259,7 @@ int ax_adjust_frequency(ax_config* config, uint32_t frequency);
 void ax_tx_on(ax_config* config, ax_modulation* mod);
 void ax_tx_packet(ax_config* config, ax_modulation* mod,
                   uint8_t* packet, uint16_t length);
+void ax_tx_1k_zeros(ax_config* config);
 
 /* receive */
 void ax_rx_on(ax_config* config, ax_modulation* mod);
