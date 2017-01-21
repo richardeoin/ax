@@ -254,6 +254,7 @@ void ax_default_params(ax_config* config, ax_modulation* mod);
 
 /* adjust frequency */
 int ax_adjust_frequency(ax_config* config, uint32_t frequency);
+int ax_force_quick_adjust_frequency(ax_config* config, uint32_t frequency);
 
 /* transmit */
 void ax_tx_on(ax_config* config, ax_modulation* mod);
@@ -269,6 +270,7 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt);
 
 /* turn off */
 void ax_off(ax_config* config);
+void ax_force_off(ax_config* config);
 
 /* pinfunc */
 void ax_set_pinfunc_sysclk(ax_config* config, pinfunc_t func);

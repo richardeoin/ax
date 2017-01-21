@@ -34,6 +34,14 @@
 * write new values to chip (if not in DEEPSLEEP)
 * (currently just frequency synth A)
 
+#### `ax_force_quick_adjust_frequency(ax_config* config, uint32_t frequency)`
+
+* re-calculate register values for new frequency
+* write new values to chip
+* delta with current frequency f must be < f/256
+* must be in a suitable mode to do this
+* (currently just frequency synth A)
+
 #### `ax_tx_on(ax_config* config, ax_modulation* modulation)`
 
 * set parameters for given modulation

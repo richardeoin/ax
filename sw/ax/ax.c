@@ -1355,6 +1355,26 @@ int ax_adjust_frequency(ax_config* config, uint32_t frequency)
 
   return AX_INIT_OK;
 }
+/**
+ * force quick update of frequency registers
+ *
+ * * delta with current frequency f must be < f/256
+ * * must be in a suitable mode to do this
+ * * currently only frequency A
+ */
+int ax_force_quick_adjust_frequency(ax_config* config, uint32_t frequency)
+{
+  ax_synthesiser* synth = &config->synthesiser.A;
+
+  /* set new frequency */
+  synth->frequency = frequency;
+
+  /* don't re-range, just change */
+  ax_set_synthesiser_frequencies(config);
+
+  return AX_INIT_OK;
+}
+
 
 /**
  * Configure and switch to FULLTX
@@ -1583,6 +1603,15 @@ void ax_off(ax_config* config)
 
   debug_printf("ax_off complete!\n");
 }
+
+/**
+ * Shuts down the radio immediately, even if an operation is in progress
+ */
+void ax_force_off(ax_config* config)
+{
+  ax_set_pwrmode(config, AX_PWRMODE_POWERDOWN);
+}
+
 
 /**
  * immediately updates pinfunc
