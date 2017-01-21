@@ -56,6 +56,12 @@ void ax_set_synthesiser_parameters(ax_config* config,
                                    ax_synthesiser* synth,
                                    enum ax_vco_type vco_type);
 
+pinfunc_t _pinfunc_sysclk	= 1;
+pinfunc_t _pinfunc_dclk		= 1;
+pinfunc_t _pinfunc_data		= 1;
+pinfunc_t _pinfunc_antsel	= 1;
+pinfunc_t _pinfunc_pwramp	= 7;
+
 /**
  * FIFO -----------------------------------------------------
  */
@@ -371,11 +377,11 @@ void ax_set_modulation_parameters(ax_config* config, ax_modulation* mod)
  */
 void ax_set_pin_configuration(ax_config* config)
 {
-  ax_hw_write_register_8(config, AX_REG_PINFUNCSYSCLK, 0x01);
-  ax_hw_write_register_8(config, AX_REG_PINFUNCDCLK, 0x01);
-  ax_hw_write_register_8(config, AX_REG_PINFUNCDATA, 0x01);
-  ax_hw_write_register_8(config, AX_REG_PINFUNCANTSEL, 0x01);
-  ax_hw_write_register_8(config, AX_REG_PINFUNCPWRAMP, 0x07);
+  ax_hw_write_register_8(config, AX_REG_PINFUNCSYSCLK, _pinfunc_sysclk);
+  ax_hw_write_register_8(config, AX_REG_PINFUNCDCLK, _pinfunc_dclk);
+  ax_hw_write_register_8(config, AX_REG_PINFUNCDATA, _pinfunc_data);
+  ax_hw_write_register_8(config, AX_REG_PINFUNCANTSEL, _pinfunc_antsel);
+  ax_hw_write_register_8(config, AX_REG_PINFUNCPWRAMP, _pinfunc_pwramp);
 }
 
 /**
@@ -678,6 +684,51 @@ void ax_set_afsk_tx_parameters(ax_config* config, ax_modulation* mod)
   debug_printf("afskspace (tx) %d = 0x%04x\n", space, afskspace);
 }
 /**
+ * helper function (5.16)
+ *
+ * return the lower two bits of modcfga for tx path.
+ * will return TXSE only when _AX_TX_SE is defined;
+ * will retrun TXDIFF only when _AX_TX_DIFF is defined;
+ * #errors if neither is defined
+ */
+uint8_t ax_modcfga_tx_parameters_tx_path(enum ax_transmit_path path)
+{
+#ifndef _AX_TX_SE
+#ifndef _AX_TX_DIFF
+  #error "You must define either _AX_TX_DIFF or _AX_TX_SE to build! Check your hw"
+#endif
+#endif
+
+  /* main switch statement */
+  switch (path) {
+    case AX_TRANSMIT_PATH_SE:
+#ifdef _AX_TX_SE
+      return AX_MODCFGA_TXSE;
+#else
+      debug_printf("Single ended transmit path NOT set!\n");
+      debug_printf("Check this is okay on your hardware, and define _AX_TX_SE to enable.\n");
+      debug_printf("Setting differential transmit path instead...\n");
+      return AX_MODCFGA_TXDIFF;
+#endif
+    case AX_TRANSMIT_PATH_DIFF:
+#ifdef _AX_TX_DIFF
+      return AX_MODCFGA_TXDIFF;
+#else
+      debug_printf("Differential transmit path NOT set!\n");
+      debug_printf("Check this is okay on your hardware, and define _AX_TX_SE to enable.\n");
+      debug_printf("Setting single ended transmit path instead...\n");
+      return AX_MODCFGA_TXSE;
+#endif
+    default:
+      debug_printf("Unknown transmit path!\n");
+#ifdef _AX_TX_DIFF
+      return AX_MODCFGA_TXDIFF;
+#else
+      return AX_MODCFGA_TXSE;
+#endif
+  }
+}
+/**
  * 5.16 set transmitter parameters
  */
 void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
@@ -690,10 +741,12 @@ void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
   /* frequency shaping mode of transmitter */
   ax_hw_write_register_8(config, AX_REG_MODCFGF, mod->shaping & 0x3);
 
+  /* transmit path */
+  modcfga = ax_modcfga_tx_parameters_tx_path(config->transmit_path);
   /* amplitude shaping mode of transmitter */
   switch (mod->modulation & 0xf) {
     default:
-      modcfga = AX_MODCFGA_TXDIFF | AX_MODCFGA_AMPLSHAPE_RAISED_COSINE;
+      modcfga |= AX_MODCFGA_AMPLSHAPE_RAISED_COSINE;
       break;
   }
   ax_hw_write_register_8(config, AX_REG_MODCFGA, modcfga);
@@ -1491,6 +1544,47 @@ void ax_off(ax_config* config)
   ax_set_pwrmode(config, AX_PWRMODE_POWERDOWN);
 
   debug_printf("ax_off complete!\n");
+}
+
+/**
+ * immediately updates pinfunc
+ */
+void ax_set_pinfunc_sysclk(ax_config* config, pinfunc_t func)
+{
+  _pinfunc_sysclk = func;
+  ax_hw_write_register_8(config, AX_REG_PINFUNCSYSCLK, _pinfunc_sysclk);
+}
+void ax_set_pinfunc_dclk(ax_config* config, pinfunc_t func)
+{
+  _pinfunc_dclk = func;
+  ax_hw_write_register_8(config, AX_REG_PINFUNCDCLK, _pinfunc_dclk);
+}
+void ax_set_pinfunc_data(ax_config* config, pinfunc_t func)
+{
+  _pinfunc_data = func;
+  ax_hw_write_register_8(config, AX_REG_PINFUNCDATA, _pinfunc_data);
+}
+void ax_set_pinfunc_antsel(ax_config* config, pinfunc_t func)
+{
+  _pinfunc_antsel = func;
+  ax_hw_write_register_8(config, AX_REG_PINFUNCANTSEL, _pinfunc_antsel);
+}
+void ax_set_pinfunc_pwramp(ax_config* config, pinfunc_t func)
+{
+  _pinfunc_pwramp = func;
+  ax_hw_write_register_8(config, AX_REG_PINFUNCPWRAMP, _pinfunc_pwramp);
+}
+/**
+ * immediately updates tx path
+ */
+void ax_set_tx_path(ax_config* config, enum ax_transmit_path path)
+{
+  config->transmit_path = path;
+
+  uint8_t modcfga = ax_hw_read_register_8(config, AX_REG_MODCFGA);
+  modcfga &= ~0x3;
+  modcfga |= ax_modcfga_tx_parameters_tx_path(config->transmit_path);
+  ax_hw_write_register_8(config, AX_REG_MODCFGA, modcfga);
 }
 
 /**

@@ -24,7 +24,7 @@ TR		:= tr
 #
 # Display all warnings
 #
-CFLAGS  += -g3 -ggdb -std=c99 -Wall -Wextra -pthread -I. -I..
+CFLAGS  += -g3 -ggdb -std=c99 -Wall -Wextra -pthread -I. -D_AX_TX_DIFF
 LDFLAGS += -g3 -ggdb -Wall -Wextra
 
 # Source files

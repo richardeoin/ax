@@ -41,6 +41,11 @@ typedef enum ax_init_status {
 } ax_init_status;
 
 /**
+ * pin functions
+ */
+typedef uint8_t pinfunc_t;
+
+/**
  * Represents a receive parameter set for an ax5243 radio
  */
 typedef struct ax_rx_param_set {
@@ -159,6 +164,11 @@ enum ax_rfdiv {
   AX_RFDIV_0,
   AX_RFDIV_1,
 };
+/* Transmit path */
+enum ax_transmit_path {
+  AX_TRANSMIT_PATH_DIFF = 0,
+  AX_TRANSMIT_PATH_SE,
+};
 
 
 /**
@@ -204,6 +214,7 @@ typedef struct ax_config {
   uint8_t f_xtaldiv;            /* xtal division factor, set automatically */
   void* (*tcxo_enable)(void);    /* function to enable tcxo */
   void* (*tcxo_disable)(void);   /* function to disable tcxo */
+  enum ax_transmit_path transmit_path; /* transmit path */
 
   /* spi transfer */
   void (*spi_transfer)(unsigned char*, uint8_t);
@@ -257,6 +268,16 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt);
 
 /* turn off */
 void ax_off(ax_config* config);
+
+/* pinfunc */
+void ax_set_pinfunc_sysclk(ax_config* config, pinfunc_t func);
+void ax_set_pinfunc_dclk(ax_config* config, pinfunc_t func);
+void ax_set_pinfunc_data(ax_config* config, pinfunc_t func);
+void ax_set_pinfunc_antsel(ax_config* config, pinfunc_t func);
+void ax_set_pinfunc_pwramp(ax_config* config, pinfunc_t func);
+
+/* tx path */
+void ax_set_tx_path(ax_config* config, enum ax_transmit_path path);
 
 /* init */
 int ax_init(ax_config* config);

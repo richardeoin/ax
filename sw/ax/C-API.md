@@ -67,3 +67,11 @@
 #### `ax_off(ax_config* config)`
 
 * switch to POWERDOWN/DEEPSLEEP mode
+
+#### `ax_set_pinfunc_{sysclk,dclk,data,antsel,pwramp}(ax_config* config, pinfunc_t func)`
+
+* change the function of the given pin with immediate effect
+
+#### `ax_set_tx_path(ax_config* config, enum ax_transmit_path path)`
+
+* change the transmit path with immediate effect

@@ -80,7 +80,7 @@ enum ax_set_spi_transfer_status
 }
 """
 
-compile_args = ["-D_AX_DUMMY"]
+compile_args = ["-D_AX_DUMMY", "-D_AX_TX_DIFF"]
 if debug:
     compile_args.append("-DDEBUG")
 
