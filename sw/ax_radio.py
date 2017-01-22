@@ -31,7 +31,7 @@ class AxRadio:
     def __init__(self,
                  spi=0, vco_type=VcoTypes.Undefined,
                  frequency_MHz=434.6, modu=Modulations.FSK,
-                 bitrate=20000, fec=False, power=0.1):
+                 bitrate=20000, fec=False, power=0.1, cont=True):
 
         self.config = ffi.new('ax_config*')
         self.mod = ffi.new('ax_modulation*')
@@ -79,13 +79,13 @@ class AxRadio:
         self.in_transmit_mode = False
 
         # set modulation parameters
-        self.modulation(bitrate, modu, fec, power)
+        self.modulation(bitrate, modu, fec, power, cont)
 
         # calculate tweakable parameters
         lib.ax_default_params(self.config, self.mod)
 
 
-    def modulation(self, bitrate, modu, fec, power):
+    def modulation(self, bitrate, modu, fec, power, cont):
         if modu == self.Modulations.FSK or modu == self.Modulations.GFSK:
             self.mod.modulation = lib.AX_MODULATION_FSK
         if modu == self.Modulations.MSK or modu == self.Modulations.GMSK:
@@ -114,7 +114,11 @@ class AxRadio:
             self.mod.shaping = lib.AX_MODCFGF_FREQSHAPE_GAUSSIAN_BT_0_5
 
         self.mod.bitrate = bitrate
-        self.mod.continuous = 1
+
+        if cont:
+            self.mod.continuous = 1
+        else:
+            self.mod.continuous = 0
 
         if (power <= 1) and (power >= 0):
             self.mod.power = power
@@ -192,7 +196,7 @@ class AxRadioAPRS(AxRadio):
         # configure radio
         AxRadio.__init__(self, spi, vco_type, frequency_MHz,
                          modu=AxRadio.Modulations.AFSK,
-                         bitrate=1200, fec=False, power=power)
+                         bitrate=1200, fec=False, power=power, cont=False)
 
         # set new deviation
         self.mod.parameters.afsk.deviation = deviation
