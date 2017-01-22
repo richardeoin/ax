@@ -97,17 +97,19 @@ class AxRadio:
         if modu == self.Modulations.CW:
             self.mod.modulation = lib.AX_MODULATION_CW
 
-        # fec
+        # fec and framing
         if fec:                 # forward error correction
             self.mod.fec = 1
             self.mod.encoding = lib.AX_ENC_NRZ | lib.AX_ENC_SCRAM
-        else:                   # nrzi
+            # HDLC required for FEC
+            self.mod.framing = lib.AX_FRAMING_MODE_HDLC | \
+                               lib.AX_FRAMING_CRCMODE_CCITT
+
+        else:                   # nrzi with pattern match
             self.mod.fec = 0
             self.mod.encoding = lib.AX_ENC_NRZI
-
-        # framing
-        self.mod.framing = lib.AX_FRAMING_MODE_HDLC | \
-                           lib.AX_FRAMING_CRCMODE_CCITT
+            self.mod.framing = lib.AX_FRAMING_MODE_RAW_PATTERN_MATCH | \
+                               lib.AX_FRAMING_CRCMODE_CCITT
 
         # gaussian shaping
         if modu == self.Modulations.GFSK or modu == self.Modulations.GMSK:
