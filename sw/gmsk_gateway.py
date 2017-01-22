@@ -25,6 +25,14 @@ from datetime import datetime
 import habitat
 import logging
 import yaml
+import argparse
+
+parser = argparse.ArgumentParser(description=
+                                 'Gateway from AX radio GMSK modes to habitat.')
+parser.add_argument('-f', '--offline', action='store_true',
+                    help='do not connect to habitat')
+
+args = parser.parse_args()
 
 # load gateway parameters from gateway.yaml
 try:
@@ -38,50 +46,50 @@ except:
 frequency_MHz = 434.6375
 radio = AxRadioGMSK(spi=0, frequency_MHz=frequency_MHz, mode='Y')
 
+if not args.offline:            # if online
+    # Habitat
+    uploader = habitat.uploader.UploaderThread()
 
-# Habitat
-uploader = habitat.uploader.UploaderThread()
+    # create logger
+    logger = logging.getLogger('habitat.uploader')
+    logger.setLevel(logging.DEBUG)
 
-# create logger
-logger = logging.getLogger('habitat.uploader')
-logger.setLevel(logging.DEBUG)
+    logfile = datetime.utcnow().strftime("gmsk_gateway_%H_%M_%S.log")
+    ch = logging.FileHandler(logfile)
+    ch.setLevel(logging.DEBUG)
+    logger.addHandler(ch)
 
-logfile = datetime.utcnow().strftime("gmsk_gateway_%H_%M_%S.log")
-ch = logging.FileHandler(logfile)
-ch.setLevel(logging.DEBUG)
-logger.addHandler(ch)
+    # add listener once UploadThread initialises
+    def uploader_initialised():
+        time_str = datetime.utcnow().strftime("%H:%M:%S")
+        uploader.listener_telemetry({
+            "time": time_str,
+            "latitude": gw["latitude"],
+            "longitude": gw["longitude"],
+            "altitude": gw["altitude"]
+        })
 
-# add listener once UploadThread initialises
-def uploader_initialised():
-    time_str = datetime.utcnow().strftime("%H:%M:%S")
-    uploader.listener_telemetry({
-        "time": time_str,
-        "latitude": gw["latitude"],
-        "longitude": gw["longitude"],
-        "altitude": gw["altitude"]
-    })
+        uploader.listener_information({
+            "name": gw["callsign"],
+            "location": gw["location"],
+            "radio": "AX",
+            "antenna": gw["antenna"]
+        })
 
-    uploader.listener_information({
-        "name": gw["callsign"],
-        "location": gw["location"],
-        "radio": "AX",
-        "antenna": gw["antenna"]
-    })
+    def uploader_saved_id(doc_type, doc_id):
+        print(doc_type)
+        print(doc_id)
 
-def uploader_saved_id(doc_type, doc_id):
-    print(doc_type)
-    print(doc_id)
+    # habitat
+    uploader.initialised = uploader_initialised
+    uploader.saved_id = uploader_saved_id
+    uploader.settings(gw["callsign"])
+    uploader.start()
 
-# habitat
-uploader.initialised = uploader_initialised
-uploader.saved_id = uploader_saved_id
-uploader.settings(gw["callsign"])
-uploader.start()
-
-# Telemetry Metadata
-metadata = {
-    "frequency": int(frequency_MHz * 1e6)
-}
+    # Telemetry Metadata
+    metadata = {
+        "frequency": int(frequency_MHz * 1e6)
+    }
 
 
 # Receive Loop
@@ -91,7 +99,10 @@ def rx_callback(data, length):
     string = data[:-2].decode('utf-8')
     print(string)
 
-    uploader.payload_telemetry(string, metadata=metadata)
+    if not args.offline:
+        uploader.payload_telemetry(string, metadata=metadata)
+
+        # TODO: uploads to the ssdv server
 
 
 radio.receive(rx_callback)
