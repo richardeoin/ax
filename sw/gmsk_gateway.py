@@ -96,13 +96,16 @@ if not args.offline:            # if online
 def rx_callback(data, length):
     print(length)
 
-    string = data[:-2].decode('utf-8')
-    print(string)
+    try:
+        string = data[:-2].decode('utf-8')
+        print(string)
 
-    if not args.offline:
-        uploader.payload_telemetry(string, metadata=metadata)
+        if not args.offline:
+            uploader.payload_telemetry(string, metadata=metadata)
 
-        # TODO: uploads to the ssdv server
+            # TODO: uploads to the ssdv server
+    except:
+        print("Unexpected error parsing/uploading packet!")
 
 
 radio.receive(rx_callback)
