@@ -157,7 +157,12 @@ class AxRadio:
         while 1:
             while lib.ax_rx_packet(self.config, pkt): # empty the fifo
                 data = ffi.string(pkt.data[0:pkt.length])
-                rx_func(data, pkt.length)
+                metadata = {
+                    'rssi': pkt.rssi,
+                    'rffreqoffs': pkt.rffreqoffs,
+                }
+                if rx_func:
+                    rx_func(data, pkt.length, metadata)
 
             time.sleep(0.025)         # 25ms sleep
 
@@ -209,7 +214,7 @@ class AxRadioAPRS(AxRadio):
 
 if __name__ == "__main__":
 
-    def rx_callback(data, length):
+    def rx_callback(data, length, metadata):
         print(length)
         print(data[:-2].decode('utf-8'))
 

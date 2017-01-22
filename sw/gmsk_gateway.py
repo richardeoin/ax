@@ -43,7 +43,7 @@ except:
 
 
 # TODO set frequency/mode dynamically
-frequency_MHz = 434.6375
+frequency_MHz = 434.61
 radio = AxRadioGMSK(spi=0, frequency_MHz=frequency_MHz, mode='Y')
 
 if not args.offline:            # if online
@@ -93,7 +93,7 @@ if not args.offline:            # if online
 
 
 # Receive Loop
-def rx_callback(data, length):
+def rx_callback(data, length, metadata):
     print(length)
 
     try:

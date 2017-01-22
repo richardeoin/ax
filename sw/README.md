@@ -34,7 +34,7 @@ radio = AxRadio()
 radio.transmit("Hello World de Q0QQQ "*10)
 
 # receive
-def rx_callback(data, length):
+def rx_callback(data, length, metadata):
     print(data[:-2].decode('utf-8'))
 
 radio.receive(rx_callback)
