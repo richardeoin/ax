@@ -151,7 +151,7 @@ class AxRadio:
                          bytes_to_transmit, len(bytes_to_transmit))
 
 
-    def receive(self, rx_func): # receive
+    def receive(self, rx_func, timeout=0): # receive
         pkt = ffi.new('ax_packet*')
 
         if self.state != self.RadioStates.Receive:
@@ -159,6 +159,7 @@ class AxRadio:
             lib.ax_rx_on(self.config, self.mod)
             self.state = self.RadioStates.Receive
 
+        start_time = time.time()
 
         while (self.state == self.RadioStates.Receive):
             while lib.ax_rx_packet(self.config, pkt): # empty the fifo
@@ -171,6 +172,9 @@ class AxRadio:
                     rx_func(data, pkt.length, metadata)
 
             time.sleep(0.025)         # 25ms sleep
+
+            if (timeout > 0) and ((time.time() - start_time) > timeout):
+                return          # timeout
 
     def off(self):              # off
         if self.state != self.RadioStates.Off:
