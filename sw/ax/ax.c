@@ -1517,6 +1517,10 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt)
   uint16_t length;
   float offset;
 
+  /* compile parts of the pkt structure, 0x80 is flag for the data itself */
+  uint8_t pkt_parts_list = (config->pkt_store_flags & 0x1E) | 0x80;
+  uint8_t pkt_parts = 0;
+
   while (1) {
     //for (int i = 0; i < 1000*1000*5; i++);
 
@@ -1560,27 +1564,47 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt)
                            ax_hw_read_register_8(config, AX_REG_FECSTATUS));
             }
 
-            return 1;
+            pkt_parts |= 0x80;
           }
 
           break;
 
         case AX_FIFO_CHUNK_RSSI:
           debug_printf("rssi %d dB\n", rx_chunk.chunk.rssi);
+
+          rx_pkt->rssi = rx_chunk.chunk.rssi;
+          pkt_parts |= AX_PKT_STORE_RSSI;
           break;
 
         case AX_FIFO_CHUNK_RFFREQOFFS:
           debug_printf("rf offset %d Hz\n", rx_chunk.chunk.rffreqoffs);
+
+          rx_pkt->rffreqoffs = rx_chunk.chunk.rffreqoffs;
+          pkt_parts |= AX_PKT_STORE_RF_OFFSET;
           break;
 
         case AX_FIFO_CHUNK_FREQOFFS:
           offset = rx_chunk.chunk.freqoffs * 2000;
           debug_printf("freq offset %f \n", offset / (1 << 16));
+
+          /* todo add data to back */
+          pkt_parts |= AX_PKT_STORE_FREQUENCY_OFFSET;
           break;
 
+        case AX_FIFO_CHUNK_DATARATE:
+          /* todo process datarate */
+
+          pkt_parts |= AX_PKT_STORE_DATARATE_OFFSET;
+          break;
         default:
+
           debug_printf("some other chunk type 0x%02x\n", rx_chunk.chunk_t);
           break;
+      }
+
+      if (pkt_parts == pkt_parts_list) {
+        /* we have all the parts for a packet */
+        return 1;
       }
     } else if (pkt_wr_index == 0) {
       /* nothing to read from fifo */
