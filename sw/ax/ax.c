@@ -1395,6 +1395,9 @@ void ax_tx_on(ax_config* config, ax_modulation* mod)
   /* Enable TCXO if used */
   if (config->tcxo_enable) { config->tcxo_enable(); }
 
+  /* Clear FIFO */
+  ax_fifo_clear(config);
+
   /* Place chip in FULLTX mode */
   ax_set_pwrmode(config, AX_PWRMODE_FULLTX);
 
