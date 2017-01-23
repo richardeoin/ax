@@ -27,6 +27,7 @@ import time
 class AxRadio:
     Modulations = Enum('Modulation', 'FSK MSK GFSK GMSK PSK AFSK CW')
     VcoTypes = Enum('VcoType', 'Undefined Internal Inductor External')
+    RadioStates = Enum('RadioState', 'Off Transmit Receive')
 
     def __init__(self,
                  spi=0, vco_type=VcoTypes.Undefined,
@@ -35,6 +36,7 @@ class AxRadio:
 
         self.config = ffi.new('ax_config*')
         self.mod = ffi.new('ax_modulation*')
+        self.state = self.RadioStates.Off
 
         # attempt to open the SPI port
         spi_status = lib.ax_set_spi_transfer(self.config, spi)
@@ -140,9 +142,10 @@ class AxRadio:
 
 
     def transmit(self, bytes_to_transmit): # transmit
-        if self.in_transmit_mode == False:
+        if self.state != self.RadioStates.Transmit:
+            self.off()          # need to turn off firstn
             lib.ax_tx_on(self.config, self.mod)
-            self.in_transmit_mode = True
+            self.state = self.RadioStates.Transmit
 
         lib.ax_tx_packet(self.config, self.mod,
                          bytes_to_transmit, len(bytes_to_transmit))
@@ -151,10 +154,13 @@ class AxRadio:
     def receive(self, rx_func): # receive
         pkt = ffi.new('ax_packet*')
 
-        lib.ax_rx_on(self.config, self.mod)
-        self.in_transmit_mode = False
+        if self.state != self.RadioStates.Receive:
+            self.off()          # need to turn off first
+            lib.ax_rx_on(self.config, self.mod)
+            self.state = self.RadioStates.Receive
 
-        while 1:
+
+        while (self.state == self.RadioStates.Receive):
             while lib.ax_rx_packet(self.config, pkt): # empty the fifo
                 data = ffi.string(pkt.data[0:pkt.length])
                 metadata = {
@@ -165,6 +171,11 @@ class AxRadio:
                     rx_func(data, pkt.length, metadata)
 
             time.sleep(0.025)         # 25ms sleep
+
+    def off(self):              # off
+        if self.state != self.RadioStates.Off:
+            lib.ax_off(self.config)
+            self.state = self.RadioStates.Off
 
     def get_modulation(self):       # getter
         return self.mod

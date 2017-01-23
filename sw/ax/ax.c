@@ -1594,10 +1594,14 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt)
  */
 void ax_off(ax_config* config)
 {
-  /* Wait for any ongoing operations to complete by polling RADIOSTATE */
-  while ((ax_hw_read_register_8(config, AX_REG_RADIOSTATE) & 0xF) > 1) {
-    /* Not IDLE or POWERDOWN */
-  }
+  /* Wait for ongoing transmit to complete by polling RADIOSTATE */
+  uint8_t radiostate;
+
+  do {
+    radiostate = ax_hw_read_register_8(config, AX_REG_RADIOSTATE) & 0xF;
+  } while ((radiostate == AX_RADIOSTATE_TX_PLL_SETTLING) ||
+           (radiostate == AX_RADIOSTATE_TX) ||
+           (radiostate == AX_RADIOSTATE_TX_TAIL));
 
   ax_set_pwrmode(config, AX_PWRMODE_POWERDOWN);
 
