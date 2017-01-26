@@ -186,8 +186,9 @@ typedef struct ax_synthesiser {
 /**
  * Represents a received packet and its metadata
  */
+#define AX_PACKET_MAX_DATA_LENGTH	0x200
 typedef struct ax_packet {
-  unsigned char data[0x200];
+  unsigned char data[AX_PACKET_MAX_DATA_LENGTH];
   uint16_t length;
   int16_t rssi;
   int32_t rffreqoffs;

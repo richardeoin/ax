@@ -1544,6 +1544,11 @@ int ax_rx_packet(ax_config* config, ax_packet* rx_pkt)
             break;              /* discard */
           }
 
+          /* if the current chunk would overflow packet data buffer, discard */
+          if ((pkt_wr_index + length) > AX_PACKET_MAX_DATA_LENGTH) {
+            return 0;
+          }
+
           /* copy in this chunk */
           memcpy(rx_pkt->data + pkt_wr_index,
                  rx_chunk.chunk.data.data + 1, length);
