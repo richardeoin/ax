@@ -188,7 +188,7 @@ typedef struct ax_synthesiser {
  */
 #define AX_PACKET_MAX_DATA_LENGTH	0x200
 typedef struct ax_packet {
-  unsigned char data[AX_PACKET_MAX_DATA_LENGTH];
+  unsigned char data[0x200];
   uint16_t length;
   int16_t rssi;
   int32_t rffreqoffs;
