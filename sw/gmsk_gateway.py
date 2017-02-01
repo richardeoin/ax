@@ -31,6 +31,8 @@ parser = argparse.ArgumentParser(description=
                                  'Gateway from AX radio GMSK modes to habitat.')
 parser.add_argument('-f', '--offline', action='store_true',
                     help='do not connect to habitat')
+parser.add_argument('-i', '--infodoc', action='store_true',
+                    help='print document ids of uploaded documents')
 
 args = parser.parse_args()
 
@@ -77,8 +79,8 @@ if not args.offline:            # if online
         })
 
     def uploader_saved_id(doc_type, doc_id):
-        print(doc_type)
-        print(doc_id)
+        if args.infodoc:
+            print("{} upload success! id {}".format(doc_type, doc_id))
 
     # habitat
     uploader.initialised = uploader_initialised
@@ -86,26 +88,40 @@ if not args.offline:            # if online
     uploader.settings(gw["callsign"])
     uploader.start()
 
-    # Telemetry Metadata
-    metadata = {
-        "frequency": int(frequency_MHz * 1e6)
-    }
 
 
 # Receive Loop
-def rx_callback(data, length, metadata):
-    print(length)
+def rx_callback(data, length, ax_metadata):
+    print("(Length:      {})".format(length))
+    print("(RSSI:        {} dBm)".format(ax_metadata['rssi']))
+    print("(Freq offset: {} Hz)".format(ax_metadata['rffreqoffs']))
 
+    # Telemetry Metadata
+    metadata = {
+        "frequency": int((frequency_MHz * 1e6) + ax_metadata['rffreqoffs']),
+        "signal_strength": ax_metadata['rssi']
+    }
+
+    # decode data to ascii
     try:
-        string = data[:-2].decode('utf-8')
+        string = data[:-2].decode('ascii')
         print(string)
 
-        if not args.offline:
-            uploader.payload_telemetry(string, metadata=metadata)
+        # upload
+        try:
+            if not args.offline:
+                uploader.payload_telemetry(string, metadata=metadata)
 
-            # TODO: uploads to the ssdv server
+                # TODO: uploads to the ssdv server
+        except:
+            print("Unexpected error uploading packet!")
     except:
-        print("Unexpected error parsing/uploading packet!")
+        print("Packet string was not valid ascii!")
 
 
-radio.receive(rx_callback)
+# start rx
+try:
+    radio.receive(rx_callback)
+except KeyboardInterrupt:
+    print("")
+    print("Uploading remaining packets to habitat...")
