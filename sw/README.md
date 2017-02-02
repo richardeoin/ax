@@ -7,6 +7,9 @@ provides more detailed control, it has a much steeper learning curve
 and requires a greater understand of the radio's internal
 operation. Therefore the Python API is recommended where possible.
 
+*Changelog:*
+* 02/07/16 Push v0.2. rx_callback now requires 3 arguments as example below.
+
 ## Supported Modes
 
 ### Transmit
