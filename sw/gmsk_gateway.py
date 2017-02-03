@@ -45,7 +45,7 @@ except:
 
 
 # TODO set frequency/mode dynamically
-frequency_MHz = 434.61
+frequency_MHz = 434.6375
 radio = AxRadioGMSK(spi=0, frequency_MHz=frequency_MHz, mode='Y')
 
 if not args.offline:            # if online
