@@ -220,6 +220,12 @@ class AxRadioAPRS(AxRadio):
                          modu=AxRadio.Modulations.AFSK,
                          bitrate=1200, fec=False, power=power, cont=False)
 
+        # HDLC but with no FEC
+        self.mod.fec = 0
+        self.mod.encoding = lib.AX_ENC_NRZI
+        self.mod.framing = lib.AX_FRAMING_MODE_HDLC | \
+                           lib.AX_FRAMING_CRCMODE_CCITT
+
         # set new deviation
         self.mod.parameters.afsk.deviation = deviation
 
