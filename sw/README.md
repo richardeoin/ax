@@ -7,6 +7,12 @@ provides more detailed control, it has a much steeper learning curve
 and requires a greater understand of the radio's internal
 operation. Therefore the Python API is recommended where possible.
 
+You can also use the Python API to generate an initialised C
+structure, which can then be passed to the C API at runtime. This is
+useful for microcontrollers where Python is not available or
+appropriate, but the full functionality of the C API is not required
+either. See [Ax-Structures.md](Ax-Structures.md)
+
 *Changelog:*
 * 02/07/16 Push v0.2. rx_callback now requires 3 arguments as example below.
 
