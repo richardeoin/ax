@@ -123,5 +123,6 @@ def rx_callback(data, length, ax_metadata):
 try:
     radio.receive(rx_callback)
 except KeyboardInterrupt:
-    print("")
-    print("Uploading remaining packets to habitat...")
+    if not args.offline:
+        print("")
+        print("Uploading remaining packets to habitat...")
