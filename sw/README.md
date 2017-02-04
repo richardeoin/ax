@@ -79,7 +79,7 @@ Then
 ```
 # get cffi
 sudo apt-get install git python-pip python-dev libffi-dev
-sudo pip install cffi enum34
+sudo pip install cffi enum34 wiringpi2
 
 # get wiring pi
 git clone git://git.drogon.net/wiringPi
@@ -115,3 +115,5 @@ nano gateway.yaml
 # run gateway
 python gmsk_gateway.py
 ```
+
+Use `python gmsk_gateway.py --help` for more information.

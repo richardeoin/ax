@@ -5,3 +5,5 @@ latitude: 1.0
 longitude: 0.0
 altitude: 40
 antenna: Unknown
+rx_led: 24
+habitat_led: 25

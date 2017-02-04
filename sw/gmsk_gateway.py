@@ -26,6 +26,7 @@ import habitat
 import logging
 import yaml
 import argparse
+import time
 
 parser = argparse.ArgumentParser(description=
                                  'Gateway from AX radio GMSK modes to habitat.')
@@ -33,6 +34,8 @@ parser.add_argument('-f', '--offline', action='store_true',
                     help='do not connect to habitat')
 parser.add_argument('-i', '--infodoc', action='store_true',
                     help='print document ids of uploaded documents')
+parser.add_argument('-l', '--leds', action='store_true',
+                    help='blink LEDs')
 
 args = parser.parse_args()
 
@@ -42,6 +45,42 @@ try:
         gw = yaml.load(g.read())
 except:
     raise RuntimeError("Couldn't load gateway.yaml! cp gateway-example.yaml gateway.yaml to get started!")
+
+# leds
+def rx_led(f):
+    if "rx_led" in gw:
+        f(gw["rx_led"])
+
+def habitat_led(f):
+    if "habitat_led" in gw:
+        f(gw["habitat_led"])
+
+def do_leds(f):
+    rx_led(f)
+    habitat_led(f)
+
+if args.leds:
+    import wiringpi
+    wiringpi.wiringPiSetup()
+
+    def init_led(led):
+        wiringpi.pinMode(led, 1)   # set output
+        wiringpi.digitalWrite(led, 0) # set off
+
+    do_leds(init_led)
+
+def deinit_leds():
+    if args.leds:
+        def deinit_led(led):
+            wiringpi.pinMode(led, 0)   # set input
+
+        do_leds(deinit_led)
+
+def blink(led):
+    if args.leds:
+        wiringpi.digitalWrite(led, 1) # set on
+        time.sleep(0.002)
+        wiringpi.digitalWrite(led, 0) # set off
 
 
 # TODO set frequency/mode dynamically
@@ -79,6 +118,7 @@ if not args.offline:            # if online
         })
 
     def uploader_saved_id(doc_type, doc_id):
+        habitat_led(blink)
         if args.infodoc:
             print("{} upload success! id {}".format(doc_type, doc_id))
 
@@ -106,6 +146,7 @@ def rx_callback(data, length, ax_metadata):
     try:
         string = data[:-2].decode('ascii')
         print(string)
+        rx_led(blink)
 
         # upload
         try:
@@ -123,6 +164,8 @@ def rx_callback(data, length, ax_metadata):
 try:
     radio.receive(rx_callback)
 except KeyboardInterrupt:
+    deinit_leds()
+
     if not args.offline:
         print("")
         print("Uploading remaining packets to habitat...")
