@@ -215,7 +215,10 @@ typedef struct ax_config {
   uint8_t f_xtaldiv;            /* xtal division factor, set automatically */
   void* (*tcxo_enable)(void);    /* function to enable tcxo */
   void* (*tcxo_disable)(void);   /* function to disable tcxo */
+
+  /* transmit path */
   enum ax_transmit_path transmit_path; /* transmit path */
+  float transmit_power_limit;          /* power limit */
 
   /* spi transfer */
   void (*spi_transfer)(unsigned char*, uint8_t);

@@ -46,6 +46,8 @@
 #define debug_printf(...)
 #endif
 
+#define MIN(a,b) ((a < b) ? (a) : (b))
+
 typedef struct ax_synthesiser_parameters {
   uint8_t loop, charge_pump_current;
 } ax_synthesiser_parameters;
@@ -756,6 +758,7 @@ uint8_t ax_modcfga_tx_parameters_tx_path(enum ax_transmit_path path)
 void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
 {
   uint8_t modcfga;
+  float p;
   uint16_t pwr;
   uint32_t deviation;
   uint32_t fskdev, txrate;
@@ -815,7 +818,12 @@ void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
   }
 
   /* TX power */
-  pwr = (uint16_t)((mod->power * (1 << 12)) + 0.5);
+  if (config->transmit_power_limit > 0) {
+    p = MIN(mod->power, config->transmit_power_limit);
+  } else {
+    p = mod->power;
+  }
+  pwr = (uint16_t)((p * (1 << 12)) + 0.5);
   pwr = (pwr > 0xFFF) ? 0xFFF : pwr; /* max 0xFFF */
   ax_hw_write_register_16(config, AX_REG_TXPWRCOEFFB, pwr);
 
