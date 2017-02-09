@@ -22,6 +22,7 @@
 
 from ax_radio import AxRadioGMSK
 from datetime import datetime
+from rs8 import rs8
 import habitat
 import logging
 import yaml
@@ -85,7 +86,6 @@ def blink(led):
 
 # TODO set frequency/mode dynamically
 frequency_MHz = 434.6375
-radio = AxRadioGMSK(spi=0, frequency_MHz=frequency_MHz, mode='Y')
 
 if not args.offline:            # if online
     # Habitat
@@ -132,6 +132,16 @@ if not args.offline:            # if online
 
 # Receive Loop
 def rx_callback(data, length, ax_metadata):
+
+    # strip crc
+    message = data[:-2]
+    length = length - 2
+
+    if length < 32:
+        #print("not enough bytes for reed solomon!")
+        #print("")
+        return
+
     print("(Length:      {})".format(length))
     print("(RSSI:        {} dBm)".format(ax_metadata['rssi']))
     print("(Freq offset: {} Hz)".format(ax_metadata['rffreqoffs']))
@@ -142,9 +152,18 @@ def rx_callback(data, length, ax_metadata):
         "signal_strength": ax_metadata['rssi']
     }
 
+    error_count = rs8.decode_rs_8_assume_pad(message)
+    if error_count == -1:
+        print("not recoverable with reed-solomon!")
+        #print(message)
+        print("")
+        return
+
+    print("(RS C Errors: {})".format(error_count))
+
     # decode data to ascii
     try:
-        string = data[:-2].decode('ascii')
+        string = message[:-32].decode('ascii')
         print(string)
         rx_led(blink)
 
@@ -161,8 +180,12 @@ def rx_callback(data, length, ax_metadata):
 
 
 # start rx
+radio = AxRadioGMSK(spi=0, frequency_MHz=frequency_MHz, mode='Y',
+                    accept_crc_failures=True)
+
 try:
     radio.receive(rx_callback)
+
 except KeyboardInterrupt:
     deinit_leds()
 

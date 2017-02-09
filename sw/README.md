@@ -104,6 +104,14 @@ sudo pip install -r requirements.txt
 
 TODO: somehow install habitat globally, or just move habitat/habitat to sw
 
+Also need to build reed-solomon library:
+
+```
+cd rs8
+python build_rs8.py
+cd ..
+```
+
 Now you can run a gateway:
 
 ```
