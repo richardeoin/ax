@@ -163,7 +163,8 @@ class AxRadio:
 
         while (self.state == self.RadioStates.Receive):
             while lib.ax_rx_packet(self.config, pkt): # empty the fifo
-                data = ffi.string(pkt.data[0:pkt.length])
+                data_c = ffi.cast('char*', pkt.data)
+                data = ffi.unpack(data_c[0:pkt.length], pkt.length)
                 metadata = {
                     'rssi': pkt.rssi,
                     'rffreqoffs': pkt.rffreqoffs,
