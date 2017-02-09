@@ -32,7 +32,8 @@ class AxRadio:
     def __init__(self,
                  spi=0, vco_type=VcoTypes.Undefined,
                  frequency_MHz=434.6, modu=Modulations.FSK,
-                 bitrate=20000, fec=False, power=0.1, cont=True):
+                 bitrate=20000, fec=False, power=0.1, cont=True,
+                 accept_crc_failures=False):
 
         self.config = ffi.new('ax_config*')
         self.mod = ffi.new('ax_modulation*')
@@ -66,6 +67,10 @@ class AxRadio:
         # report rssi and rf frequency offset
         self.config.pkt_store_flags = lib.AX_PKT_STORE_RSSI | \
                                 lib.AX_PKT_STORE_RF_OFFSET
+
+        # maybe accept CRC failures
+        if accept_crc_failures:
+            self.config.pkt_accept_flags = lib.AX_PKT_ACCEPT_CRC_FAILURES
 
         # actually initialise the radio
         init_status = lib.ax_init(self.config)
@@ -192,7 +197,8 @@ GMSK-{X,Y,Z} modes
 class AxRadioGMSK(AxRadio):
     def __init__(self,
                  spi=0, vco_type=AxRadio.VcoTypes.Undefined,
-                 frequency_MHz=434.6, mode='X', power=0.1):
+                 frequency_MHz=434.6, mode='X', power=0.1,
+                 accept_crc_failures=False):
 
         if mode == 'X' or mode == 'x':
             bitrate = 12000
@@ -206,7 +212,8 @@ class AxRadioGMSK(AxRadio):
         # configure radio
         AxRadio.__init__(self, spi, vco_type, frequency_MHz,
                          modu=AxRadio.Modulations.GMSK,
-                         bitrate=bitrate, fec=True, power=power)
+                         bitrate=bitrate, fec=True, power=power,
+                         accept_crc_failures=accept_crc_failures)
 
 """
 APRS

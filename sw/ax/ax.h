@@ -225,6 +225,9 @@ typedef struct ax_config {
 
   /* receive */
   uint8_t pkt_store_flags;      /* PKTSTOREFLAGS */
+  uint8_t pkt_accept_flags;     /* PKTACCEPTFLAGS */
+  /* Note that we always accept multiple chunks (LRGP), bad address
+   * (ADDRF), and nonintegral number of bytes in HDLC (RESIDUE) */
 
   /* wakeup */
   uint32_t wakeup_period_ms;

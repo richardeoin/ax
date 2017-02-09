@@ -1045,9 +1045,12 @@ void ax_set_packet_controller_parameters(ax_config* config, ax_modulation* mod,
   ax_hw_write_register_8(config, AX_REG_PKTSTOREFLAGS,
                          config->pkt_store_flags);
 
-  /* accept multiple chunks */
+  /* packet accept flags. always accept some things, more from config */
   ax_hw_write_register_8(config, AX_REG_PKTACCEPTFLAGS,
-                         0x29);  //SOME!!! //AX_PKT_ACCEPT_MULTIPLE_CHUNKS);
+                         AX_PKT_ACCEPT_MULTIPLE_CHUNKS |  /* (LRGP) */
+                         AX_PKT_ACCEPT_ADDRESS_FAILURES | /* (ADDRF) */
+                         AX_PKT_ACCEPT_RESIDUE |          /* (RESIDUE) */
+                         config->pkt_accept_flags);
 }
 /**
  * 5.24 low power oscillator
