@@ -216,7 +216,7 @@ uint16_t ax_fifo_rx_data(ax_config* config, ax_rx_chunk* chunk)
   uint8_t ptr[3];
   uint32_t scratch;
 
-  uint8_t fifocount = ax_hw_read_register_16(config, AX_REG_FIFOCOUNT);
+  uint16_t fifocount = ax_hw_read_register_16(config, AX_REG_FIFOCOUNT);
   if (fifocount == 0) {
     return 0;                   /* nothing to read */
   }
