@@ -739,7 +739,7 @@ uint8_t ax_modcfga_tx_parameters_tx_path(enum ax_transmit_path path)
       return AX_MODCFGA_TXDIFF;
 #else
       debug_printf("Differential transmit path NOT set!\n");
-      debug_printf("Check this is okay on your hardware, and define _AX_TX_SE to enable.\n");
+      debug_printf("Check this is okay on your hardware, and define _AX_TX_DIFF to enable.\n");
       debug_printf("Setting single ended transmit path instead...\n");
       return AX_MODCFGA_TXSE;
 #endif

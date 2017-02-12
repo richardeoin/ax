@@ -1,4 +1,4 @@
-# Script to build _ax_radio.so for the Raspberry Pi
+# Script to build _ax_radio.so for the C.H.I.P.
 # Copyright (C) 2016  Richard Meadows <richardeoin>
 
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -65,41 +65,105 @@ enum ax_set_spi_transfer_status
 void ax_platform_init(ax_config* config);
 """)
 spi_callbacks_source = """
-#include <wiringPi.h>
-#include <wiringPiSPI.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/types.h>
+#include <linux/spi/spidev.h>
 #include "ax/ax.h"
-#define SPI_SPEED	5000000     /* 5MHz */
 
-void wiringpi_spi_transfer_spi_0(unsigned char* data, uint8_t length) {
-  wiringPiSPIDataRW(0, data, length);
-}
-void wiringpi_spi_transfer_spi_1(unsigned char* data, uint8_t length) {
-  wiringPiSPIDataRW(1, data, length);
+static const char *device = "/dev/spidev32766.0";
+static uint32_t speed = 5000000;     /* 5MHz */
+static uint8_t bits = 8;
+static uint8_t mode = 0;
+
+int fd;
+
+void chip_spi_transfer_spi(unsigned char* data, uint8_t length)
+{
+  int ret;
+
+  struct spi_ioc_transfer tr = {
+    .tx_buf = (unsigned long)data,
+    .rx_buf = (unsigned long)data,
+    .len = length,
+    .delay_usecs = 0,
+    .speed_hz = speed,
+    .bits_per_word = bits,
+  };
+
+  ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
+  if (ret < 1) {
+    /* failed to send message */
+  }
 }
 
 enum ax_set_spi_transfer_status
      ax_set_spi_transfer(ax_config* config, int spi)
 {
-  if (wiringPiSPISetup(spi, SPI_SPEED) < 0) {
-    fprintf(stderr, "Failed to open SPI port. Try loading spi library with 'gpio load spi'");
+  int ret;
+  (void)spi;
+
+  fd = open(device, O_RDWR);
+
+  if (fd < 0) {
+    fprintf(stderr, "can't open device");
     return AX_SET_SPI_TRANSFER_FAILED;
   }
 
-  if (spi == 0) {
-    config->spi_transfer = wiringpi_spi_transfer_spi_0;
-  } else if (spi == 1) {
-    config->spi_transfer = wiringpi_spi_transfer_spi_1;
-  } else {
-    return AX_SET_SPI_TRANSFER_BAD_SPI;
+  /* spi mode */
+  ret = ioctl(fd, SPI_IOC_WR_MODE, &mode);
+  if (ret == -1) {
+    fprintf(stderr, "can't set spi mode");
+    return AX_SET_SPI_TRANSFER_FAILED;
   }
+  ret = ioctl(fd, SPI_IOC_RD_MODE, &mode);
+  if (ret == -1) {
+    fprintf(stderr,"can't get spi mode");
+    return AX_SET_SPI_TRANSFER_FAILED;
+  }
+
+  /* bits per word */
+  ret = ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
+  if (ret == -1) {
+    fprintf(stderr,"can't set bits per word");
+    return AX_SET_SPI_TRANSFER_FAILED;
+  }
+  ret = ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &bits);
+  if (ret == -1) {
+    fprintf(stderr,"can't get bits per word");
+    return AX_SET_SPI_TRANSFER_FAILED;
+  }
+
+  /* max speed hz */
+  ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
+  if (ret == -1) {
+    fprintf(stderr,"can't set max speed hz");
+    return AX_SET_SPI_TRANSFER_FAILED;
+  }
+  ret = ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
+  if (ret == -1) {
+    fprintf(stderr,"can't get max speed hz");
+    return AX_SET_SPI_TRANSFER_FAILED;
+  }
+
+  config->spi_transfer = chip_spi_transfer_spi;
+  config->transmit_path = AX_TRANSMIT_PATH_SE;
 
   return AX_SET_SPI_TRANSFER_OK;
 }
 
-void ax_platform_init(ax_config* config) { /* nothing */ }
+/* Platform init for C.H.I.P. */
+void ax_platform_init(ax_config* config)
+{
+  /* pwramp */
+  ax_set_pinfunc_pwramp(config, 6); /* Power Amplifer Control */
+  /* antsel */
+  ax_set_pinfunc_antsel(config, 2); /* High-Z */
+}
 """
 
-compile_args = ["-D_AX_TX_DIFF"]
+compile_args = ["-D_AX_TX_SE"]
 if debug:
     compile_args.append("-DDEBUG")
 
@@ -107,7 +171,7 @@ if debug:
 ax_sources = ["ax/ax.c", "ax/ax_hw.c", "ax/ax_modes.c", "ax/ax_params.c"]
 ffibuilder.set_source("_ax_radio",
                       definitions_enum + status_enum + spi_callbacks_source,
-                      sources=ax_sources, libraries=['wiringPi'],
+                      sources=ax_sources,
                       include_dirs=['.'], extra_compile_args=compile_args)
 
 # main

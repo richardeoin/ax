@@ -83,6 +83,9 @@ class AxRadio:
             raise RuntimeError('VCO ranging failed. Try a different frequency '
                                'or changing `vco_type` and `rf_div`')
 
+        # platform init (rpi/chip/...)
+        lib.ax_platform_init(self.config)
+
         self.in_transmit_mode = False
 
         # set modulation parameters

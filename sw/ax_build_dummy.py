@@ -62,6 +62,7 @@ ffibuilder.cdef(status_enum)
 ffibuilder.cdef("""
 enum ax_set_spi_transfer_status
      ax_set_spi_transfer(ax_config* config, int spi);
+void ax_platform_init(ax_config* config);
 """)
 spi_callbacks_source = """
 #include "ax/ax.h"
@@ -78,6 +79,8 @@ enum ax_set_spi_transfer_status
 
   return AX_SET_SPI_TRANSFER_OK;
 }
+
+void ax_platform_init(ax_config* config) { /* nothing */ }
 """
 
 compile_args = ["-D_AX_DUMMY", "-D_AX_TX_DIFF"]
