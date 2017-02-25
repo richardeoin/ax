@@ -426,3 +426,22 @@
 #define AX_LPOSC_CALIBR		(1 << 5)
 #define AX_LPOSC_OSC_DOUBLE	(1 << 6)
 #define AX_LPOSC_OSC_INVERT	(1 << 7)
+
+/**
+ * 5.25 DAC --------------------------------------
+ */
+#define AX_DAC_INPUT_DACVALUE		(0)
+#define AX_DAC_INPUT_TRKAMPLITUDE	(1)
+#define AX_DAC_INPUT_TRKRFFREQUENCY	(2)
+#define AX_DAC_INPUT_TRKFREQUENCY	(3)
+#define AX_DAC_INPUT_FSKDEMOD		(4)
+#define AX_DAC_INPUT_AFSKDEMOD		(5)
+#define AX_DAC_INPUT_RXSOFTDATA		(6)
+#define AX_DAC_INPUT_RSSI			(7)
+#define AX_DAC_INPUT_SAMPLE_ROT_I	(8)
+#define AX_DAC_INPUT_SAMPLE_ROT_Q	(9)
+#define AX_DAC_INPUT_GPADC13		(10)
+
+#define AX_DEC_CLKX2			(1 << 6)
+#define AX_DAC_MODE_DELTA_SIGMA	(0 << 7)
+#define AX_DAC_MODE_PWM			(1 << 7)

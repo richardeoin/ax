@@ -1082,7 +1082,8 @@ void ax_set_low_power_osc(ax_config* config, ax_wakeup_config* wakeup_config)
  */
 void ax_set_digital_to_analog_converter(ax_config* config)
 {
-  ax_hw_write_register_8(config, AX_REG_DACCONFIG, 0x00);
+  ax_hw_write_register_8(config, AX_REG_DACCONFIG, AX_DAC_MODE_DELTA_SIGMA |
+                                                   config->dac_config);
 }
 /**
  * 5.26 'performance tuning'

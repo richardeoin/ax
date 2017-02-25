@@ -233,6 +233,9 @@ typedef struct ax_config {
   uint32_t wakeup_period_ms;
   uint32_t wakeup_xo_early_ms;
 
+  /* digitial to analogue (DAC) channel */
+  uint8_t dac_config;
+
   /* pll vco */
   uint32_t f_pllrng;
 
