@@ -139,7 +139,7 @@ class AxRadio:
 
         # fsk: modulation index
         if modu == self.Modulations.FSK or modu == self.Modulations.GFSK:
-            self.mod.parameters.fsk.modulation_index = 2/3
+            self.mod.parameters.fsk.modulation_index = 2.0/3
 
         # afsk: deviation, mark, space
         if modu == self.Modulations.AFSK:
