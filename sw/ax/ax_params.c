@@ -394,6 +394,7 @@ void ax_param_rx_parameter_set(ax_config* config, ax_modulation* mod,
       pars->freq_dev = 0;              /* no frequency deviation */
   }
   debug_printf("freqdev 0x%03x\n", pars->freq_dev);
+  debug_printf("-\n");
 }
 
 /**
@@ -503,11 +504,14 @@ void ax_populate_params(ax_config* config, ax_modulation* mod, ax_params* par)
       par->m = 0;
   }
 
+  debug_printf("modulation index m = %f\n", par->m);
+
   ax_param_forward_error_correction(config, mod, par);
   ax_param_receiver_parameters(config, mod, par);
   ax_param_afskctrl(config, mod, par);
 
   /* receive sets */
+  debug_printf("-\n");
   if (mod->continuous) {
     ax_param_rx_parameter_set(config, mod,
                               &par->rx_param_sets[3], par,
