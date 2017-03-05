@@ -589,11 +589,6 @@ void ax_set_rx_parameters(ax_config* config, ax_modulation* mod)
       break;
   }
 
-  /* AFSK */
-  if ((mod->modulation & 0xf) == AX_MODULATION_AFSK) {
-    ax_set_afsk_rx_parameters(config, mod);
-  }
-
   /* Amplitude Lowpass filter */
   ax_hw_write_register_8(config, AX_REG_AMPLFILTER, mod->par.ampl_filter);
 }
@@ -797,8 +792,6 @@ void ax_set_tx_parameters(ax_config* config, ax_modulation* mod)
       fskdev = (uint32_t)((((float)deviation * (1 << 24) * 0.858785) /
                            (float)config->f_xtal) + 0.5);
 
-      /* additionally set mark and space frequencies */
-      ax_set_afsk_tx_parameters(config, mod);
       break;
   }
   ax_hw_write_register_24(config, AX_REG_FSKDEV, fskdev);
@@ -1178,12 +1171,17 @@ void ax_set_registers(ax_config* config, ax_modulation* mod,
 /**
  * register settings for transmit
  */
-void ax_set_registers_tx(ax_config* config)
+void ax_set_registers_tx(ax_config* config, ax_modulation* mod)
 {
   ax_set_synthesiser_parameters(config,
                                 &synth_operation,
                                 &config->synthesiser.A,
                                 config->synthesiser.vco_type);
+
+  /* AFSK */
+  if ((mod->modulation & 0xf) == AX_MODULATION_AFSK) {
+    ax_set_afsk_tx_parameters(config, mod);
+  }
 
   ax_hw_write_register_8(config, 0xF00, 0x0F); /* const */
   ax_hw_write_register_8(config, 0xF18, 0x06); /* ?? */
@@ -1191,12 +1189,17 @@ void ax_set_registers_tx(ax_config* config)
 /**
  * register settings for receive
  */
-void ax_set_registers_rx(ax_config* config)
+void ax_set_registers_rx(ax_config* config, ax_modulation* mod)
 {
   ax_set_synthesiser_parameters(config,
                                 &synth_operation,
                                 &config->synthesiser.A,
                                 config->synthesiser.vco_type);
+
+  /* AFSK */
+  if ((mod->modulation & 0xf) == AX_MODULATION_AFSK) {
+    ax_set_afsk_rx_parameters(config, mod);
+  }
 
   ax_hw_write_register_8(config, 0xF00, 0x0F); /* const */
   ax_hw_write_register_8(config, 0xF18, 0x02); /* ?? */
@@ -1403,7 +1406,7 @@ void ax_tx_on(ax_config* config, ax_modulation* mod)
 
   /* Registers */
   ax_set_registers(config, mod, NULL);
-  ax_set_registers_tx(config);
+  ax_set_registers_tx(config, mod);
 
   /* Enable TCXO if used */
   if (config->tcxo_enable) { config->tcxo_enable(); }
@@ -1477,7 +1480,7 @@ void ax_rx_on(ax_config* config, ax_modulation* mod)
   /* Place chip in FULLRX mode */
   ax_set_pwrmode(config, AX_PWRMODE_FULLRX);
 
-  ax_set_registers_rx(config);    /* set rx registers??? */
+  ax_set_registers_rx(config, mod);    /* set rx registers */
 
   /* Enable TCXO if used */
   if (config->tcxo_enable) { config->tcxo_enable(); }
@@ -1507,7 +1510,7 @@ void ax_rx_wor(ax_config* config, ax_modulation* mod,
   /* Place chip in FULLRX mode */
   ax_set_pwrmode(config, AX_PWRMODE_WORRX);
 
-  ax_set_registers_rx(config);    /* set rx registers??? */
+  ax_set_registers_rx(config, mod);    /* set rx registers */
 
   /* Enable TCXO if used */
   if (config->tcxo_enable) { config->tcxo_enable(); }
