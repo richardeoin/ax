@@ -119,6 +119,54 @@ uint16_t ax_hw_write_register_8(ax_config* config, uint16_t reg, uint8_t value)
   }
 }
 /**
+ * Writes register, and fully updates status. 32 bit
+ *
+ * Returns status
+ */
+uint16_t ax_hw_write_register_long_32(ax_config* config, uint16_t reg, uint32_t value)
+{
+  unsigned char data[6];
+
+  data[0] = ((reg >> 8) | 0xF0);
+  data[1] = (reg & 0xFF);
+  data[2] = (value >> 24);
+  data[3] = (value >> 16);
+  data[4] = (value >> 8);
+  data[5] = (value >> 0);
+  config->spi_transfer(data, 6);
+
+  status = ((uint16_t)data[0] << 8) & data[1];
+
+  return status;
+}
+/**
+ * Write register, using long or short access as required. 32 bit
+ *
+ * Returns status
+ */
+uint16_t ax_hw_write_register_32(ax_config* config, uint16_t reg, uint32_t value)
+{
+  if (reg > 0x70) {             /* long access */
+    return ax_hw_write_register_long_32(config, reg, value);
+
+  } else {                      /* short access */
+    unsigned char data[5];
+
+    data[0] = ((reg & 0x7F) | 0x80);
+    data[1] = (value >> 24);
+    data[2] = (value >> 16);
+    data[3] = (value >> 8);
+    data[4] = (value >> 0);
+
+    config->spi_transfer(data, 5);
+
+    status &= 0xFF;
+    status |= ((uint16_t)data[0] << 8);
+
+    return status;
+  }
+}
+/**
  * Reads register, and fully updates status. Up to 4 bytes
  *
  * Returns status
@@ -186,13 +234,6 @@ uint16_t ax_hw_write_register_24(ax_config* config, uint16_t reg, uint32_t value
   ax_hw_write_register_8(config,        reg,   (value >> 16)); /* MSB first */
   ax_hw_write_register_8(config,        reg+1, (value >> 8));
   return ax_hw_write_register_8(config, reg+2, (value >> 0));
-}
-uint16_t ax_hw_write_register_32(ax_config* config, uint16_t reg, uint32_t value)
-{
-  ax_hw_write_register_8(config,        reg,   (value >> 24)); /* MSB first */
-  ax_hw_write_register_8(config,        reg+1, (value >> 16));
-  ax_hw_write_register_8(config,        reg+2, (value >> 8));
-  return ax_hw_write_register_8(config, reg+3, (value >> 0));
 }
 uint16_t ax_hw_read_register_16(ax_config* config, uint16_t reg)
 {
