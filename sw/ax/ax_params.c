@@ -218,7 +218,7 @@ void ax_param_rx_parameter_set(ax_config* config, ax_modulation* mod,
                                ax_rx_param_set* pars, ax_params* par,
                                enum ax_parameter_set_type type)
 {
-  uint32_t tmg_corr_frac, dmg_corr_frac;
+  uint32_t tmg_corr_frac, drg_corr_frac;
   uint32_t rffreq_gain_f;
   uint32_t rffreq_rg;
 
@@ -274,18 +274,18 @@ void ax_param_rx_parameter_set(ax_config* config, ax_modulation* mod,
 
   /* Gain of datarate recovery loop */
   /**
-   * DRGCORRFRAC - 256, 512, 1024
+   * DRGCORRFRAC - 128, 256, 512
    * tightning the loop...
    */
   switch (type) {
     case AX_PARAMETER_SET_INITIAL_SETTLING:
-      drg_corr_frac = 256;        /* fast lock */
+      drg_corr_frac = 128;        /* fast lock */
       break;
     case AX_PARAMETER_SET_AFTER_PATTERN1:
-      drg_corr_frac = 512;
+      drg_corr_frac = 256;
       break;
     default:
-      drg_corr_frac = 1024;       /* low datarate jitter */
+      drg_corr_frac = 512;       /* low datarate jitter */
       break;
   }
   pars->dr_gain = (uint32_t)((float)par->rx_data_rate / drg_corr_frac);
