@@ -1302,8 +1302,11 @@ enum ax_vco_ranging_result ax_vco_ranging(ax_config* config)
   /* Disable TCXO if used */
   if (config->tcxo_disable) { config->tcxo_disable(); }
 
-  if ((resultA == AX_VCO_RANGING_SUCCESS) &&
-      (resultB == AX_VCO_RANGING_SUCCESS)) {
+  if (((resultA == AX_VCO_RANGING_SUCCESS) ||     /* success */
+       (config->synthesiser.A.frequency == 0)) && /* or not used */
+      ((resultB == AX_VCO_RANGING_SUCCESS) ||     /* success */
+       (config->synthesiser.B.frequency == 0))) { /* or not used */
+
     return AX_VCO_RANGING_SUCCESS; /* currently assume with need both VCOs */
   }
 
