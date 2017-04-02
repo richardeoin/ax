@@ -2,7 +2,7 @@
 <export version="D">
   <design>
     <source>/Users/richard/Documents/_ax50/hw/chip/ax-chip.sch</source>
-    <date>Tuesday, 22 November 2016 'amt' 01:41:22</date>
+    <date>Wednesday, 23 November 2016 'amt' 00:48:50</date>
     <tool>Eeschema 4.0.4-stable</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
@@ -52,8 +52,9 @@
     <comp ref="L2">
       <value>22nH</value>
       <footprint>agg:0603</footprint>
+      <datasheet>LQW18AN22NJ10D</datasheet>
       <fields>
-        <field name="STD.PAS">22nH</field>
+        <field name="Digikey">490-6876-1-ND</field>
       </fields>
       <libsource lib="device" part="L_Small"/>
       <sheetpath names="/" tstamps="/"/>
@@ -134,8 +135,9 @@
     <comp ref="L3">
       <value>22nH</value>
       <footprint>agg:0603</footprint>
+      <datasheet>LQW18AN22NJ10D</datasheet>
       <fields>
-        <field name="STD.PAS">22nH</field>
+        <field name="Digikey">490-6876-1-ND</field>
       </fields>
       <libsource lib="device" part="L_Small"/>
       <sheetpath names="/" tstamps="/"/>
@@ -366,8 +368,9 @@
     <comp ref="L1">
       <value>22nH</value>
       <footprint>agg:0603</footprint>
+      <datasheet>LQW18AN22NJ10D</datasheet>
       <fields>
-        <field name="STD.PAS">22nH</field>
+        <field name="Digikey">490-6876-1-ND</field>
       </fields>
       <libsource lib="device" part="L_Small"/>
       <sheetpath names="/" tstamps="/"/>
@@ -446,8 +449,9 @@
     <comp ref="L4">
       <value>120nH</value>
       <footprint>agg:0603</footprint>
+      <datasheet>LQW18ANR12G00D</datasheet>
       <fields>
-        <field name="STD.PAS">120nH</field>
+        <field name="Digikey">490-1180-1-ND</field>
       </fields>
       <libsource lib="device" part="L_Small"/>
       <sheetpath names="/" tstamps="/"/>
@@ -466,8 +470,9 @@
     <comp ref="L6">
       <value>120nH</value>
       <footprint>agg:0603</footprint>
+      <datasheet>LQW18ANR12G00D</datasheet>
       <fields>
-        <field name="STD.PAS">120nH</field>
+        <field name="Digikey">490-1180-1-ND</field>
       </fields>
       <libsource lib="device" part="L_Small"/>
       <sheetpath names="/" tstamps="/"/>
@@ -486,8 +491,9 @@
     <comp ref="L8">
       <value>39nH</value>
       <footprint>agg:0402</footprint>
+      <datasheet>LQG15HS39NJ02D</datasheet>
       <fields>
-        <field name="STD.PAS">39nH</field>
+        <field name="Digikey">490-2630-1-ND</field>
       </fields>
       <libsource lib="device" part="L_Small"/>
       <sheetpath names="/" tstamps="/"/>
@@ -569,6 +575,9 @@
     <comp ref="J1">
       <value>CONN_01x02</value>
       <footprint>Terminal_Blocks:TerminalBlock_Pheonix_PT-3.5mm_2pol</footprint>
+      <fields>
+        <field name="Farnell">3882615</field>
+      </fields>
       <libsource lib="agg-kicad" part="CONN_01x02"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>580DAB3E</tstamp>
@@ -576,6 +585,9 @@
     <comp ref="J2">
       <value>CONN_01x02</value>
       <footprint>Terminal_Blocks:TerminalBlock_Pheonix_PT-3.5mm_2pol</footprint>
+      <fields>
+        <field name="Farnell">3882615</field>
+      </fields>
       <libsource lib="agg-kicad" part="CONN_01x02"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>580DD2FD</tstamp>
@@ -1155,17 +1167,17 @@
     </libpart>
   </libparts>
   <libraries>
-    <library logical="_passive">
-      <uri>/Users/richard/Documents/_kicad/kicad-schlib/library/_passive.lib</uri>
-    </library>
-    <library logical="_semi">
-      <uri>/Users/richard/Documents/_kicad/kicad-schlib/library/_semi.lib</uri>
-    </library>
     <library logical="device">
       <uri>/Library/Application Support/kicad/library/device.lib</uri>
     </library>
     <library logical="maxim">
       <uri>/Library/Application Support/kicad/library/maxim.lib</uri>
+    </library>
+    <library logical="_passive">
+      <uri>/Users/richard/Documents/_kicad/kicad-schlib/library/_passive.lib</uri>
+    </library>
+    <library logical="_semi">
+      <uri>/Users/richard/Documents/_kicad/kicad-schlib/library/_semi.lib</uri>
     </library>
     <library logical="ax5243">
       <uri>/Users/richard/Documents/_kicad/rem-kicad/lib/radio/ax5243.lib</uri>
