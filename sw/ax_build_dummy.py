@@ -1,4 +1,4 @@
-# Script to build _ax_radio.so for the Raspberry Pi
+# Script to build _ax_radio.so for a dummy platform with no hardware
 # Copyright (C) 2016  Richard Meadows <richardeoin>
 
 # Permission is hereby granted, free of charge, to any person obtaining
