@@ -201,7 +201,7 @@ class AxRadioGMSK(AxRadio):
     def __init__(self,
                  spi=0, vco_type=AxRadio.VcoTypes.Undefined,
                  frequency_MHz=434.6, mode='X', power=0.1,
-                 accept_crc_failures=False):
+                 accept_crc_failures=False, cont=True):
 
         if mode == 'X' or mode == 'x':
             bitrate = 12000
@@ -216,6 +216,7 @@ class AxRadioGMSK(AxRadio):
         AxRadio.__init__(self, spi, vco_type, frequency_MHz,
                          modu=AxRadio.Modulations.GMSK,
                          bitrate=bitrate, fec=True, power=power,
+                         cont=cont,
                          accept_crc_failures=accept_crc_failures)
 
 """
