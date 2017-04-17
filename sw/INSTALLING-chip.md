@@ -5,7 +5,8 @@
 * Flash. I used 4.4 command line version. `uname -a` gives `Linux chip
   4.4.13-ntc-mlc #1 SMP Tue Dec 6 21:38:00 UTC 2016 armv7l GNU/Linux`
 * Setup wifi etc.
-* Disable low power wifi because it's annoying `sudo iw wlan0 set power_save off`
+* Disable low power wifi because it's annoying `iw wlan0 set
+  power_save off`. (add it to rc.local)
 
 ## Enable SPI
 
@@ -41,3 +42,5 @@ sudo pip install cffi enum34
 # build ax for chip
 python ax_build_chip.py
 ```
+
+Need `sudo` to run scripts and access hardware!
