@@ -27,6 +27,7 @@ ffibuilder = FFI()
 
 # command line args
 debug = True if 'debug' in sys.argv else False
+singleport = True if 'singleport' in sys.argv else False
 
 # headers we'd like to use from python
 ax_headers = ["ax/ax.h"]
@@ -163,7 +164,11 @@ void ax_platform_init(ax_config* config)
 }
 """
 
-compile_args = ["-D_AX_TX_SE"]
+if singleport:
+    compile_args = ["-D_AX_TX_DIFF"]
+else:
+    compile_args = ["-D_AX_TX_SE"]
+
 if debug:
     compile_args.append("-DDEBUG")
 
