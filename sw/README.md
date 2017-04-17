@@ -97,9 +97,11 @@ Installing habitat on RPi `2016-09-23-raspbian-jessie-lite.img`
 ```
 sudo apt-get install git python-pip python-dev swig libssl-dev
 git clone https://github.com/ukhas/habitat
+cd habitiat
 # needed to install m2crypto
 sudo ln -s /usr/include/arm-linux-gnueabihf/openssl/opensslconf.h /usr/include/openssl/opensslconf.h
 sudo pip install -r requirements.txt
+cd ..
 ```
 
 TODO: somehow install habitat globally, or just move habitat/habitat to sw
