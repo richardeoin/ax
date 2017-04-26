@@ -87,6 +87,7 @@ cd wiringPi
 ./build
 
 # build ax for rpi
+cd sw
 python ax_build_raspberry_pi.py
 ```
 
@@ -109,7 +110,7 @@ TODO: somehow install habitat globally, or just move habitat/habitat to sw
 Also need to build reed-solomon library:
 
 ```
-cd rs8
+cd sw/rs8
 python build_rs8.py
 cd ..
 ```
@@ -117,6 +118,7 @@ cd ..
 Now you can run a gateway:
 
 ```
+cd sw
 cp gateway-example.yaml gateway.yaml
 
 # edit gateway.yaml
