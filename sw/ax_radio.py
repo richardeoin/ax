@@ -38,6 +38,7 @@ class AxRadio:
         self.config = ffi.new('ax_config*')
         self.mod = ffi.new('ax_modulation*')
         self.state = self.RadioStates.Off
+        self.autotune_batch = []
 
         # attempt to open the SPI port
         spi_status = lib.ax_set_spi_transfer(self.config, spi)
@@ -184,6 +185,33 @@ class AxRadio:
 
             if (timeout > 0) and ((time.time() - start_time) > timeout):
                 return          # timeout
+
+    # averages 10 rf freq offsets and autotunes to them
+    # only call with known good offsets (passed CRC etc.)
+    def autotune(self, rffreqoffs):
+        self.autotune_batch.append(rffreqoffs)
+
+        if len(self.autotune_batch) >= 10:
+            # autotune
+            offs   = self.autotune_batch
+            # mean and std. dev
+            mean   = sum(offs) / len(offs)
+            stddev = sum([(e-mean)**2 for e in offs]) / len(offs)
+            # filter outliers
+            offs   = [e for e in offs if abs(e - mean) < 3*stddev] # 3 std. devs
+            # new mean
+            offset = int(sum(offs) / len(offs))
+            # limit
+            if (offset >  200): offset =  200
+            if (offset < -200): offset = -200
+            # update
+            if (abs(offset) >= 5): # don't bother with < 5Hz
+                current_freq = self.config.synthesiser.A.frequency
+                updated_freq = current_freq - offset
+                lib.ax_force_quick_adjust_frequency(self.config, updated_freq)
+                print("Updated frequency by {}Hz...".format(-offset))
+            # clear batch
+            self.autotune_batch = []
 
     def off(self):              # off
         if self.state != self.RadioStates.Off:
