@@ -180,7 +180,7 @@ def rx_callback(data, length, ax_metadata):
 
 
 # start rx
-radio = AxRadioGMSK(spi=0, frequency_MHz=frequency_MHz, mode='Y',
+radio = AxRadioGMSK(spi=0, frequency_MHz=frequency_MHz, mode='X',
                     accept_crc_failures=True)
 
 try:
