@@ -23,11 +23,20 @@
 from ax_radio import AxRadioGMSK
 from datetime import datetime
 from rs8 import rs8
+from backports.shutil_get_terminal_size import get_terminal_size
 import habitat
 import logging
 import yaml
 import argparse
 import time
+import sys
+import ssdv_uploader
+
+tcolumns, trows = get_terminal_size()
+def print_no_cr(string):
+    sys.stdout.write(string)
+    sys.stdout.write(" "*(tcolumns-len(string)))
+    sys.stdout.flush()
 
 parser = argparse.ArgumentParser(description=
                                  'Gateway from AX radio GMSK modes to habitat.')
@@ -91,6 +100,9 @@ if not args.offline:            # if online
     # Habitat
     uploader = habitat.uploader.UploaderThread()
 
+    # ssdv
+    ssdv_uploader = ssdv_uploader.SSDVUploader(gw["callsign"])
+
     # create logger
     logger = logging.getLogger('habitat.uploader')
     logger.setLevel(logging.DEBUG)
@@ -131,7 +143,9 @@ if not args.offline:            # if online
 
 
 # Receive Loop
+nr_count = 0
 def rx_callback(data, length, ax_metadata):
+    global nr_count
 
     # strip crc
     message = data[:-2]
@@ -142,24 +156,59 @@ def rx_callback(data, length, ax_metadata):
         #print("")
         return
 
-    print("(Length:      {})".format(length))
-    print("(RSSI:        {} dBm)".format(ax_metadata['rssi']))
-    print("(Freq offset: {} Hz)".format(ax_metadata['rffreqoffs']))
-
     # Telemetry Metadata
     metadata = {
         "frequency": int((frequency_MHz * 1e6) + ax_metadata['rffreqoffs']),
         "signal_strength": ax_metadata['rssi']
     }
 
+    # Reed-Solomon Error correction
     error_count = rs8.decode_rs_8_assume_pad(message)
     if error_count == -1:
-        print("not recoverable with reed-solomon!")
-        #print(message)
-        print("")
+        sys.stdout.write("\r\b\r"*5)      # start of line
+        print_no_cr("(Length:      {})".format(length))
+        print_no_cr("(RSSI:        {} dBm)".format(ax_metadata['rssi']))
+        print_no_cr("(Freq offset: {} Hz)".format(ax_metadata['rffreqoffs']))
+        nr_count += 1
+        print_no_cr("Not recoverable with reed-solomon! (count = {})".format(nr_count))
+        print_no_cr("")
         return
 
+    nr_count = 0
+    print("(Length:      {})".format(length))
+    print("(RSSI:        {} dBm)".format(ax_metadata['rssi']))
+    print("(Freq offset: {} Hz)".format(ax_metadata['rffreqoffs']))
     print("(RS C Errors: {})".format(error_count))
+
+    # this is a valid packet, use offset for autotune
+    radio.autotune(ax_metadata['rffreqoffs'])
+
+    # check for ssdv packet
+    if length == 255:           # possibly a ssdv packet
+        # sanity checks. 0x66 = JPG FEC, 0x68 = CBEC FEC
+        packet_type = ord(message[0])
+        if (packet_type == 0x66) or (packet_type == 0x68):
+            # ssdv packet
+
+            # info
+            if packet_type == 0x68: # ssdv cbec fec
+                image_id = ord(message[5])
+                packet_id = (ord(message[6])*256) + ord(message[7])
+                sequences = ord(message[8])
+                original_blocks = ord(message[9])
+                print("Image {}, Packet {}. {}x{} total {} packets".format(
+                    image_id, packet_id, sequences, original_blocks,
+                    int(sequences*original_blocks*1.5)))
+                print("")
+
+            # upload
+            if not args.offline:
+                ssdv_uploader.ssdv_post_batch_async(b'U'+message)
+
+            return
+
+    # flush ssdv. does nothing if no data pushed
+    ssdv_uploader.ssdv_flush_batch_async()
 
     # decode data to ascii
     try:
@@ -182,6 +231,8 @@ def rx_callback(data, length, ax_metadata):
 # start rx
 radio = AxRadioGMSK(spi=0, frequency_MHz=frequency_MHz, mode='X',
                     accept_crc_failures=True)
+
+print("Enabled Radio!")
 
 try:
     radio.receive(rx_callback)
