@@ -91,6 +91,16 @@ cd sw
 python ax_build_raspberry_pi.py
 ```
 
+Updating:
+
+```
+git pull
+
+# rebuild
+cd sw
+python ax_build_raspberry_pi.py
+```
+
 #### Habitat
 
 Installing habitat on RPi `2016-09-23-raspbian-jessie-lite.img`
