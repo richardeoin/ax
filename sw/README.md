@@ -91,7 +91,7 @@ cd sw
 python ax_build_raspberry_pi.py
 ```
 
-Updating:
+#### Updating
 
 ```
 git pull
