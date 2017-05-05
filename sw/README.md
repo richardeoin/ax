@@ -68,18 +68,14 @@ There's minimum IF frequencies - 3.18kHz for FSK modes and 9.38kHz for
 ASK/PSK. These might reduce sensitivity at small bandwidths!
 
 
-## Installing
-
-#### Raspberry Pi
+## Installing GMSK Gateway on Raspberry Pi
 
 Use `raspi-config` to enable SPI!
-
-Then
 
 ```
 # get cffi
 sudo apt-get install git python-pip python-dev libffi-dev
-sudo pip install cffi enum34 wiringpi2
+sudo pip install cffi enum34 wiringpi2 backports.shutil_get_terminal_size
 
 # get wiring pi
 git clone git://git.drogon.net/wiringPi
@@ -94,6 +90,10 @@ python ax_build_raspberry_pi.py
 #### Updating
 
 ```
+# check dependancies are up to date
+sudo pip install cffi enum34 wiringpi2 backports.shutil_get_terminal_size
+
+# git
 git pull
 
 # rebuild
