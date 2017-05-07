@@ -208,7 +208,8 @@ def rx_callback(data, length, ax_metadata):
             return
 
     # flush ssdv. does nothing if no data pushed
-    ssdv_uploader.ssdv_flush_batch_async()
+    if not args.offline:
+        ssdv_uploader.ssdv_flush_batch_async()
 
     # decode data to ascii
     try:
