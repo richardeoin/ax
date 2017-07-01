@@ -9,4 +9,4 @@ pitch breakout board.
 
 The [software](sw/) has both C and Python APIs, and can be used
 without the cumbersome Ax-RadioLab GUI tool. Not all features of the
-radio and supported yet.
+radio are supported yet.
